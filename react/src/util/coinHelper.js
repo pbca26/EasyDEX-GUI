@@ -1,4 +1,4 @@
-export const getCoinTitle = (coin) => {
+export function getCoinTitle(coin) {
   let coinlogo;
   let coinname;
   let transparentBG = false;
@@ -6,14 +6,6 @@ export const getCoinTitle = (coin) => {
   let hideTitle = false;
 
   switch (coin) {
-    case 'BCBC':
-      coinlogo = 'BCBC';
-      coinname = 'Bitcoin CBC';
-      break;
-    case 'BNTN':
-      coinlogo = 'bntn';
-      coinname = 'Blocnation';
-      break;
     case 'ACC':
       coinlogo = 'acc';
       coinname = 'AdCoin';
@@ -437,14 +429,6 @@ export const getCoinTitle = (coin) => {
       coinlogo = 'COQUI';
       coinname = 'COQUI';
       break;
-    case 'GLXT':
-      coinlogo = 'GLXT';
-      coinname = 'GLXToken';
-      break;
-    case 'EQL':
-      coinlogo = 'EQL';
-      coinname = 'Equaliser';
-      break;
     case 'MESH':
       hideTitle = true;
       titleBG = true;
@@ -463,6 +447,14 @@ export const getCoinTitle = (coin) => {
     case 'BTCH':
       coinlogo = 'BTCH';
       coinname = 'BTCH';
+      break;
+    case 'VRSC':
+      coinlogo = 'VRSC';
+      coinname = 'VRSC';
+      break;
+    case 'VERUSTEST':
+      coinlogo = 'VERUSTEST';
+      coinname = 'VERUSTEST';
       break;
     case 'USD':
       titleBG = true;
@@ -652,7 +644,7 @@ export const getCoinTitle = (coin) => {
   };
 }
 
-export const getModeInfo = (mode) => {
+export function getModeInfo(mode) {
   let modecode;
   let modetip;
   let modecolor;
@@ -664,8 +656,8 @@ export const getModeInfo = (mode) => {
       modecolor = 'primary';
       break;
     case 'spv':
-      modecode = 'Lite';
-      modetip = 'Lite';
+      modecode = 'SPV';
+      modetip = 'SPV';
       modecolor = 'info';
       break;
     case 'full':
@@ -692,7 +684,7 @@ export const getModeInfo = (mode) => {
   };
 }
 
-export const coindList = () => {
+export function coindList() {
   const _coins = [
     'KMD',
     'CHIPS',
@@ -700,8 +692,6 @@ export const coindList = () => {
     'BOTS',
     'CEAL',
     'COQUI',
-    'GLXT',
-    'EQL',
     'CRYPTO',
     'HODL',
     'DEX',
@@ -718,7 +708,9 @@ export const coindList = () => {
     'WLC',
     'AXO',
     'ETOMIC',
-    'BTCH'
+    'BTCH',
+    'VRSC',
+    'VERUSTEST',
   ];
 
   return _coins;
@@ -733,8 +725,6 @@ export const isKomodoCoin = (coin) => {
       coin === 'BET' ||
       coin === 'CRYPTO' ||
       coin === 'COQUI' ||
-      coin === 'GLXT' ||
-      coin === 'EQL' ||
       coin === 'HODL' ||
       coin === 'MSHARK' ||
       coin === 'BOTS' ||
@@ -749,7 +739,9 @@ export const isKomodoCoin = (coin) => {
       coin === 'KMD' ||
       coin === 'AXO' ||
       coin === 'ETOMIC' ||
-      coin === 'BTCH') {
+      coin === 'BTCH' ||
+      coin === 'VRSC' ||
+      coin === 'VERUSTEST') {
     return true;
   }
 }

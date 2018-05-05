@@ -1,6 +1,6 @@
 {
   "name": "AgamaGUI",
-  "version": "0.2.31",
+  "version": "0.0.26",
   "description": "Agama Wallet GUI",
   "main": "src/index.js",
   "scripts": {
@@ -99,7 +99,7 @@
     "socket.io-client": "^1.7.3",
     "style-loader": "^0.13.0",
     "url-loader": "^0.5.7",
-    "webpack": "^2.2.1",
+    "webpack": "^2.7.0",
     "webpack-dashboard": "^0.2.1",
     "webpack-dev-server": "^2.2.1"
   }
