@@ -28,11 +28,12 @@ const addCoinOptionsAC = () => {
     'axo',
     'etomic',
     'btch',
+    'vrsc',
+    'verustest',
     'beer',
     'pizza',
     'vote2018',
-    'ninja',
-    'bntn'
+    'ninja'
   ];
   let _items = [];
 

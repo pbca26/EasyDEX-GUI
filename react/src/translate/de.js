@@ -800,6 +800,8 @@ export const LANG_DE = {
     'MSHARK': 'MSHARK (MSHARK)',
     'MESH': 'SpaceMesh (MESH)',
     'SUPERNET': 'SUPERNET (SUPERNET)',
+    'VRSC': 'Verus (VRSC)',
+    'VERUSTEST': 'Verus Test (VERUSTEST)',
     'WLC': 'WIRELESS (WIRELESS)'
   },
   'DEX': {

@@ -23,6 +23,8 @@ const explorerList = {
   EQL: 'http://178.62.240.191',
   MNZ: 'https://www.mnzexplorer.com',
   BTCH: 'http://www.btch.host',
+  VRSC: 'http://explorer.veruscoin.io',
+  VERUSTEST: 'http://explorer.veruscoin.io',
   BTC: 'https://blockchain.info',
   HUSH: 'https://explorer.myhush.org',
   PIZZA: 'http://pizza.komodochainz.info',

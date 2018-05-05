@@ -27,6 +27,8 @@ export const checkAC = (coinVal) => {
 			coinVal === 'AXO' ||
 			coinVal === 'ETOMIC' ||
 			coinVal === 'BTCH' ||
+			coinVal === 'VRSC' ||
+			coinVal === 'VERUSTEST' ||
 			coinVal === 'BEER' ||
 			coinVal === 'PIZZA' ||
 			coinVal === 'OOT' ||

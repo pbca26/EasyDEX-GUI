@@ -1,4 +1,4 @@
-export const getCoinTitle = (coin) => {
+export function getCoinTitle(coin) {
   let coinlogo;
   let coinname;
   let transparentBG = false;
@@ -468,6 +468,14 @@ export const getCoinTitle = (coin) => {
       coinlogo = 'BTCH';
       coinname = 'BTCH';
       break;
+    case 'VRSC':
+      coinlogo = 'VRSC';
+      coinname = 'VRSC';
+      break;
+    case 'VERUSTEST':
+      coinlogo = 'VERUSTEST';
+      coinname = 'VERUSTEST';
+      break;
     case 'USD':
       titleBG = true;
       transparentBG = true;
@@ -656,7 +664,7 @@ export const getCoinTitle = (coin) => {
   };
 }
 
-export const getModeInfo = (mode) => {
+export function getModeInfo(mode) {
   let modecode;
   let modetip;
   let modecolor;
@@ -668,8 +676,8 @@ export const getModeInfo = (mode) => {
       modecolor = 'primary';
       break;
     case 'spv':
-      modecode = 'Lite';
-      modetip = 'Lite';
+      modecode = 'SPV';
+      modetip = 'SPV';
       modecolor = 'info';
       break;
     case 'full':
@@ -696,7 +704,7 @@ export const getModeInfo = (mode) => {
   };
 }
 
-export const coindList = () => {
+export function coindList() {
   const _coins = [
     'KMD',
     'CHIPS',
@@ -723,7 +731,9 @@ export const coindList = () => {
     'WLC',
     'AXO',
     'ETOMIC',
-    'BTCH'
+    'BTCH',
+    'VRSC',
+    'VERUSTEST',
   ];
 
   return _coins;
@@ -755,7 +765,9 @@ export const isKomodoCoin = (coin) => {
       coin === 'KMD' ||
       coin === 'AXO' ||
       coin === 'ETOMIC' ||
-      coin === 'BTCH') {
+      coin === 'BTCH' ||
+      coin === 'VRSC' ||
+      coin === 'VERUSTEST') {
     return true;
   }
 }
