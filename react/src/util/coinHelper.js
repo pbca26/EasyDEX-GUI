@@ -6,6 +6,14 @@ export function getCoinTitle(coin) {
   let hideTitle = false;
 
   switch (coin) {
+    case 'BCBC':
+      coinlogo = 'bcbc';
+      coinname = 'Bitcoin CBC';
+      break;
+    case 'BNTN':
+      coinlogo = 'bntn';
+      coinname = 'Blocnation';
+      break;
     case 'ACC':
       coinlogo = 'acc';
       coinname = 'AdCoin';
@@ -429,6 +437,18 @@ export function getCoinTitle(coin) {
       coinlogo = 'COQUI';
       coinname = 'COQUI';
       break;
+    case 'CHAIN':
+      coinlogo = 'CHAIN';
+      coinname = 'Chainmakers';
+      break;
+    case 'GLXT':
+      coinlogo = 'GLXT';
+      coinname = 'GLXToken';
+      break;
+    case 'EQL':
+      coinlogo = 'EQL';
+      coinname = 'Equaliser';
+      break;
     case 'MESH':
       hideTitle = true;
       titleBG = true;
@@ -692,6 +712,9 @@ export function coindList() {
     'BOTS',
     'CEAL',
     'COQUI',
+    'CHAIN',
+    'GLXT',
+    'EQL',
     'CRYPTO',
     'HODL',
     'DEX',
@@ -725,6 +748,9 @@ export const isKomodoCoin = (coin) => {
       coin === 'BET' ||
       coin === 'CRYPTO' ||
       coin === 'COQUI' ||
+      coin === 'CHAIN' ||
+      coin === 'GLXT' ||
+      coin === 'EQL' ||
       coin === 'HODL' ||
       coin === 'MSHARK' ||
       coin === 'BOTS' ||

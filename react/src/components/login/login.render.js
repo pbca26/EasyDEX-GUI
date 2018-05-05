@@ -273,14 +273,36 @@ const LoginRender = function() {
                     optionRenderer={ this.renderShortcutOption }
                     valueRenderer={ this.renderShortcutOption }
                     options={[
-                      { value: 'kmd', label: 'kmd' },
-                      { value: 'mnz', label: 'mnz' },
-                      { value: 'btch', label: 'btch' },
+                      {
+                        value: 'kmd',
+                        label: 'kmd',
+                      },
+                      {
+                        value: 'bntn',
+                        label: 'bntn',
+                      },
+                      {
+                        value: 'mnz',
+                        label: 'mnz',
+                      },
+                      {
+                        value: 'btch',
+                        label: 'btch',
+                      },
+                      {
+                        value: 'revs',
+                        label: 'revs',
+                      },
+                      {
+                        value: 'jumblr',
+                        label: 'jumblr',
+                      },
+                      {
+                        value: 'kmd+revs+jumblr',
+                        label: 'kmd+revs+jumblr',
+                      },
                       { value: 'vrsc', label: 'vrsc' },
                       { value: 'verustest', label: 'verustest' },
-                      { value: 'revs', label: 'revs' },
-                      { value: 'jumblr', label: 'jumblr' },
-                      { value: 'kmd+revs+jumblr', label: 'kmd+revs+jumblr' },
                     ]} />
                 </div>
               }
@@ -303,15 +325,40 @@ const LoginRender = function() {
                   optionRenderer={ this.renderShortcutOption }
                   valueRenderer={ this.renderShortcutOption }
                   options={[
-                    { value: 'kmd', label: 'kmd' },
-                    { value: 'chips', label: 'chips' },
-                    { value: 'btch', label: 'btch' },
+                    {
+                      value: 'kmd',
+                      label: 'kmd',
+                    },
+                    {
+                      value: 'chips',
+                      label: 'chips',
+                    },
+                    {
+                      value: 'bntn',
+                      label: 'bntn',
+                    },
+                    {
+                      value: 'btch',
+                      label: 'btch',
+                    },
+                    {
+                      value: 'mnz',
+                      label: 'mnz',
+                    },
+                    {
+                      value: 'revs',
+                      label: 'revs',
+                    },
+                    {
+                      value: 'jumblr',
+                      label: 'jumblr',
+                    },
+                    {
+                      value: 'kmd+revs+jumblr',
+                      label: 'kmd+revs+jumblr',
+                    },
                     { value: 'vrsc', label: 'vrsc' },
                     { value: 'verustest', label: 'verustest' },
-                    { value: 'mnz', label: 'mnz' },
-                    { value: 'revs', label: 'revs' },
-                    { value: 'jumblr', label: 'jumblr' },
-                    { value: 'kmd+revs+jumblr', label: 'kmd+revs+jumblr' },
                   ]} />
               </div>
             </div>
