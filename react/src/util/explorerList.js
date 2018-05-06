@@ -1,6 +1,8 @@
 // TODO: add at least 2 explorers per coin
 
 const explorerList = {
+  VRSC: 'http://explorer.veruscoin.io',
+  VERUSTEST: 'http://explorer.veruscoin.io',
   KMD: 'http://www.kmdexplorer.ru',
   OOT: 'http://explorer.utrum.io',
   MSHARK: 'http://MSHARK.explorer.supernet.org',
@@ -23,8 +25,6 @@ const explorerList = {
   EQL: 'http://178.62.240.191',
   MNZ: 'https://www.mnzexplorer.com',
   BTCH: 'http://www.btch.host',
-  VRSC: 'http://explorer.veruscoin.io',
-  VERUSTEST: 'http://explorer.veruscoin.io',
   BTC: 'https://blockchain.info',
   HUSH: 'https://explorer.myhush.org',
   PIZZA: 'http://pizza.komodochainz.info',

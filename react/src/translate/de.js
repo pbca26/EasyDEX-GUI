@@ -783,6 +783,8 @@ export const LANG_DE = {
     'USD': 'US-Dollar (USD)'
   },
   'ASSETCHAINS': {
+    'VRSC': 'Verus (VRSC)',
+    'VERUSTEST': 'Verus Test (VERUSTEST)',
     'BET': 'BET (BET)',
     'BOTS': 'BOTS (BOTS)',
     'CEAL': 'CEAL NET (CEAL)',
@@ -800,8 +802,6 @@ export const LANG_DE = {
     'MSHARK': 'MSHARK (MSHARK)',
     'MESH': 'SpaceMesh (MESH)',
     'SUPERNET': 'SUPERNET (SUPERNET)',
-    'VRSC': 'Verus (VRSC)',
-    'VERUSTEST': 'Verus Test (VERUSTEST)',
     'WLC': 'WIRELESS (WIRELESS)'
   },
   'DEX': {

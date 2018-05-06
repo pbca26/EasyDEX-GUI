@@ -706,6 +706,8 @@ export function getModeInfo(mode) {
 
 export function coindList() {
   const _coins = [
+    'VRSC',
+    'VERUSTEST',
     'KMD',
     'CHIPS',
     'BET',
@@ -732,8 +734,6 @@ export function coindList() {
     'AXO',
     'ETOMIC',
     'BTCH',
-    'VRSC',
-    'VERUSTEST',
   ];
 
   return _coins;

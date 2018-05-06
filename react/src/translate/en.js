@@ -838,6 +838,8 @@ export const LANG_EN = {
     'USD': 'US Dollar (USD)',
   },
   'ASSETCHAINS': {
+    'VRSC': 'Verus (VRSC)',
+    'VERUSTEST': 'Verus Test (VERUSTEST)',
     'BET': 'BET (BET)',
     'BOTS': 'BOTS (BOTS)',
     'CEAL': 'CEAL NET (CEAL)',
@@ -862,8 +864,6 @@ export const LANG_EN = {
     'AXO': 'AXO (AXO)',
     'ETOMIC': 'ETOMIC (ETOMIC)',
     'BTCH': 'BTCH (BTCH)',
-    'VRSC': 'Verus (VRSC)',
-    'VERUSTEST': 'Verus Test (VERUSTEST)',
     'BEER': 'BEER (Test coin)',
     'PIZZA': 'PIZZA (Test coin)',
     'VOTE2018': 'VOTE2018 (Notary Elections)',
