@@ -813,5 +813,8 @@ export const LANG_DE = {
     'TRADE_HISTORY_SM': 'Handelsverlauf',
     'ELECTRUM_MODE': 'Electrum-Modus',
     'NATIVE_MODE': 'Nativer Modus'
+  },
+  'RECEIVE': {
+      'DISPLAY_ALL_ADDR': 'Zeigen sie alle adressen an.',
   }
 }

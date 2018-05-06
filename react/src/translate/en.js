@@ -953,4 +953,7 @@ export const LANG_EN = {
     'ELECTRUM_MODE': 'Electrum mode',
     'NATIVE_MODE': 'Native mode',
   },
+  'RECEIVE': {
+      'DISPLAY_ALL_ADDR': 'Display all addresses.',
+  }
 };
