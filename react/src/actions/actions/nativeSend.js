@@ -13,7 +13,7 @@ export const sendNativeTx = (coin, _payload) => {
   let _apiMethod;
 
   if ((_payload.addressType === 'public' && // transparent
-      _payload.sendTo.length !== 95) || !_payload.sendFrom) {
+      _payload.sendTo.length !== 95) || (!_payload.sendFrom && !_payload.privateAddrList)) {
     _apiMethod = 'sendtoaddress';
   } else { // private
     _apiMethod = 'z_sendmany';
@@ -27,7 +27,7 @@ export const sendNativeTx = (coin, _payload) => {
       rpc2cli: Config.rpc2cli,
       token: Config.token,
       params:
-        (_payload.addressType === 'public' && _payload.sendTo.length !== 95) || !_payload.sendFrom ?
+        (_payload.addressType === 'public' && _payload.sendTo.length !== 95) || (!_payload.sendFrom && !_payload.privateAddrList) ?
         (_payload.subtractFee ?
           [
             _payload.sendTo,

@@ -125,6 +125,7 @@ export const LANG_EN = {
     'NATIVE_ONLY_MODE': 'Native only mode',
     'NORMAL_MODE': 'Normal mode',
     'T_FUNDS': 'Transparent funds',
+    'Z_FUNDS': 'Private (Z) Funds',
     'HASH': 'Hash',
     'SYNC_IN_PROGRESS': 'Synchronization is in progress',
     'UI_UPDATE_DOWNLOADED': 'UI update downloaded. Verifying',
@@ -352,6 +353,8 @@ export const LANG_EN = {
     'CHOOSE_RECEIVING_ADDRESS': 'Choose Address',
     'SAVE_AS_IMAGE': 'Save as Image',
     'OPEN_TRANSACTION_IN_EPLORER': 'Open transaction in @template@ Explorer',
+    'TOGGLE_Z_ADDRESS_LIST': 'Send from a private address',
+    'TOGGLE_Z_ADDRESS_LIST_DESC': 'This will change the dropdown menu below to display only your private (Z) addresses',
   },
   'ATOMIC': {
     'RAW_OUTPUT': 'Raw Output',

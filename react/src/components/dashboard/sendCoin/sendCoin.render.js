@@ -7,6 +7,32 @@ import ReactTooltip from 'react-tooltip';
 
 export const AddressListRender = function() {
   return (
+    <div>
+    
+    <div className="toggle-box padding-top-20">
+      <span className="pointer">
+       <label className="switch">
+         <input
+            type="checkbox"
+            checked={ this.state.privateAddrList } />
+            <div
+            className="slider"
+            onClick={ this.togglePrivateAddrList }></div>
+        </label>
+        <div
+          className="toggle-label"
+          onClick={ this.togglePrivateAddrList }>
+          { translate('INDEX.TOGGLE_Z_ADDRESS_LIST') }
+          <i
+            className="icon fa-question-circle settings-help"
+            data-tip={ translate('INDEX.TOGGLE_Z_ADDRESS_LIST_DESC') }></i>
+          <ReactTooltip
+            effect="solid"
+            className="text-left" />
+        </div>
+      </span>
+    </div>
+
     <div className={ `btn-group bootstrap-select form-control form-material showkmdwalletaddrs show-tick ${(this.state.addressSelectorOpen ? 'open' : '')}` }>
       <button
         type="button"
@@ -24,17 +50,17 @@ export const AddressListRender = function() {
             onClick={ () => this.updateAddressSelection(null, 'public', null) }>
             <a>
               <span className="text">
-                { this.props.ActiveCoin.mode === 'spv' ? `[ ${this.props.ActiveCoin.balance.balance} ${this.props.ActiveCoin.coin} ] ${this.props.Dashboard.electrumCoins[this.props.ActiveCoin.coin].pub}` : translate('INDEX.T_FUNDS') }
+                { this.props.ActiveCoin.mode === 'spv' ? `[ ${this.props.ActiveCoin.balance.balance} ${this.props.ActiveCoin.coin} ] ${this.props.Dashboard.electrumCoins[this.props.ActiveCoin.coin].pub}` : this.state.privateAddrList ? translate('INDEX.Z_FUNDS') : translate('INDEX.T_FUNDS') }
               </span>
               <span
                 className="glyphicon glyphicon-ok check-mark pull-right"
                 style={{ display: this.state.sendFrom === null ? 'inline-block' : 'none' }}></span>
             </a>
           </li>
-          { this.renderAddressByType('public') }
-          { this.renderAddressByType('private') }
+          { this.state.privateAddrList ? this.renderAddressByType('private') : this.renderAddressByType('public') }
         </ul>
       </div>
+    </div>
     </div>
   );
 };
