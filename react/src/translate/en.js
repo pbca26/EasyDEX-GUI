@@ -129,6 +129,7 @@ export const LANG_EN = {
     'NATIVE_ONLY_MODE': 'Native only mode',
     'NORMAL_MODE': 'Normal mode',
     'T_FUNDS': 'Transparent funds',
+    'Z_FUNDS': 'Private (Z) Funds',
     'HASH': 'Hash',
     'SYNC_IN_PROGRESS': 'Synchronization is in progress',
     'UI_UPDATE_DOWNLOADED': 'UI update downloaded. Verifying',
