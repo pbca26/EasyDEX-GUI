@@ -13,7 +13,7 @@ export const AddressActionsNonBasiliskModeRender = function(address, type) {
       </span>
       <button
         onClick={ () => this.toggleAddressMenu(address) }
-        data-tip={ translate('RECEIVE.TOOGLE_ADDRESS') }
+        data-tip={ translate('RECEIVE.TOGGLE_ADDRESS') }
         className="btn btn-default btn-xs clipboard-edexaddr margin-left-10 receive-address-context-menu-trigger">
         <i className="fa fa-ellipsis-v receive-address-context-menu-trigger"></i>
       </button>

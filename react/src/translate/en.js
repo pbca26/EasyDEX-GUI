@@ -971,6 +971,10 @@ export const LANG_EN = {
   },
   'RECEIVE': {
       'DISPLAY_ALL_ADDR': 'Display all addresses.',
+      'PUB_KEY': 'public key',
+      'PRIV_KEY': 'private key',
+      'VALIDATE_ADDRESS': 'validate address',
+      'TOGGLE_ADDRESS': 'address options'
   },
   'SUPPORT': {
       'FOR_GUIDES': 'For guides on using agama',
