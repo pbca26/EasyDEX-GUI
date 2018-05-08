@@ -352,6 +352,12 @@ export const LANG_EN = {
     'CHOOSE_RECEIVING_ADDRESS': 'Choose Address',
     'SAVE_AS_IMAGE': 'Save as Image',
     'OPEN_TRANSACTION_IN_EPLORER': 'Open transaction in @template@ Explorer',
+    'TOGGLE_Z_ADDRESS_LIST': 'Send from a private address',
+    'TOGGLE_Z_ADDRESS_LIST_DESC': 'This will change the dropdown menu below to display only your private (Z) addresses',
+    'Z_ADDR_UNSELECTED': 'Select a private (Z) address',
+    'TOGGLE_SHIELD_COINBASE': 'Shield a coinbase transaction',
+    'TOGGLE_SHIELD_COINBASE_DESC': 'Mining generated transactions must be sent in full to one of your private (Z) addresses',
+    'SHIELD_ADDR': 'Shield Funds',
   },
   'ATOMIC': {
     'RAW_OUTPUT': 'Raw Output',

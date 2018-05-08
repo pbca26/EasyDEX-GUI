@@ -7,6 +7,56 @@ import ReactTooltip from 'react-tooltip';
 
 export const AddressListRender = function() {
   return (
+    <div>
+    
+    <div className="toggle-box padding-top-0">
+      <span className="pointer">
+       <label className="switch">
+         <input
+            type="checkbox"
+            checked={ this.state.privateAddrList } />
+            <div
+            className="slider"
+            onClick={ this.togglePrivateAddrList }></div>
+        </label>
+        <div
+          className="toggle-label"
+          onClick={ this.togglePrivateAddrList }>
+          { translate('INDEX.TOGGLE_Z_ADDRESS_LIST') }
+          <i
+            className="icon fa-question-circle settings-help"
+            data-tip={ translate('INDEX.TOGGLE_Z_ADDRESS_LIST_DESC') }></i>
+          <ReactTooltip
+            effect="solid"
+            className="text-left" />
+        </div>
+      </span>
+    </div>
+
+    <div className= { !this.state.privateAddrList ? "toggle-box padding-top-0" : 'hide'}>
+      <span className="pointer">
+       <label className="switch">
+         <input
+            type="checkbox"
+            checked={ this.state.shieldCoinbase } />
+            <div
+            className="slider"
+            onClick={ this.toggleShieldCoinbase }></div>
+        </label>
+        <div
+          className="toggle-label"
+          onClick={ this.toggleShieldCoinbase }>
+          { translate('INDEX.TOGGLE_SHIELD_COINBASE') }
+          <i
+            className="icon fa-question-circle settings-help"
+            data-tip={ translate('INDEX.TOGGLE_SHIELD_COINBASE_DESC') }></i>
+          <ReactTooltip
+            effect="solid"
+            className="text-left" />
+        </div>
+      </span>
+    </div>
+
     <div className={ `btn-group bootstrap-select form-control form-material showkmdwalletaddrs show-tick ${(this.state.addressSelectorOpen ? 'open' : '')}` }>
       <button
         type="button"
@@ -24,17 +74,17 @@ export const AddressListRender = function() {
             onClick={ () => this.updateAddressSelection(null, 'public', null) }>
             <a>
               <span className="text">
-                { this.props.ActiveCoin.mode === 'spv' ? `[ ${this.props.ActiveCoin.balance.balance} ${this.props.ActiveCoin.coin} ] ${this.props.Dashboard.electrumCoins[this.props.ActiveCoin.coin].pub}` : translate('INDEX.T_FUNDS') }
+                { this.props.ActiveCoin.mode === 'spv' ? `[ ${this.props.ActiveCoin.balance.balance} ${this.props.ActiveCoin.coin} ] ${this.props.Dashboard.electrumCoins[this.props.ActiveCoin.coin].pub}` : this.state.privateAddrList ? translate('INDEX.Z_ADDR_UNSELECTED') : translate('INDEX.T_FUNDS') }
               </span>
               <span
                 className="glyphicon glyphicon-ok check-mark pull-right"
                 style={{ display: this.state.sendFrom === null ? 'inline-block' : 'none' }}></span>
             </a>
           </li>
-          { this.renderAddressByType('public') }
-          { this.renderAddressByType('private') }
+          { this.state.privateAddrList ? this.renderAddressByType('private') : this.renderAddressByType('public') }
         </ul>
       </div>
+    </div>
     </div>
   );
 };
@@ -76,7 +126,7 @@ export const _SendFormRender = function() {
             autoComplete="off"
             required />
         </div>
-        <div className="col-lg-12 form-group form-material">
+        <div className={ this.state.shieldCoinbase ? 'hide' : "col-lg-12 form-group form-material" }>
           { this.props.ActiveCoin.mode === 'spv' &&
             <button
               type="button"
@@ -157,10 +207,11 @@ export const _SendFormRender = function() {
             className="btn btn-primary waves-effect waves-light pull-right"
             onClick={ this.props.renderFormOnly ? this.handleSubmit : () => this.changeSendCoinStep(1) }
             disabled={
-              !this.state.sendTo ||
-              !this.state.amount
+              (!this.state.sendTo ||
+              !this.state.amount) &&
+              !this.state.shieldCoinbase
             }>
-            { translate('INDEX.SEND') } { this.state.amount } { this.props.ActiveCoin.coin }
+            { this.state.shieldCoinbase ? translate('INDEX.SHIELD_ADDR') : translate('INDEX.SEND') } { this.state.shieldCoinbase ? '' : this.state.amount } { this.state.shieldCoinbase ? '' : this.props.ActiveCoin.coin }
           </button>
         </div>
       </div>
@@ -227,9 +278,9 @@ export const SendRender = function() {
                 <div className="col-xs-12">
                   <strong>{ translate('INDEX.TO') }</strong>
                 </div>
-                <div className="col-lg-6 col-sm-6 col-xs-12 overflow-hidden">{ this.state.sendTo }</div>
+                <div className={this.state.shieldCoinbase ? "col-lg-6 col-sm-6 col-xs-12 overflow" : "col-lg-6 col-sm-6 col-xs-12 overflow-hidden"}>{ this.state.sendTo }</div>
                 <div className="col-lg-6 col-sm-6 col-xs-6">
-                  { this.state.amount } { this.props.ActiveCoin.coin }
+                  { this.state.shieldCoinbase ? '' : this.state.amount } { this.state.shieldCoinbase ? '' : this.props.ActiveCoin.coin }
                 </div>
                 <div className={ this.state.subtractFee ? 'col-lg-6 col-sm-6 col-xs-12 padding-top-10 bold' : 'hide' }>
                   { translate('DASHBOARD.SUBTRACT_FEE') }
@@ -243,7 +294,7 @@ export const SendRender = function() {
                   </div>
                   <div className="col-lg-6 col-sm-6 col-xs-12 overflow-hidden">{ this.state.sendFrom }</div>
                   <div className="col-lg-6 col-sm-6 col-xs-6 confirm-currency-send-container">
-                    { Number(this.state.amount) } { this.props.ActiveCoin.coin }
+                    { this.state.shieldCoinbase ? '' : Number(this.state.amount) } { this.state.shieldCoinbase ? '' : this.props.ActiveCoin.coin }
                   </div>
                 </div>
               }
