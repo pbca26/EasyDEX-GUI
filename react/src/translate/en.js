@@ -42,6 +42,10 @@ export const LANG_EN = {
     'RESCAN_TIP': 'Use this option if you want to trigger rescan after WIF is imported. If you have several addresses that you want to import add them one by one and toggle this option on the last address import.',
     'WIF_KEY': 'WIF key',
     'IMPORT_AND_RESCAN': 'Import and rescan',
+    'WIF_DESC': 'Wallet Import Format',
+    'IMPORT_MULTI_KEYS': 'Import multiple keys',
+    'IMPORT_MULTI_KEYS_DESC': 'Use this option to input multiple keys, seperated by line',
+    'KEYS_SEPARATED_BY_LINE': 'Keys seperated by line:',
   },
   'CLAIM_INTEREST': {
     'SHOW_ZERO_INTEREST': 'Show zero interest',
@@ -673,7 +677,9 @@ export const LANG_EN = {
     'ENCRYPT_SEED': 'Encrypt login seed',
     'PUBKEY': 'pubkey',
     'ENCRYPT_KEY': 'Encrypt key',
-    'DECRYPT_KEY': 'Decrypt key'
+    'DECRYPT_KEY': 'Decrypt key',
+    'SEED_ENCRYPT_KEY': 'Enter your key',
+    'SEED_ENCRYPT_KEY_CONF': 'Confirm key',
   },
   'SIDEBAR': {
     'EDEX_MOTTO': 'Most Secure, Easy and Native Decentralised Exchange',
@@ -746,6 +752,9 @@ export const LANG_EN = {
     'ADD_PEER_IP': 'Add Peer IP',
     'APP_SESSION': 'App Session',
     'EXPORT_KEYS_NOTE': 'Note: it\'s important that you provide the same passphrase you used to login to the wallet!',
+    'ENCRYPT_SEED': 'Encrypt wallet seed',
+    'THIS_SECTION_ALLOWS_YOU_TO_ENCRYPT': 'This section allows you to encrypt your wallet seed',
+    'ENCRYPT': 'Encrypt',
   },
   'TX_INFO': {
     'ADDRESS': 'address',
@@ -961,5 +970,9 @@ export const LANG_EN = {
   },
   'RECEIVE': {
       'DISPLAY_ALL_ADDR': 'Display all addresses.',
+  },
+  'SUPPORT': {
+      'FOR_GUIDES': 'For guides on using agama',
+      'TO_SEND_FEEDBACK': 'To send feedback'
   }
 };
