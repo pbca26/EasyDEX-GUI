@@ -818,6 +818,7 @@ export const LANG_EN = {
     'QR_COIN_MISMATCH_MESSAGE_END': ' active in your wallet. Please, check that you have same coin active that you try to import!',
     'QR_COIN_MISMATCH_TITLE': 'Coin Mismatch',
     'SEND_NATIVE_SYNC_WARNING': 'Your wallet is not fully synced! Please wait until it reached 100% to avoid possible transaction send implications.',
+    'ENTER_Z_ADDR': 'Enter Private address',
   },
   'FIAT_CURRENCIES': {
     'AUD': 'Australian Dollar (AUD)',

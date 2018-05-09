@@ -4,8 +4,6 @@ import config from '../../config';
 
 const addCoinOptionsAC = () => {
   const _assetChains = [
-    'vrsc',
-    'verustest',
     'bet',
     'bots',
     'ceal',
@@ -30,6 +28,8 @@ const addCoinOptionsAC = () => {
     'axo',
     'etomic',
     'btch',
+    'vrsc',
+    'verustest',
     'beer',
     'pizza',
     'vote2018',
