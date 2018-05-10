@@ -140,6 +140,15 @@ class SendCoin extends React.Component {
   }
 
   componentWillReceiveProps(props) {
+
+    if (this.props.ActiveCoin.coin !== props.ActiveCoin.coin) {
+      if(this.props.ActiveCoin.coin !== 'VERUSTEST' || this.props.ActiveCoin.coin !== 'VRSC'){
+        this.setState({
+          shieldCoinbase: false,
+        });
+      }  
+    }
+
     if (this.props.ActiveCoin.coin !== props.ActiveCoin.coin &&
         this.props.ActiveCoin.lastSendToResponse) {
       Store.dispatch(clearLastSendToResponseState());
