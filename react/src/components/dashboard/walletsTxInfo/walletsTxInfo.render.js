@@ -123,6 +123,14 @@ const WalletsTxInfoRender = function(txInfo) {
                                   { secondsToString(this.props.ActiveCoin.mode === 'spv' ? this.state.txDetails.blocktime : this.state.txDetails.timereceived) }
                                 </td>
                               </tr>
+                              { this.props.ActiveCoin.mode !== 'spv' &&
+                              <tr>
+                                <td>{ this.capitalizeFirstLetter('blockstomaturity') }</td>
+                                <td>
+                                  { txInfo.blockstomaturity > 0 ? txInfo.blockstomaturity : translate('TX_INFO.MATURE')}
+                                </td>
+                              </tr>
+                              }
                             </tbody>
                           </table>
                         </div>

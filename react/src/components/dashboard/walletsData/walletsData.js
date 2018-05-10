@@ -156,7 +156,7 @@ class WalletsData extends React.Component {
       className: 'colum--direction',
       headerClassName: 'colum--direction',
       footerClassName: 'colum--direction',
-      accessor: (tx) => TxTypeRender.call(this, tx.category || tx.type),
+      accessor: (tx) => TxTypeRender.call(this, tx),
     },
     {
       id: 'confirmations',

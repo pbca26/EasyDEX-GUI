@@ -118,7 +118,8 @@ export const AddressListRender = function() {
   }
 };
 
-export const TxTypeRender = function(category) {
+export const TxTypeRender = function(tx) {
+  let category = tx.category || tx.type;
   if (category === 'send' ||
       category === 'sent') {
     return (
@@ -144,7 +145,7 @@ export const TxTypeRender = function(category) {
   } else if (category === 'immature') {
     return (
       <span>
-        <i className="icon fa-clock-o"></i> <span>{ translate('DASHBOARD.IMMATURE') }</span>
+        <i className="icon fa-clock-o"></i> <span>{ translate('DASHBOARD.IMMATURE') }</span> <span>{ ' ' + '(' + tx.blockstomaturity + ')'}</span>
       </span>
     );
   } else if (category === 'unknown') {
