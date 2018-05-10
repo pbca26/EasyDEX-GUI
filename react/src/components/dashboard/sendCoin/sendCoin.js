@@ -296,17 +296,27 @@ class SendCoin extends React.Component {
         </span>
       );
     } else {
-      if (!this.state.privateAddrList){
+      if (!this.state.privateAddrList && !this.state.shieldCoinbase){
         return (
           <span>
-            { this.props.ActiveCoin.mode === 'spv' ? `[ ${this.props.ActiveCoin.balance.balance} ${this.props.ActiveCoin.coin} ] ${this.props.Dashboard.electrumCoins[this.props.ActiveCoin.coin].pub}` : translate('INDEX.T_FUNDS') }
+            { this.props.ActiveCoin.mode === 'spv' ? `[ ${this.props.ActiveCoin.balance.balance} ${this.props.ActiveCoin.coin} ] ${this.props.Dashboard.electrumCoins[this.props.ActiveCoin.coin].pub}`
+            : translate('INDEX.T_FUNDS') }
+          </span>
+        );
+      }
+      else if (!this.state.privateAddrList && this.state.shieldCoinbase) {
+        return (
+          <span>
+            { this.props.ActiveCoin.mode === 'spv' ? `[ ${this.props.ActiveCoin.balance.balance} ${this.props.ActiveCoin.coin} ] ${this.props.Dashboard.electrumCoins[this.props.ActiveCoin.coin].pub}` 
+            : translate('INDEX.UNSHIELDED_FUNDS') }
           </span>
         );
       }
       else {
         return (
           <span>
-            { this.props.ActiveCoin.mode === 'spv' ? `[ ${this.props.ActiveCoin.balance.balance} ${this.props.ActiveCoin.coin} ] ${this.props.Dashboard.electrumCoins[this.props.ActiveCoin.coin].pub}` : translate('INDEX.Z_ADDR_UNSELECTED') }
+            { this.props.ActiveCoin.mode === 'spv' ? `[ ${this.props.ActiveCoin.balance.balance} ${this.props.ActiveCoin.coin} ] ${this.props.Dashboard.electrumCoins[this.props.ActiveCoin.coin].pub}` 
+            : translate('INDEX.Z_ADDR_UNSELECTED') }
           </span>
         );
       }
@@ -670,7 +680,8 @@ class SendCoin extends React.Component {
 
       if (this.state.sendTo.length > 34 &&
           this.state.sendTo.substring(0, 2) === 'zc' &&
-          (!this.state.sendFrom && !this.state.privateAddrList)) {
+          (!this.state.sendFrom && !this.state.privateAddrList) && 
+          !this.state.shieldCoinbase) {
         Store.dispatch(
           triggerToaster(
             translate('SEND.SELECT_SOURCE_ADDRESS'),
@@ -691,8 +702,34 @@ class SendCoin extends React.Component {
         );
         valid = false;
       }
-    }
+      
 
+      //Error checking for VERUSTEST and VRSC because they bypass electrum
+      if (this.props.ActiveCoin.coin === 'VERUSTEST' || this.props.ActiveCoin.coin === 'VRSC'){
+        if(!this.state.sendTo){
+          Store.dispatch(
+            triggerToaster(
+              translate('SEND.SELECT_TO_ADDRESS'),
+              translate('TOASTR.WALLET_NOTIFICATION'),
+              'error'
+            )
+          );
+          valid = false;
+        }
+
+        if(this.state.shieldCoinbase && (!(this.state.sendTo.length > 34 && this.state.sendTo.substring(0, 2) === 'zc'))){
+          Store.dispatch(
+            triggerToaster(
+              translate('SEND.MUST_BE_Z_ADDR'),
+              translate('TOASTR.WALLET_NOTIFICATION'),
+              'error'
+            )
+          );
+          valid = false;
+        }
+
+      }
+    }
     return valid;
   }
 

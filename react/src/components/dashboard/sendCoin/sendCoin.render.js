@@ -33,7 +33,7 @@ export const AddressListRender = function() {
       </span>
     </div>
 
-    <div className= { !this.state.privateAddrList ? "toggle-box padding-top-0" : 'hide'}>
+    <div className= { !this.state.privateAddrList && (this.props.ActiveCoin.coin === 'VERUSTEST' || this.props.ActiveCoin.coin === 'VRSC') ? "toggle-box padding-top-0" : 'hide'}>
       <span className="pointer">
        <label className="switch">
          <input
@@ -74,7 +74,8 @@ export const AddressListRender = function() {
             onClick={ () => this.updateAddressSelection(null, 'public', null) }>
             <a>
               <span className="text">
-                { this.props.ActiveCoin.mode === 'spv' ? `[ ${this.props.ActiveCoin.balance.balance} ${this.props.ActiveCoin.coin} ] ${this.props.Dashboard.electrumCoins[this.props.ActiveCoin.coin].pub}` : this.state.privateAddrList ? translate('INDEX.Z_ADDR_UNSELECTED') : translate('INDEX.T_FUNDS') }
+                { this.props.ActiveCoin.mode === 'spv' ? `[ ${this.props.ActiveCoin.balance.balance} ${this.props.ActiveCoin.coin} ] ${this.props.Dashboard.electrumCoins[this.props.ActiveCoin.coin].pub}` 
+                : this.state.privateAddrList ? translate('INDEX.Z_ADDR_UNSELECTED') : (this.state.shieldCoinbase ? translate('INDEX.UNSHIELDED_FUNDS') : translate('INDEX.T_FUNDS')) }
               </span>
               <span
                 className="glyphicon glyphicon-ok check-mark pull-right"
@@ -409,6 +410,7 @@ export const SendRender = function() {
                           { this.state.sendTo }
                         </td>
                       </tr>
+                      {!this.state.shieldCoinbase && 
                       <tr>
                         <td className="padding-left-30">
                         { translate('INDEX.AMOUNT') }
@@ -417,6 +419,7 @@ export const SendRender = function() {
                           { this.state.amount }
                         </td>
                       </tr>
+                      }
                       <tr>
                         <td className="padding-left-30">{ translate('SEND.TRANSACTION_ID') }</td>
                         <td className="padding-left-30">
