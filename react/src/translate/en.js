@@ -363,6 +363,7 @@ export const LANG_EN = {
     'TOGGLE_SHIELD_COINBASE': 'Shield a coinbase transaction',
     'TOGGLE_SHIELD_COINBASE_DESC': 'Mining generated transactions must be sent in full to one of your private (Z) addresses',
     'SHIELD_ADDR': 'Shield Funds',
+    'UNSHIELDED_FUNDS': 'Unshielded funds'
   },
   'ATOMIC': {
     'RAW_OUTPUT': 'Raw Output',
@@ -620,6 +621,7 @@ export const LANG_EN = {
     'COIN_SELECTION': 'Coin Selection',
     'SELECTION_NOT_FOUND': 'Local coin list is not found',
     'AWAITING_TX_RESP': 'Awaiting transaction data response',
+    'NO_COINBASE_FUNDS': 'No coinbase funds to shield'
   },
   'COIN_WALLETS': {
     'TX_FAILED': 'Transaction Failed',
@@ -762,6 +764,7 @@ export const LANG_EN = {
     'AMOUNT': 'amount',
     'CATEGORY': 'category',
     'CONFIRMATIONS': 'confirmations',
+    'MATURE': 'This block is mature!',
   },
   'ZCPARAMS_FETCH': {
     'DOWNLOADING_ZCASH_KEYS': 'Downloading Zcash keys',
@@ -819,6 +822,8 @@ export const LANG_EN = {
     'QR_COIN_MISMATCH_TITLE': 'Coin Mismatch',
     'SEND_NATIVE_SYNC_WARNING': 'Your wallet is not fully synced! Please wait until it reached 100% to avoid possible transaction send implications.',
     'ENTER_Z_ADDR': 'Enter Private address',
+    'SELECT_TO_ADDRESS': 'Select destination (to) address',
+    'MUST_BE_Z_ADDR': 'You must shield coinbase transactions to a private (Z) address',
   },
   'FIAT_CURRENCIES': {
     'AUD': 'Australian Dollar (AUD)',

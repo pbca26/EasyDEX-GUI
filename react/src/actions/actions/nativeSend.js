@@ -13,7 +13,7 @@ export const sendNativeTx = (coin, _payload) => {
   let _apiMethod;
 
   if ((_payload.addressType === 'public' && // transparent
-      _payload.sendTo.length !== 95) || (!_payload.sendFrom && !_payload.privateAddrList)) {
+      _payload.sendTo.length !== 95) || (!_payload.sendFrom && !_payload.privateAddrList && !_payload.shieldCoinbase)) {
     _apiMethod = 'sendtoaddress';
   } else if (_payload.shieldCoinbase) {
     _apiMethod = 'z_shieldcoinbase';
@@ -29,13 +29,28 @@ export const sendNativeTx = (coin, _payload) => {
       rpc2cli: Config.rpc2cli,
       token: Config.token,
       params:
-        (_payload.addressType === 'public' && _payload.sendTo.length !== 95) || (!_payload.sendFrom && !_payload.privateAddrList) || (_payload.shieldCoinbase && _payload.sendTo.length === 95) ?
-        (_payload.shieldCoinbase ? (
-          [
-            _payload.sendFrom,
-            _payload.sendTo
-          ]
-      ) :(_payload.subtractFee ?
+        ((_payload.addressType === 'public' && _payload.sendTo.length !== 95) || 
+        (!_payload.sendFrom && !_payload.privateAddrList) || 
+        (_payload.shieldCoinbase && _payload.sendTo.length === 95) ||
+        (!_payload.sendFrom && _payload.shieldCoinbase)) ?
+        (_payload.shieldCoinbase ? 
+          (!_payload.sendFrom ? 
+            (
+              [
+                '*',
+                _payload.sendTo
+              ]
+            )
+            :
+            (
+              [
+                _payload.sendFrom,
+                _payload.sendTo
+              ]
+            )
+        )
+       :
+       (_payload.subtractFee ?
           [
             _payload.sendTo,
             _payload.amount,
@@ -101,7 +116,17 @@ export const sendNativeTx = (coin, _payload) => {
               'error',
             )
           );
-        } else {
+        } 
+        else if (json.indexOf('"code":-6') > -1) {
+          dispatch(
+            triggerToaster(
+              translate('TOASTR.NO_COINBASE_FUNDS'),
+              translate('TOASTR.WALLET_NOTIFICATION'),
+              'error',
+            )
+          );
+        }
+        else {
           if (Config.rpc2cli) {
             _message = JSON.parse(json).error.message;
           }
@@ -115,7 +140,14 @@ export const sendNativeTx = (coin, _payload) => {
           );
         }
       } else {
-        dispatch(sendToAddressState(JSON.parse(json).result));
+        if (_payload.shieldCoinbase){
+          dispatch(sendToAddressState(JSON.parse(json).result.opid));
+        }
+        
+        else {
+          dispatch(sendToAddressState(JSON.parse(json).result));
+        }
+
         dispatch(
           triggerToaster(
             translate('TOASTR.TX_SENT_ALT'),
