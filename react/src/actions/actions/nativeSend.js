@@ -118,13 +118,24 @@ export const sendNativeTx = (coin, _payload) => {
           );
         } 
         else if (json.indexOf('"code":-6') > -1) {
-          dispatch(
-            triggerToaster(
-              translate('TOASTR.NO_COINBASE_FUNDS'),
-              translate('TOASTR.WALLET_NOTIFICATION'),
-              'error',
-            )
-          );
+          if (_payload.shieldCoinbase){
+            dispatch(
+              triggerToaster(
+                translate('TOASTR.NO_COINBASE_FUNDS'),
+                translate('TOASTR.WALLET_NOTIFICATION'),
+                'error',
+              )
+            );
+          }
+          else{
+            dispatch(
+              triggerToaster(
+                translate('TOASTR.NO_FUNDS'),
+                translate('TOASTR.WALLET_NOTIFICATION'),
+                'error',
+              )
+            );
+        }
         }
         else {
           if (Config.rpc2cli) {

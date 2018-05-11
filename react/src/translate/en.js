@@ -621,7 +621,8 @@ export const LANG_EN = {
     'COIN_SELECTION': 'Coin Selection',
     'SELECTION_NOT_FOUND': 'Local coin list is not found',
     'AWAITING_TX_RESP': 'Awaiting transaction data response',
-    'NO_COINBASE_FUNDS': 'No coinbase funds to shield'
+    'NO_COINBASE_FUNDS': 'No coinbase funds to shield',
+    'NO_FUNDS': 'No funds to send from specified location',
   },
   'COIN_WALLETS': {
     'TX_FAILED': 'Transaction Failed',
