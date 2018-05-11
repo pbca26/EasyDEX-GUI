@@ -8,7 +8,7 @@ import ReactTooltip from 'react-tooltip';
 export const AddressListRender = function() {
   return (
     <div>
-    
+    { this.props.ActiveCoin.mode === 'native' &&
     <div className="toggle-box padding-top-0">
       <span className="pointer">
        <label className="switch">
@@ -32,7 +32,7 @@ export const AddressListRender = function() {
         </div>
       </span>
     </div>
-
+    }
     <div className= { !this.state.privateAddrList && (this.props.ActiveCoin.coin === 'VERUSTEST' || this.props.ActiveCoin.coin === 'VRSC') ? "toggle-box padding-top-0" : 'hide'}>
       <span className="pointer">
        <label className="switch">
