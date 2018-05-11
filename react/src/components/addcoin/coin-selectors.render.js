@@ -46,7 +46,7 @@ const CoinSelectorsRender = function(item, coin, i) {
             onChange={ (event) => this.updateSelectedCoin(event, i) }
             optionRenderer={ this.renderCoinOption }
             valueRenderer={ this.renderCoinOption }
-            options={ addCoinOptionsCrypto().concat(addCoinOptionsAC()) } />
+            options={ addCoinOptionsAC().concat(addCoinOptionsCrypto()) } />
         </div>
         <div className={ this.hasMoreThanOneCoin() && ((item.mode === '-1' || item.mode === -1) || (item.mode === '1' || item.mode === 1) || (item.mode === '2' || item.mode === 2)) ? 'col-sm-6' : 'hide' }>
           <div className="toggle-box padding-bottom-10">
