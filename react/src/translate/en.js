@@ -623,6 +623,7 @@ export const LANG_EN = {
     'AWAITING_TX_RESP': 'Awaiting transaction data response',
     'NO_COINBASE_FUNDS': 'No coinbase funds to shield',
     'NO_FUNDS': 'No funds to send from specified location',
+    'IMPROPER_ADDRESS': 'Improper address type',
   },
   'COIN_WALLETS': {
     'TX_FAILED': 'Transaction Failed',
@@ -825,7 +826,8 @@ export const LANG_EN = {
     'ENTER_Z_ADDR': 'Enter Private address',
     'SELECT_TO_ADDRESS': 'Select destination (to) address',
     'MUST_BE_Z_ADDR': 'You must shield coinbase transactions to a private (Z) address',
-    'MAX_AVAIL_BALANCE_IN_ADDR': 'Max available balance in selected address is'
+    'MAX_AVAIL_BALANCE_IN_ADDR': 'Max available balance in selected address is',
+    'PLEASE_SELECT_COINBASE_ADDRESS': 'For coinbase transactions, please select a valid public address that originated from a coinbase to send from or unshielded funds',
   },
   'FIAT_CURRENCIES': {
     'AUD': 'Australian Dollar (AUD)',

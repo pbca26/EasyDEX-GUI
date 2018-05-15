@@ -690,7 +690,7 @@ class SendCoin extends React.Component {
       }
 */
       if (this.state.shieldCoinbase){
-        if (this.state.sendFrom){
+        if (this.state.sendFrom && this.state.addressType === 'public'){
           if (Number(this.state.sendFromAmount) <= 0.0001){
             Store.dispatch(
               triggerToaster(
@@ -702,7 +702,7 @@ class SendCoin extends React.Component {
             valid = false;
           }
         }
-        else {
+        else if (this.state.addressType === 'public'){
           if (Number(this.props.ActiveCoin.balance.transparent) <= 0.0001){
             Store.dispatch(
               triggerToaster(
@@ -713,6 +713,16 @@ class SendCoin extends React.Component {
             );
             valid = false;
           }
+        }
+        else {
+          Store.dispatch(
+            triggerToaster(
+              `${translate('SEND.PLEASE_SELECT_COINBASE_ADDRESS')}`,
+              translate('TOASTR.IMPROPER_ADDRESS'),
+              'error'
+            )
+          );
+          valid = false;
         }
       }
       else if (!this.state.shieldCoinbase && (this.state.addressType === 'public' && !this.state.privateAddrList)) {
