@@ -45,10 +45,11 @@ class WalletsTxInfo extends React.Component {
         rawTxDetails: nextProps.ActiveCoin.showTransactionInfoTxIndex,
       }));
     } else {
+      //TODO: Solve why nextProps.ActiveCoin.showTransactionInfoTxIndex is null if it is passed 0
+      //in activeCoin.js
       if (nextProps.ActiveCoin &&
-          nextProps.ActiveCoin.txhistory &&
-          nextProps.ActiveCoin.showTransactionInfoTxIndex) {
-        const txInfo = nextProps.ActiveCoin.txhistory[nextProps.ActiveCoin.showTransactionInfoTxIndex];
+          nextProps.ActiveCoin.txhistory /* && nextProps.ActiveCoin.showTransactionInfoTxIndex */) {
+        const txInfo = nextProps.ActiveCoin.txhistory[nextProps.ActiveCoin.showTransactionInfoTxIndex ? nextProps.ActiveCoin.showTransactionInfoTxIndex : 0];
 
         if (txInfo &&
             this.props.ActiveCoin.showTransactionInfoTxIndex !== nextProps.ActiveCoin.showTransactionInfoTxIndex) {
@@ -103,10 +104,11 @@ class WalletsTxInfo extends React.Component {
         this.props.ActiveCoin &&
         this.props.ActiveCoin.showTransactionInfo &&
         this.props.ActiveCoin.activeSection === 'default') {
+      //TODO: Solve why this.props.ActiveCoin.showTransactionInfoTxIndex is null if it is passed 0
+      //in activeCoin.js
       if (this.props.ActiveCoin.mode === 'native') {
-        if (this.props.ActiveCoin.txhistory &&
-            this.props.ActiveCoin.showTransactionInfoTxIndex) {
-          const txInfo = this.props.ActiveCoin.txhistory[this.props.ActiveCoin.showTransactionInfoTxIndex];
+        if (this.props.ActiveCoin.txhistory /* && this.props.ActiveCoin.showTransactionInfoTxIndex */) {
+          const txInfo = this.props.ActiveCoin.txhistory[this.props.ActiveCoin.showTransactionInfoTxIndex ? this.props.ActiveCoin.showTransactionInfoTxIndex : 0];
 
           return WalletsTxInfoRender.call(this, txInfo);
         } else {
