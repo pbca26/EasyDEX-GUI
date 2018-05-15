@@ -825,6 +825,7 @@ export const LANG_EN = {
     'ENTER_Z_ADDR': 'Enter Private address',
     'SELECT_TO_ADDRESS': 'Select destination (to) address',
     'MUST_BE_Z_ADDR': 'You must shield coinbase transactions to a private (Z) address',
+    'MAX_AVAIL_BALANCE_IN_ADDR': 'Max available balance in selected address is'
   },
   'FIAT_CURRENCIES': {
     'AUD': 'Australian Dollar (AUD)',
