@@ -470,11 +470,11 @@ export function getCoinTitle(coin) {
       break;
     case 'VRSC':
       coinlogo = 'VRSC';
-      coinname = 'VRSC';
+      coinname = 'Verus';
       break;
     case 'VERUSTEST':
       coinlogo = 'VERUSTEST';
-      coinname = 'VERUSTEST';
+      coinname = 'Verus Test Chain';
       break;
     case 'USD':
       titleBG = true;
