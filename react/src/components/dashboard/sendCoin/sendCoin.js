@@ -702,7 +702,7 @@ class SendCoin extends React.Component {
             valid = false;
           }
         }
-        else if (this.state.addressType === 'public'){
+        else if (!this.state.sendFrom){
           if (Number(this.props.ActiveCoin.balance.transparent) <= 0.0001){
             Store.dispatch(
               triggerToaster(
