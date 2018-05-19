@@ -244,13 +244,14 @@ export const shepherdHerd = (coin, mode, path, startupParams, genproclimit) => {
         '-addnode=185.64.105.111',
         '-ac_timelockgte=19200000000',
         '-ac_timeunlockfrom=129600',
-        '-ac_timeunlockto=1586880',
+        '-ac_timeunlockto=1180800',
         '-ac_veruspos=50',
+        '-gen',
+        '-genproclimit=0',
       ]
   };
   }
 
-//TODO: Add node for Verus?
 
   if (startupParams) {
     herdData['ac_custom_param'] = startupParams.type;
