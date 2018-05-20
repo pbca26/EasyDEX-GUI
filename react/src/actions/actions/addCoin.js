@@ -203,29 +203,6 @@ export const shepherdHerd = (coin, mode, path, startupParams, genproclimit) => {
     };
   }
 
-  if (coin === 'VERUSTEST') {
-    herdData = {
-      'ac_name': 'VERUSTEST',
-      'ac_options': [
-        '-daemon=0',
-        '-server',
-        '-ac_algo=verushash',
-        '-ac_cc=1',
-        '-ac_supply=0',
-        '-ac_eras=3',
-        '-ac_reward=0,38400000000,2400000000',
-        '-ac_halving=1,60,2880',
-        '-ac_decay=100000000,0,0',
-        '-ac_end=56,356,0',
-        '-addnode=185.25.48.236',
-        '-ac_timelockgte=19200000000',
-        '-ac_timeunlockfrom=200',
-        '-ac_timeunlockto=1000',
-        '-ac_veruspos=50',
-      ]
-  };
-  }
-
   if (coin === 'VRSC') { 
     herdData = {
       'ac_name': 'VRSC',
@@ -252,7 +229,10 @@ export const shepherdHerd = (coin, mode, path, startupParams, genproclimit) => {
   };
   }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7afac4a9e54ea785877b0bd64f517e30c386a395
   if (startupParams) {
     herdData['ac_custom_param'] = startupParams.type;
 

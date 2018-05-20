@@ -472,10 +472,6 @@ export function getCoinTitle(coin) {
       coinlogo = 'VRSC';
       coinname = 'Verus';
       break;
-    case 'VERUSTEST':
-      coinlogo = 'VERUSTEST';
-      coinname = 'Verus Test Chain';
-      break;
     case 'USD':
       titleBG = true;
       transparentBG = true;
@@ -707,7 +703,6 @@ export function getModeInfo(mode) {
 export function coindList() {
   const _coins = [
     'VRSC',
-    'VERUSTEST',
     'KMD',
     'CHIPS',
     'BET',
@@ -766,8 +761,7 @@ export const isKomodoCoin = (coin) => {
       coin === 'AXO' ||
       coin === 'ETOMIC' ||
       coin === 'BTCH' ||
-      coin === 'VRSC' ||
-      coin === 'VERUSTEST') {
+      coin === 'VRSC') {
     return true;
   }
 }
