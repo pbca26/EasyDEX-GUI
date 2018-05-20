@@ -5,7 +5,6 @@ import config from '../../config';
 const addCoinOptionsAC = () => {
   const _assetChains = [
     'vrsc',
-    'verustest',
     'bet',
     'bots',
     'ceal',
@@ -42,7 +41,6 @@ const addCoinOptionsAC = () => {
     _assetChains[i] !== 'etomic' && 
     _assetChains[i] !== 'mesh' && 
     _assetChains[i] !== 'ceal' &&
-    _assetChains[i] !== 'verustest' &&
     _assetChains[i] !== 'vrsc' ? 'spv|native' : 'native';
 
     if (mainWindow.arch !== 'x64') {

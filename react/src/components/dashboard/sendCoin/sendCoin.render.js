@@ -33,7 +33,7 @@ export const AddressListRender = function() {
       </span>
     </div>
     }
-    <div className= { !this.state.privateAddrList && (this.props.ActiveCoin.coin === 'VERUSTEST' || this.props.ActiveCoin.coin === 'VRSC') ? "toggle-box padding-top-0" : 'hide'}>
+    <div className= { !this.state.privateAddrList && this.props.ActiveCoin.coin === 'VRSC' ? "toggle-box padding-top-0" : 'hide'}>
       <span className="pointer">
        <label className="switch">
          <input

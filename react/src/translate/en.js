@@ -865,7 +865,6 @@ export const LANG_EN = {
   },
   'ASSETCHAINS': {
     'VRSC': 'Verus (VRSC)',
-    'VERUSTEST': 'Verus Test (VERUSTEST)',
     'BET': 'BET (BET)',
     'BOTS': 'BOTS (BOTS)',
     'CEAL': 'CEAL NET (CEAL)',

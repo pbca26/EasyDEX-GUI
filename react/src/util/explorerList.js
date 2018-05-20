@@ -2,7 +2,6 @@
 
 const explorerList = {
   VRSC: 'http://explorer.veruscoin.io',
-  VERUSTEST: 'http://explorer.veruscoin.io',
   KMD: 'http://www.kmdexplorer.ru',
   OOT: 'http://explorer.utrum.io',
   MSHARK: 'http://MSHARK.explorer.supernet.org',
