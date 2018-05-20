@@ -226,13 +226,9 @@ export const shepherdHerd = (coin, mode, path, startupParams, genproclimit) => {
         '-gen',
         '-genproclimit=0',
       ]
-  };
+    };
   }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 7afac4a9e54ea785877b0bd64f517e30c386a395
   if (startupParams) {
     herdData['ac_custom_param'] = startupParams.type;
 
