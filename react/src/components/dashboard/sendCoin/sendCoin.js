@@ -142,7 +142,7 @@ class SendCoin extends React.Component {
   componentWillReceiveProps(props) {
 
     if (this.props.ActiveCoin.coin !== props.ActiveCoin.coin) {
-      if(this.props.ActiveCoin.coin !== 'VERUSTEST' || this.props.ActiveCoin.coin !== 'VRSC'){
+      if(this.props.ActiveCoin.coin !== 'VRSC'){
         this.setState({
           shieldCoinbase: false,
         });
@@ -836,8 +836,8 @@ class SendCoin extends React.Component {
       }
       
 
-      //Error checking for VERUSTEST and VRSC because they bypass electrum
-      if (this.props.ActiveCoin.coin === 'VERUSTEST' || this.props.ActiveCoin.coin === 'VRSC'){
+      //Error checking for VRSC because it bypasses electrum
+      if (this.props.ActiveCoin.coin === 'VRSC'){
         if(!this.state.sendTo){
           Store.dispatch(
             triggerToaster(

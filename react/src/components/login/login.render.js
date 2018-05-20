@@ -274,7 +274,6 @@ const LoginRender = function() {
                     valueRenderer={ this.renderShortcutOption }
                     options={[
                       { value: 'vrsc', label: 'vrsc', },
-                      { value: 'verustest', label: 'verustest', },
                       {
                         value: 'kmd',
                         label: 'kmd',
@@ -327,7 +326,6 @@ const LoginRender = function() {
                   options={[
                     /*
                     { value: 'vrsc', label: 'vrsc', },
-                    { value: 'verustest', label: 'verustest', },
                     */
                     {
                       value: 'kmd',
