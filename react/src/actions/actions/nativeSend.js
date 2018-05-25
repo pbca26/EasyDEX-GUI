@@ -2,18 +2,21 @@ import {
   DASHBOARD_ACTIVE_COIN_NATIVE_OPIDS,
   DASHBOARD_ACTIVE_COIN_SENDTO,
 } from '../storeType';
-import { translate } from '../../translate/translate';
+import translate from '../../translate/translate';
 import { triggerToaster } from '../actionCreators';
 import Config from '../../config';
 import Store from '../../store';
+import fetchType from '../../util/fetchType';
 
-export function sendNativeTx(coin, _payload) {
+export const sendNativeTx = (coin, _payload) => {
   let payload;
   let _apiMethod;
 
   if ((_payload.addressType === 'public' && // transparent
-      _payload.sendTo.length !== 95) || !_payload.sendFrom) {
+      _payload.sendTo.length !== 95) || (!_payload.sendFrom && !_payload.privateAddrList && !_payload.shieldCoinbase)) {
     _apiMethod = 'sendtoaddress';
+  } else if (_payload.shieldCoinbase) {
+    _apiMethod = 'z_shieldcoinbase';
   } else { // private
     _apiMethod = 'z_sendmany';
   }
@@ -26,8 +29,28 @@ export function sendNativeTx(coin, _payload) {
       rpc2cli: Config.rpc2cli,
       token: Config.token,
       params:
-        (_payload.addressType === 'public' && _payload.sendTo.length !== 95) || !_payload.sendFrom ?
-        (_payload.subtractFee ?
+        ((_payload.addressType === 'public' && _payload.sendTo.length !== 95) || 
+        (!_payload.sendFrom && !_payload.privateAddrList) || 
+        (_payload.shieldCoinbase && _payload.sendTo.length === 95) ||
+        (!_payload.sendFrom && _payload.shieldCoinbase)) ?
+        (_payload.shieldCoinbase ? 
+          (!_payload.sendFrom ? 
+            (
+              [
+                '*',
+                _payload.sendTo
+              ]
+            )
+            :
+            (
+              [
+                _payload.sendFrom,
+                _payload.sendTo
+              ]
+            )
+        )
+       :
+       (_payload.subtractFee ?
           [
             _payload.sendTo,
             _payload.amount,
@@ -40,7 +63,7 @@ export function sendNativeTx(coin, _payload) {
             _payload.sendTo,
             _payload.amount
           ]
-        )
+        ))
         :
         [
           _payload.sendFrom,
@@ -51,17 +74,9 @@ export function sendNativeTx(coin, _payload) {
         ]
     };
 
-    const _fetchConfig = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ payload }),
-    };
-
     fetch(
       `http://127.0.0.1:${Config.agamaPort}/shepherd/cli`,
-      _fetchConfig
+      fetchType(JSON.stringify({ payload })).post
     )
     .catch((error) => {
       console.log(error);
@@ -101,7 +116,28 @@ export function sendNativeTx(coin, _payload) {
               'error',
             )
           );
-        } else {
+        } 
+        else if (json.indexOf('"code":-6') > -1) {
+          if (_payload.shieldCoinbase){
+            dispatch(
+              triggerToaster(
+                translate('TOASTR.NO_COINBASE_FUNDS'),
+                translate('TOASTR.WALLET_NOTIFICATION'),
+                'error',
+              )
+            );
+          }
+          else{
+            dispatch(
+              triggerToaster(
+                translate('TOASTR.NO_FUNDS'),
+                translate('TOASTR.WALLET_NOTIFICATION'),
+                'error',
+              )
+            );
+        }
+        }
+        else {
           if (Config.rpc2cli) {
             _message = JSON.parse(json).error.message;
           }
@@ -115,7 +151,14 @@ export function sendNativeTx(coin, _payload) {
           );
         }
       } else {
-        dispatch(sendToAddressState(JSON.parse(json).result));
+        if (_payload.shieldCoinbase){
+          dispatch(sendToAddressState(JSON.parse(json).result.opid));
+        }
+        
+        else {
+          dispatch(sendToAddressState(JSON.parse(json).result));
+        }
+
         dispatch(
           triggerToaster(
             translate('TOASTR.TX_SENT_ALT'),
@@ -135,8 +178,8 @@ export function getKMDOPIDState(json) {
   }
 }
 
-// remove
-export function getKMDOPID(opid, coin) {
+// remove?
+export const getKMDOPID = (opid, coin) => {
   return dispatch => {
     const payload = {
       mode: null,
@@ -146,17 +189,9 @@ export function getKMDOPID(opid, coin) {
       token: Config.token,
     };
 
-    const _fetchConfig = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ payload }),
-    };
-
     fetch(
       `http://127.0.0.1:${Config.agamaPort}/shepherd/cli`,
-      _fetchConfig
+      fetchType(JSON.stringify({ payload })).post
     )
     .catch((error) => {
       console.log(error);
@@ -176,7 +211,7 @@ export function getKMDOPID(opid, coin) {
   };
 }
 
-export function sendToAddressPromise(coin, address, amount) {
+export const sendToAddressPromise = (coin, address, amount) => {
   return new Promise((resolve, reject) => {
     const payload = {
       mode: null,
@@ -193,17 +228,9 @@ export function sendToAddressPromise(coin, address, amount) {
       ],
     };
 
-    const _fetchConfig = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ payload }),
-    };
-
     fetch(
       `http://127.0.0.1:${Config.agamaPort}/shepherd/cli`,
-      _fetchConfig
+      fetchType(JSON.stringify({ payload })).post
     )
     .catch((error) => {
       console.log(error);
@@ -222,21 +249,21 @@ export function sendToAddressPromise(coin, address, amount) {
   });
 }
 
-export function sendToAddressState(json) {
+export const sendToAddressState = (json) => {
   return {
     type: DASHBOARD_ACTIVE_COIN_SENDTO,
     lastSendToResponse: json,
   }
 }
 
-export function clearLastSendToResponseState() {
+export const clearLastSendToResponseState = () => {
   return {
     type: DASHBOARD_ACTIVE_COIN_SENDTO,
     lastSendToResponse: null,
   }
 }
 
-export function validateAddressPromise(coin, address) {
+export const validateAddressPromise = (coin, address) => {
   return new Promise((resolve, reject) => {
     const payload = {
       mode: null,
@@ -247,17 +274,9 @@ export function validateAddressPromise(coin, address) {
       token: Config.token,
     };
 
-    const _fetchConfig = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ payload }),
-    };
-
     fetch(
       `http://127.0.0.1:${Config.agamaPort}/shepherd/cli`,
-      _fetchConfig
+      fetchType(JSON.stringify({ payload })).post
     )
     .catch((error) => {
       console.log(error);

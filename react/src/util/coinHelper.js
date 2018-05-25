@@ -6,6 +6,174 @@ export function getCoinTitle(coin) {
   let hideTitle = false;
 
   switch (coin) {
+    case 'BCBC':
+      coinlogo = 'bcbc';
+      coinname = 'Bitcoin CBC';
+      break;
+    case 'BNTN':
+      coinlogo = 'bntn';
+      coinname = 'Blocnation';
+      break;
+    case 'ACC':
+      coinlogo = 'acc';
+      coinname = 'AdCoin';
+      break;
+    case 'AUR':
+      coinlogo = 'aur';
+      coinname = 'Auroracoin';
+      break;
+    case 'BCA':
+      coinlogo = 'bca';
+      coinname = 'Bitcoin Atom';
+      break;
+    case 'CLAM':
+      coinlogo = 'clam';
+      coinname = 'Clams';
+      break;
+    case 'CLUB':
+      coinlogo = 'club';
+      coinname = 'ClubCoin';
+      break;
+    case 'CRAVE':
+      coinlogo = 'crave';
+      coinname = 'Crave';
+      break;
+    case 'DMD':
+      coinlogo = 'dmd';
+      coinname = 'Diamond';
+      break;
+    case 'EXCL':
+      coinlogo = 'excl';
+      coinname = 'ExclusiveCoin';
+      break;
+    case 'FTC':
+      coinlogo = 'ftc';
+      coinname = 'FeatherCoin';
+      break;
+    case 'FLASH':
+      coinlogo = 'flash';
+      coinname = 'Flash';
+      break;
+    case 'FJC':
+      coinlogo = 'FJC';
+      coinname = 'Fujicoin';
+      break;
+    case 'NLG':
+      coinlogo = 'NLG';
+      coinname = 'Gulden';
+      break;
+    case 'LCC':
+      coinlogo = 'lcc';
+      coinname = 'Litecoin Cash';
+      break;
+    case 'MNX':
+      coinlogo = 'mnx';
+      coinname = 'MinexCoin';
+      break;
+    case 'NAV':
+      coinlogo = 'nav';
+      coinname = 'NavCoin';
+      break;
+    case 'NEOS':
+      coinlogo = 'neos';
+      coinname = 'NeosCoin';
+      break;
+    case 'OK':
+      coinlogo = 'ok';
+      coinname = 'OKCash';
+      break;
+    case 'OMNI':
+      coinlogo = 'omni';
+      coinname = 'OmniLayer';
+      break;
+    case 'PIVX':
+      coinlogo = 'pivx';
+      coinname = 'Pivx';
+      break;
+    case 'RDD':
+      coinlogo = 'rdd';
+      coinname = 'Reddcoin';
+      break;
+    case 'SMART':
+      coinlogo = 'smart';
+      coinname = 'Smartcash';
+      break;
+    case 'XVC':
+      coinlogo = 'xvc';
+      coinname = 'Vcash';
+      break;
+    case 'XVG':
+      coinlogo = 'xvg';
+      coinname = 'Verge';
+      break;
+    case 'VIVO':
+      coinlogo = 'vivo';
+      coinname = 'VIVO';
+      break;
+    case 'XWC':
+      coinlogo = 'xwc';
+      coinname = 'Whitecoin';
+      break;
+    case 'EFL':
+      coinlogo = 'efl';
+      coinname = 'E-Gulden';
+      break;
+    case 'GBX':
+      coinlogo = 'gbx';
+      coinname = 'GoByte';
+      break;
+    case 'BSD':
+      coinlogo = 'bsd';
+      coinname = 'Bitsend';
+      break;
+    case 'LBC':
+      coinlogo = 'lbc';
+      coinname = 'LBRY Credits';
+      break;
+    case 'ERC':
+      coinlogo = 'erc';
+      coinname = 'Europecoin';
+      break;
+    case 'BTA':
+      coinlogo = 'bta';
+      coinname = 'Bata';
+      break;
+    case 'EMC2':
+      coinlogo = 'emc2';
+      coinname = 'Einsteinium';
+      break;
+    case 'XZC':
+      coinlogo = 'xzc';
+      coinname = 'Zcoin';
+      break;
+    case 'ZEN':
+      coinlogo = 'zen';
+      coinname = 'ZenCash';
+      break;
+    case 'BTCP':
+      coinlogo = 'btcp';
+      coinname = 'BitcoinPrivate';
+      break;
+    case 'BDL':
+      coinlogo = 'bdl';
+      coinname = 'Bitdeal';
+      break;
+    case 'IOP':
+      coinlogo = 'iop';
+      coinname = 'Internet of People';
+      break;
+    case 'VOT':
+      coinlogo = 'vot';
+      coinname = 'VoteCoin';
+      break;
+    case 'MAC':
+      coinlogo = 'mac';
+      coinname = 'Machinecoin';
+      break;
+    case 'ABY':
+      coinlogo = 'aby';
+      coinname = 'ArtByte';
+      break;
     case 'NINJA':
       coinlogo = 'ninja';
       coinname = 'NINJA';
@@ -46,6 +214,10 @@ export function getCoinTitle(coin) {
       coinlogo = 'pizza';
       coinname = 'PIZZA (Test coin)';
       break;
+    case 'OOT':
+      coinlogo = 'oot';
+      coinname = 'Utrum';
+      break;
     case 'XMY':
       coinlogo = 'xmy';
       coinname = 'Myriad';
@@ -57,6 +229,10 @@ export function getCoinTitle(coin) {
     case 'HUSH':
       coinlogo = 'hush';
       coinname = 'Hush';
+      break;
+    case 'SNG':
+      coinlogo = 'sng';
+      coinname = 'SnowGem';
       break;
     case 'BCH':
       coinlogo = 'bch';
@@ -119,11 +295,11 @@ export function getCoinTitle(coin) {
       coinname = 'Litecoin';
       break;
     case 'VPN':
-      coinlogo = 'vpncoin';
+      coinlogo = 'vpn';
       coinname = 'VPNcoin';
       break;
     case 'SYS':
-      coinlogo = 'syscoin';
+      coinlogo = 'sys';
       coinname = 'Syscoin';
       break;
     case 'ZEC':
@@ -151,7 +327,7 @@ export function getCoinTitle(coin) {
       coinname = 'Mazacoin';
       break;
     case 'UNO':
-      coinlogo = 'unobtanium';
+      coinlogo = 'uno';
       coinname = 'Unobtanium';
       break;
     case 'ZET':
@@ -186,7 +362,7 @@ export function getCoinTitle(coin) {
       coinname = 'Franko';
       break;
     case 'GAME':
-      coinlogo = 'GAME';
+      coinlogo = 'game';
       coinname = 'GameCredits';
       break;
     case 'SUPERNET':
@@ -261,6 +437,18 @@ export function getCoinTitle(coin) {
       coinlogo = 'COQUI';
       coinname = 'COQUI';
       break;
+    case 'CHAIN':
+      coinlogo = 'CHAIN';
+      coinname = 'Chainmakers';
+      break;
+    case 'GLXT':
+      coinlogo = 'GLXT';
+      coinname = 'GLXToken';
+      break;
+    case 'EQL':
+      coinlogo = 'EQL';
+      coinname = 'Equaliser';
+      break;
     case 'MESH':
       hideTitle = true;
       titleBG = true;
@@ -279,6 +467,10 @@ export function getCoinTitle(coin) {
     case 'BTCH':
       coinlogo = 'BTCH';
       coinname = 'BTCH';
+      break;
+    case 'VRSC':
+      coinlogo = 'VRSC';
+      coinname = 'Verus';
       break;
     case 'USD':
       titleBG = true;
@@ -510,12 +702,16 @@ export function getModeInfo(mode) {
 
 export function coindList() {
   const _coins = [
+    'VRSC',
     'KMD',
     'CHIPS',
     'BET',
     'BOTS',
     'CEAL',
     'COQUI',
+    'CHAIN',
+    'GLXT',
+    'EQL',
     'CRYPTO',
     'HODL',
     'DEX',
@@ -532,7 +728,7 @@ export function coindList() {
     'WLC',
     'AXO',
     'ETOMIC',
-    'BTCH'
+    'BTCH',
   ];
 
   return _coins;
@@ -547,6 +743,9 @@ export const isKomodoCoin = (coin) => {
       coin === 'BET' ||
       coin === 'CRYPTO' ||
       coin === 'COQUI' ||
+      coin === 'CHAIN' ||
+      coin === 'GLXT' ||
+      coin === 'EQL' ||
       coin === 'HODL' ||
       coin === 'MSHARK' ||
       coin === 'BOTS' ||
@@ -561,7 +760,8 @@ export const isKomodoCoin = (coin) => {
       coin === 'KMD' ||
       coin === 'AXO' ||
       coin === 'ETOMIC' ||
-      coin === 'BTCH') {
+      coin === 'BTCH' ||
+      coin === 'VRSC') {
     return true;
   }
 }

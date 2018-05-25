@@ -1,5 +1,5 @@
 import React from 'react';
-import { translate } from '../../../translate/translate';
+import translate from '../../../translate/translate';
 
 class About extends React.Component {
   constructor() {
@@ -15,6 +15,9 @@ class About extends React.Component {
       height: 800,
       title: `${translate('INDEX.LOADING')}...`,
       icon: remote.getCurrentWindow().iguanaIcon,
+        webPreferences: {
+          nodeIntegration: false,
+        },
     });
 
     externalWindow.loadURL(url);

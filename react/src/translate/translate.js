@@ -7,7 +7,7 @@ const _lang = {
   DE: LANG_DE,
 };
 
-export function translate(langID, interpolateStr) {
+export default function translate(langID, interpolateStr) {
   let defaultLang = Config.lang || 'EN';
 
   if (langID &&
@@ -33,3 +33,4 @@ export function translate(langID, interpolateStr) {
     }
   }
 }
+

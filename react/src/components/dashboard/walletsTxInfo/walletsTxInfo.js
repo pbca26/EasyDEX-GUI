@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { translate } from '../../../translate/translate';
-import { sortByDate } from '../../../util/sort';
+import translate from '../../../translate/translate';
+import sortByDate from '../../../util/sort';
 import {
   toggleDashboardTxInfoModal,
   getTxDetails,
@@ -9,6 +9,8 @@ import {
 import Store from '../../../store';
 import WalletsTxInfoRender from './walletsTxInfo.render';
 import explorerList from '../../../util/explorerList';
+
+const shell = window.require('electron').shell;
 
 class WalletsTxInfo extends React.Component {
   constructor() {
@@ -43,10 +45,11 @@ class WalletsTxInfo extends React.Component {
         rawTxDetails: nextProps.ActiveCoin.showTransactionInfoTxIndex,
       }));
     } else {
+      //TODO: Solve why nextProps.ActiveCoin.showTransactionInfoTxIndex is null if it is passed 0
+      //in activeCoin.js
       if (nextProps.ActiveCoin &&
-          nextProps.ActiveCoin.txhistory &&
-          nextProps.ActiveCoin.showTransactionInfoTxIndex) {
-        const txInfo = nextProps.ActiveCoin.txhistory[nextProps.ActiveCoin.showTransactionInfoTxIndex];
+          nextProps.ActiveCoin.txhistory /* && nextProps.ActiveCoin.showTransactionInfoTxIndex */) {
+        const txInfo = nextProps.ActiveCoin.txhistory[nextProps.ActiveCoin.showTransactionInfoTxIndex ? nextProps.ActiveCoin.showTransactionInfoTxIndex : 0];
 
         if (txInfo &&
             this.props.ActiveCoin.showTransactionInfoTxIndex !== nextProps.ActiveCoin.showTransactionInfoTxIndex) {
@@ -93,25 +96,7 @@ class WalletsTxInfo extends React.Component {
 
   openExplorerWindow(txid) {
     const url = explorerList[this.props.ActiveCoin.coin].split('/').length - 1 > 2 ? `${explorerList[this.props.ActiveCoin.coin]}${txid}` : `${explorerList[this.props.ActiveCoin.coin]}/tx/${txid}`;
-    const remote = window.require('electron').remote;
-    const BrowserWindow = remote.BrowserWindow;
-
-    const externalWindow = new BrowserWindow({
-      width: 1280,
-      height: 800,
-      title: `${translate('INDEX.LOADING')}...`,
-      icon: remote.getCurrentWindow().iguanaIcon,
-      webPreferences: {
-        nodeIntegration: false,
-      },
-    });
-
-    externalWindow.loadURL(url);
-    externalWindow.webContents.on('did-finish-load', () => {
-      setTimeout(() => {
-        externalWindow.show();
-      }, 40);
-    });
+    return shell.openExternal(url);
   }
 
   render() {
@@ -119,10 +104,11 @@ class WalletsTxInfo extends React.Component {
         this.props.ActiveCoin &&
         this.props.ActiveCoin.showTransactionInfo &&
         this.props.ActiveCoin.activeSection === 'default') {
+      //TODO: Solve why this.props.ActiveCoin.showTransactionInfoTxIndex is null if it is passed 0
+      //in activeCoin.js
       if (this.props.ActiveCoin.mode === 'native') {
-        if (this.props.ActiveCoin.txhistory &&
-            this.props.ActiveCoin.showTransactionInfoTxIndex) {
-          const txInfo = this.props.ActiveCoin.txhistory[this.props.ActiveCoin.showTransactionInfoTxIndex];
+        if (this.props.ActiveCoin.txhistory /* && this.props.ActiveCoin.showTransactionInfoTxIndex */) {
+          const txInfo = this.props.ActiveCoin.txhistory[this.props.ActiveCoin.showTransactionInfoTxIndex ? this.props.ActiveCoin.showTransactionInfoTxIndex : 0];
 
           return WalletsTxInfoRender.call(this, txInfo);
         } else {

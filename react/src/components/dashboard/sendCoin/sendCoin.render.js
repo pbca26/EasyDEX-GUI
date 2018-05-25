@@ -1,12 +1,62 @@
 import React from 'react';
-import { translate } from '../../../translate/translate';
+import translate from '../../../translate/translate';
 import QRModal from '../qrModal/qrModal';
-import { formatValue } from '../../../util/formatValue';
+import formatValue from '../../../util/formatValue';
 import explorerList from '../../../util/explorerList';
 import ReactTooltip from 'react-tooltip';
 
 export const AddressListRender = function() {
   return (
+    <div>
+    { this.props.ActiveCoin.mode === 'native' &&
+    <div className="toggle-box padding-top-0">
+      <span className="pointer">
+       <label className="switch">
+         <input
+            type="checkbox"
+            checked={ this.state.privateAddrList } />
+            <div
+            className="slider"
+            onClick={ this.togglePrivateAddrList }></div>
+        </label>
+        <div
+          className="toggle-label"
+          onClick={ this.togglePrivateAddrList }>
+          { translate('INDEX.TOGGLE_Z_ADDRESS_LIST') }
+          <i
+            className="icon fa-question-circle settings-help"
+            data-tip={ translate('INDEX.TOGGLE_Z_ADDRESS_LIST_DESC') }></i>
+          <ReactTooltip
+            effect="solid"
+            className="text-left" />
+        </div>
+      </span>
+    </div>
+    }
+    <div className= { !this.state.privateAddrList && this.props.ActiveCoin.coin === 'VRSC' ? "toggle-box padding-top-0" : 'hide'}>
+      <span className="pointer">
+       <label className="switch">
+         <input
+            type="checkbox"
+            checked={ this.state.shieldCoinbase } />
+            <div
+            className="slider"
+            onClick={ this.toggleShieldCoinbase }></div>
+        </label>
+        <div
+          className="toggle-label"
+          onClick={ this.toggleShieldCoinbase }>
+          { translate('INDEX.TOGGLE_SHIELD_COINBASE') }
+          <i
+            className="icon fa-question-circle settings-help"
+            data-tip={ translate('INDEX.TOGGLE_SHIELD_COINBASE_DESC') }></i>
+          <ReactTooltip
+            effect="solid"
+            className="text-left" />
+        </div>
+      </span>
+    </div>
+
     <div className={ `btn-group bootstrap-select form-control form-material showkmdwalletaddrs show-tick ${(this.state.addressSelectorOpen ? 'open' : '')}` }>
       <button
         type="button"
@@ -24,17 +74,18 @@ export const AddressListRender = function() {
             onClick={ () => this.updateAddressSelection(null, 'public', null) }>
             <a>
               <span className="text">
-                { this.props.ActiveCoin.mode === 'spv' ? `[ ${this.props.ActiveCoin.balance.balance} ${this.props.ActiveCoin.coin} ] ${this.props.Dashboard.electrumCoins[this.props.ActiveCoin.coin].pub}` : translate('INDEX.T_FUNDS') }
+                { this.props.ActiveCoin.mode === 'spv' ? `[ ${this.props.ActiveCoin.balance.balance} ${this.props.ActiveCoin.coin} ] ${this.props.Dashboard.electrumCoins[this.props.ActiveCoin.coin].pub}` 
+                : this.state.privateAddrList ? translate('INDEX.Z_ADDR_UNSELECTED') : (this.state.shieldCoinbase ? translate('INDEX.UNSHIELDED_FUNDS') : translate('INDEX.T_FUNDS')) }
               </span>
               <span
                 className="glyphicon glyphicon-ok check-mark pull-right"
                 style={{ display: this.state.sendFrom === null ? 'inline-block' : 'none' }}></span>
             </a>
           </li>
-          { this.renderAddressByType('public') }
-          { this.renderAddressByType('private') }
+          { this.state.privateAddrList ? this.renderAddressByType('private') : this.renderAddressByType('public') }
         </ul>
       </div>
+    </div>
     </div>
   );
 };
@@ -72,11 +123,11 @@ export const _SendFormRender = function() {
             onChange={ this.updateInput }
             value={ this.state.sendTo }
             id="kmdWalletSendTo"
-            placeholder={ this.props.ActiveCoin.mode === 'spv' ? translate('SEND.ENTER_ADDRESS') : translate('SEND.ENTER_T_OR_Z_ADDR') }
+            placeholder={ this.props.ActiveCoin.mode === 'spv' ? translate('SEND.ENTER_ADDRESS') : this.state.shieldCoinbase ? translate('SEND.ENTER_Z_ADDR') : translate('SEND.ENTER_T_OR_Z_ADDR') }
             autoComplete="off"
             required />
         </div>
-        <div className="col-lg-12 form-group form-material">
+        <div className={ this.state.shieldCoinbase ? 'hide' : "col-lg-12 form-group form-material" }>
           { this.props.ActiveCoin.mode === 'spv' &&
             <button
               type="button"
@@ -156,8 +207,12 @@ export const _SendFormRender = function() {
             type="button"
             className="btn btn-primary waves-effect waves-light pull-right"
             onClick={ this.props.renderFormOnly ? this.handleSubmit : () => this.changeSendCoinStep(1) }
-            disabled={ !this.state.sendTo || !this.state.amount }>
-            { translate('INDEX.SEND') } { this.state.amount } { this.props.ActiveCoin.coin }
+            disabled={
+              (!this.state.sendTo ||
+              !this.state.amount) &&
+              !this.state.shieldCoinbase
+            }>
+            { this.state.shieldCoinbase ? translate('INDEX.SHIELD_ADDR') : translate('INDEX.SEND') } { this.state.shieldCoinbase ? '' : this.state.amount } { this.state.shieldCoinbase ? '' : this.props.ActiveCoin.coin }
           </button>
         </div>
       </div>
@@ -224,9 +279,9 @@ export const SendRender = function() {
                 <div className="col-xs-12">
                   <strong>{ translate('INDEX.TO') }</strong>
                 </div>
-                <div className="col-lg-6 col-sm-6 col-xs-12 overflow-hidden">{ this.state.sendTo }</div>
+                <div className={this.state.shieldCoinbase ? "col-lg-6 col-sm-6 col-xs-12 overflow" : "col-lg-6 col-sm-6 col-xs-12 overflow-hidden"}>{ this.state.sendTo }</div>
                 <div className="col-lg-6 col-sm-6 col-xs-6">
-                  { this.state.amount } { this.props.ActiveCoin.coin }
+                  { this.state.shieldCoinbase ? '' : this.state.amount } { this.state.shieldCoinbase ? '' : this.props.ActiveCoin.coin }
                 </div>
                 <div className={ this.state.subtractFee ? 'col-lg-6 col-sm-6 col-xs-12 padding-top-10 bold' : 'hide' }>
                   { translate('DASHBOARD.SUBTRACT_FEE') }
@@ -240,27 +295,29 @@ export const SendRender = function() {
                   </div>
                   <div className="col-lg-6 col-sm-6 col-xs-12 overflow-hidden">{ this.state.sendFrom }</div>
                   <div className="col-lg-6 col-sm-6 col-xs-6 confirm-currency-send-container">
-                    { Number(this.state.amount) } { this.props.ActiveCoin.coin }
+                    { this.state.shieldCoinbase ? '' : Number(this.state.amount) } { this.state.shieldCoinbase ? '' : this.props.ActiveCoin.coin }
                   </div>
                 </div>
               }
               { this.state.spvPreflightRes &&
                 <div className="row padding-top-20">
                   <div className="col-xs-12">
-                    <strong>Fee</strong>
+                    <strong>{ translate('SEND.FEE') }</strong>
                   </div>
-                  <div className="col-lg-12 col-sm-12 col-xs-12">{ formatValue(this.state.spvPreflightRes.fee * 0.00000001) } ({ this.state.spvPreflightRes.fee } sats)</div>
+                  <div className="col-lg-12 col-sm-12 col-xs-12">
+                    { formatValue(this.state.spvPreflightRes.fee * 0.00000001) } ({ this.state.spvPreflightRes.fee } { translate('SEND.SATS') })
+                  </div>
                 </div>
               }
               { this.state.spvPreflightRes &&
                 <div className="row padding-top-20">
                   { this.state.spvPreflightRes.change === 0 &&
                     <div className="col-lg-12 col-sm-12 col-xs-12">
-                      <strong>Adjusted amount</strong>
+                      <strong>{ translate('SEND.ADJUSTED_AMOUNT') }</strong>
                       <span>
                         <i
                           className="icon fa-question-circle settings-help send-btc"
-                          data-tip="Max. available amount to spend - transaction fee"></i>
+                          data-tip={ translate('SEND.MAX_AVAIL_AMOUNT_TO_SPEND') }></i>
                         <ReactTooltip
                           effect="solid"
                           className="text-left" />
@@ -270,13 +327,13 @@ export const SendRender = function() {
                   }
                   { this.state.spvPreflightRes.estimatedFee < 0 &&
                     <div className="col-lg-12 col-sm-12 col-xs-12 padding-bottom-20">
-                      <strong>KMD interest</strong>&nbsp;
-                      { Math.abs(formatValue(this.state.spvPreflightRes.estimatedFee * 0.00000001)) } to { this.props.Dashboard.electrumCoins[this.props.ActiveCoin.coin].pub }
+                      <strong>{ translate('SEND.KMD_INTEREST') }</strong>&nbsp;
+                      { Math.abs(formatValue(this.state.spvPreflightRes.estimatedFee * 0.00000001)) } { translate('SEND.TO') } { this.props.Dashboard.electrumCoins[this.props.ActiveCoin.coin].pub }
                     </div>
                   }
                   { this.state.spvPreflightRes.change > 0 &&
                     <div className="col-lg-12 col-sm-12 col-xs-12">
-                      <strong>Total (amount + transaction fee)</strong>&nbsp;
+                      <strong>{ translate('SEND.TOTAL_AMOUNT_DESC') }</strong>&nbsp;
                       { formatValue((this.state.spvPreflightRes.value * 0.00000001) + (this.state.spvPreflightRes.fee * 0.00000001)) }
                     </div>
                   }
@@ -301,7 +358,7 @@ export const SendRender = function() {
                     type="button"
                     className="btn btn-primary"
                     onClick={ () => this.changeSendCoinStep(2) }>
-                      { translate('INDEX.CONFIRM') }
+                    { translate('INDEX.CONFIRM') }
                   </button>
                 </div>
               </div>
@@ -334,7 +391,8 @@ export const SendRender = function() {
                           <span className="label label-success">{ translate('SEND.SUCCESS_SM') }</span>
                         </td>
                       </tr>
-                      { ((this.state.sendFrom && this.props.ActiveCoin.mode === 'native') || this.props.ActiveCoin.mode === 'spv') &&
+                      { ((this.state.sendFrom && this.props.ActiveCoin.mode === 'native') ||
+                        this.props.ActiveCoin.mode === 'spv') &&
                         <tr>
                           <td className="padding-left-30">
                           { translate('INDEX.SEND_FROM') }
@@ -352,6 +410,7 @@ export const SendRender = function() {
                           { this.state.sendTo }
                         </td>
                       </tr>
+                      {!this.state.shieldCoinbase && 
                       <tr>
                         <td className="padding-left-30">
                         { translate('INDEX.AMOUNT') }
@@ -360,6 +419,7 @@ export const SendRender = function() {
                           { this.state.amount }
                         </td>
                       </tr>
+                      }
                       <tr>
                         <td className="padding-left-30">{ translate('SEND.TRANSACTION_ID') }</td>
                         <td className="padding-left-30">
@@ -372,7 +432,7 @@ export const SendRender = function() {
                               className="btn btn-default btn-xs clipboard-edexaddr margin-left-10"
                               title={ translate('INDEX.COPY_TO_CLIPBOARD') }
                               onClick={ () => this.copyTXID(this.props.ActiveCoin.mode === 'spv' ? (this.state.lastSendToResponse && this.state.lastSendToResponse.txid ? this.state.lastSendToResponse.txid : '') : this.state.lastSendToResponse) }>
-                                <i className="icon wb-copy"></i> { translate('INDEX.COPY') }
+                              <i className="icon wb-copy"></i> { translate('INDEX.COPY') }
                             </button>
                           }
                           { ((this.props.ActiveCoin.mode === 'spv' &&
@@ -406,8 +466,8 @@ export const SendRender = function() {
                     </div>
                     { (this.state.lastSendToResponse.result.toLowerCase().indexOf('decode error') > -1) &&
                       <div>
-                        Your history contains shielded transactions(z).<br />
-                        Please move funds to another transparent address in order to use Lite mode.
+                        { translate('SEND.YOUR_TXHISTORY_CONTAINS_ZTX_P1') }<br />
+                        { translate('SEND.YOUR_TXHISTORY_CONTAINS_ZTX_P2') }
                       </div>
                     }
                     { this.state.lastSendToResponse.result.toLowerCase().indexOf('decode error') === -1 &&
@@ -439,7 +499,7 @@ export const SendRender = function() {
                     type="button"
                     className="btn btn-primary"
                     onClick={ () => this.changeSendCoinStep(0) }>
-                      { translate('INDEX.MAKE_ANOTHER_TX') }
+                    { translate('INDEX.MAKE_ANOTHER_TX') }
                   </button>
                 </div>
               </div>
