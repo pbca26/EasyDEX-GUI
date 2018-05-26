@@ -1,0 +1,28 @@
+sudo: required
+os: linux
+dist: xenial
+language: node_js
+node_js:
+- lts/*
+env:
+  global:
+  - CCACHE_SIZE=100M
+  - CCACHE_TEMPDIR=/tmp/.ccache-temp
+  - CCACHE_COMPRESS=1
+cache:
+  apt: true
+  directories:
+  - "$HOME/google-cloud-sdk/"
+  - "$HOME/.ccache"
+
+install:
+- gcloud auth activate-service-account --key-file AUTH_KEY.json
+- rm AUTH_KEY.json && rm AUTH_KEY.json.enc
+script:
+- npm install && npm install webpack webpack-dashboard
+- cd react && npm install && npm run build
+after_script:
+- if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then tar -czvf build.tar.gz build && gsutil cp build.tar.gz gs://$BUCKET/$PROJECT/$TRAVIS_BRANCH/; fi
+before_install:
+- openssl aes-256-cbc -K $encrypted_6b9be889f511_key -iv $encrypted_6b9be889f511_iv
+  -in AUTH_KEY.json.enc -out AUTH_KEY.json -d
