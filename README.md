@@ -6,5 +6,6 @@ Change into the react directory and install abd build:
 git clone https://github.com/VerusCoin/EasyDEX-GUI.git
 cd EasyDEX-GUI/react
 npm install
-npm run build```
+npm run build
+```
 This creates the files needed for Agama in the EasyDEX-GUI/react/build directory.
