@@ -728,6 +728,7 @@ pagination.render.js
 walletsData.js
 walletsData.render.js
 walletsData.scss
+miningButton.js
 
 ./components/dashboard/walletsHeader:
 walletsHeader.js

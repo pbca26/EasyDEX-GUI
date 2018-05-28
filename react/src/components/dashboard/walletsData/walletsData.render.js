@@ -6,6 +6,7 @@ import TablePaginationRenderer from './pagination';
 import formatValue from '../../../util/formatValue';
 import Config from '../../../config';
 import Spinner from '../spinner/spinner';
+import MiningButton from './walletsData.miningButton';
 
 export const TxConfsRender = function(confs) {
   if (Number(confs) > -1) {
@@ -328,8 +329,36 @@ export const WalletsDataRender = function() {
                             className="form-control"
                             onChange={ e => this.onSearchTermChange(e.target.value) }
                             placeholder={ translate('DASHBOARD.SEARCH') } />
-                        </div>
+                        </div>  
                       }
+                      { this.props.ActiveCoin.txhistory !== 'loading' &&
+                        this.props.ActiveCoin.txhistory !== 'no data' &&
+                        this.props.ActiveCoin.txhistory !== 'connection error' &&
+                        this.props.ActiveCoin.txhistory !== 'connection error or incomplete data' &&
+                        this.props.ActiveCoin.txhistory !== 'cant get current height' &&
+                        this.props.ActiveCoin.coin === 'VRSC' &&
+                        <div className="row">
+                          <div className="col-sm-4">
+                            <button
+                              type="button"
+                              className="btn btn-dark waves-effect waves-light margin-top-5"
+                              data-tip={ this.state.showMiningButton ? translate('DASHBOARD.MINING_DESC_CONTRACT') : translate('DASHBOARD.MINING_DESC_EXPAND') }
+                              onClick={ () => this.toggleMiningButton() }><i className="icon fa-cogs"></i>{ this.state.showMiningButton ? translate('DASHBOARD.CONTRACT_MINING') : translate('DASHBOARD.EXPAND_MINING') }</button>
+                                <ReactTooltip
+                                effect="solid"
+                                className="text-left" />
+                          </div>
+                        </div>
+                      }  
+                      { this.props.ActiveCoin.txhistory !== 'loading' &&
+                        this.props.ActiveCoin.txhistory !== 'no data' &&
+                        this.props.ActiveCoin.txhistory !== 'connection error' &&
+                        this.props.ActiveCoin.txhistory !== 'connection error or incomplete data' &&
+                        this.props.ActiveCoin.txhistory !== 'cant get current height' &&
+                        this.state.showMiningButton && 
+                        <MiningButton />
+                      }
+                      
                     </div>
                     <div className="row">
                       { this.renderTxHistoryList() }

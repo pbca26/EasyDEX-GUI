@@ -363,7 +363,23 @@ export const LANG_EN = {
     'TOGGLE_SHIELD_COINBASE': 'Shield a coinbase transaction',
     'TOGGLE_SHIELD_COINBASE_DESC': 'Mining generated transactions must be sent in full to one of your private (Z) addresses',
     'SHIELD_ADDR': 'Shield Funds',
-    'UNSHIELDED_FUNDS': 'Unshielded funds'
+    'UNSHIELDED_FUNDS': 'Unshielded funds',
+    'MINING_STATUS': 'Mining Status:',
+    'MINING_INFO': 'Mining Info',
+    'START_MINING': 'Start Mining',
+    'STOP_MINING': 'Stop Mining',
+    'STOP_STAKING': 'Stop Staking',
+    'MINING_ERROR': 'An error ocurred',
+    'MINING_STARTED': 'Mining initiated',
+    'MINING_STOPPED': 'Mining stopped',
+    'MINING': 'Mining & Staking',
+    'IDLE': 'Idle',
+    'STAKING': 'Staking',
+    'UKNOWN_ERROR': 'An uknown error occured',
+    'MINING_HPS': 'Local Hash/s:',
+    'INPUT_THREADS': 'Thread Count:',
+    'LOADING_MINING_INFO': 'Loading...',
+    'THREADS_DESC': 'Input the number of threads you would like to mine with, selecting 0 will set the miner to staking only'
   },
   'ATOMIC': {
     'RAW_OUTPUT': 'Raw Output',
@@ -542,6 +558,10 @@ export const LANG_EN = {
     'WIN_SYNC_WORKAROUND_CTA_P3': 'Please run the app again after that.',
     'APPLY_WORKAROUND': 'Apply workaround',
     'CURRENT_BLOCK_SM': 'current block',
+    'EXPAND_MINING': 'Mining +',
+    'CONTRACT_MINING': 'Mining -',
+    'MINING_DESC_EXPAND': 'Expand mining options',
+    'MINING_DESC_CONTRACT': 'Contract mining options'
   },
   'TOASTR': {
     'INCORRECT_WIF': 'Incorrect WIF key format',
@@ -624,6 +644,10 @@ export const LANG_EN = {
     'NO_COINBASE_FUNDS': 'No coinbase funds to shield',
     'NO_FUNDS': 'No funds to send from specified location',
     'IMPROPER_ADDRESS': 'Improper address type',
+    'MINING': 'Mining Status',
+    'MINING_INIT': 'Mining initiated successfully with',
+    'MINING_STOP': 'Mining stopped successfully',
+    'MINING_INIT_FAIL': 'Failed to initiate mining',
   },
   'COIN_WALLETS': {
     'TX_FAILED': 'Transaction Failed',

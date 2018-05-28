@@ -58,6 +58,7 @@ class WalletsData extends React.Component {
       txhistory: null,
       loading: false,
       reconnectInProgress: false,
+      showMiningButton: false,
     };
     this.openDropMenu = this.openDropMenu.bind(this);
     this.handleClickOutside = this.handleClickOutside.bind(this);
@@ -65,6 +66,7 @@ class WalletsData extends React.Component {
     this.openClaimInterestModal = this.openClaimInterestModal.bind(this);
     this.displayClaimInterestUI = this.displayClaimInterestUI.bind(this);
     this.spvAutoReconnect = this.spvAutoReconnect.bind(this);
+    this.toggleMiningButton = this.toggleMiningButton.bind(this);
   }
 
   componentWillMount() {
@@ -275,6 +277,12 @@ class WalletsData extends React.Component {
 
   toggleTxInfoModal(display, txIndex) {
     Store.dispatch(toggleDashboardTxInfoModal(display, txIndex));
+  }
+
+  toggleMiningButton() {
+    this.setState({
+      showMiningButton: !this.state.showMiningButton,
+    });
   }
 
   componentWillReceiveProps(props) {
