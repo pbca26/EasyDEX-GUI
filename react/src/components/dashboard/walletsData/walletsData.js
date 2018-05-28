@@ -58,7 +58,7 @@ class WalletsData extends React.Component {
       txhistory: null,
       loading: false,
       reconnectInProgress: false,
-      showMiningButton: true,
+      showMiningButton: false,
     };
     this.openDropMenu = this.openDropMenu.bind(this);
     this.handleClickOutside = this.handleClickOutside.bind(this);
