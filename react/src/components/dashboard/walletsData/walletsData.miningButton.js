@@ -19,7 +19,7 @@ class MiningButton extends React.Component {
   }
 
   componentDidMount() {
-    this.interval = setInterval(() => this.updateMiningInfo(), 1000);
+    this.interval = setInterval(() => this.updateMiningInfo(), 10000);
   }
 
   componentWillUnmount() {
