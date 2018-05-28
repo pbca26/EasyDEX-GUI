@@ -332,7 +332,6 @@ export const WalletsDataRender = function() {
                         </div>  
                       }
                       { this.props.ActiveCoin.txhistory !== 'loading' &&
-                        this.props.ActiveCoin.txhistory !== 'no data' &&
                         this.props.ActiveCoin.txhistory !== 'connection error' &&
                         this.props.ActiveCoin.txhistory !== 'connection error or incomplete data' &&
                         this.props.ActiveCoin.txhistory !== 'cant get current height' &&
@@ -351,7 +350,6 @@ export const WalletsDataRender = function() {
                         </div>
                       }  
                       { this.props.ActiveCoin.txhistory !== 'loading' &&
-                        this.props.ActiveCoin.txhistory !== 'no data' &&
                         this.props.ActiveCoin.txhistory !== 'connection error' &&
                         this.props.ActiveCoin.txhistory !== 'connection error or incomplete data' &&
                         this.props.ActiveCoin.txhistory !== 'cant get current height' &&
