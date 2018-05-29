@@ -19,16 +19,17 @@ class MiningButton extends React.Component {
   }
 
   componentDidMount() {
-    this.interval = setInterval(() => this.updateMiningInfo(), 1000);
+    this.loopUpdateMiningInfoCli();
+    this.intervalUpdate = setInterval(() => this.loopUpdateMiningInfoCli(), 15000);
   }
 
   componentWillUnmount() {
-    clearInterval(this.interval);
+    clearInterval(this.intervalUpdate);
+    clearInterval(this.intervalDelay);
   }
 
    // TODO: rerender only if prop is changed
-  updateMiningInfo() {
-    this.execCliCmd('getmininginfo');
+  updateMiningStatus() {
     const _cliResponse = this.props.Settings.cli;
     let _items = [];
 
@@ -73,6 +74,29 @@ class MiningButton extends React.Component {
   }
       
 }
+
+  loopUpdateMiningInfoCli(){
+    let i = 100;
+    this.updateMiningInfoCli(i);
+    this.intervalDelay = setInterval(() => this.tickInfoDelay(i, this.intervalDelay), 1000);
+  }
+
+  tickInfoDelay(_i, interval){
+    if (this.state.loading && _i !== 500) 
+      {
+        _i += 50;
+        this.updateMiningInfoCli(_i);
+        return;
+      }
+    clearInterval(interval);
+    _i = 100;
+  }
+
+  updateMiningInfoCli(_timeout){
+    setTimeout(() => this.getMiningInfo(), _timeout);
+    setTimeout(() => this.updateMiningStatus(), (_timeout*2));
+  }
+
   execCliCmd(_command) {
     Store.dispatch(
       shepherdCli(
@@ -105,13 +129,13 @@ class MiningButton extends React.Component {
     else if (_numThreads == 0){
       this.execCliCmd('setgenerate true');
     }
-    this.updateMiningInfo();
+    this.loopUpdateMiningInfoCli();
   }
 
   stopMining() {
     this.startLoading();
     this.execCliCmd('setgenerate false');
-    this.updateMiningInfo();
+    this.loopUpdateMiningInfoCli();
   }
 
   updateInput = (e) => {
@@ -152,6 +176,10 @@ class MiningButton extends React.Component {
     this.setState({
       numThreads: _numThreads,
     });
+  }
+
+  getMiningInfo(){
+    this.execCliCmd('getmininginfo');
   }
 
   render() {
