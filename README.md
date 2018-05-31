@@ -1,7 +1,7 @@
 # EasyDEX-GUI
 Agama GUI from SuperNETorg/EasyDEX-GUI via KomodoPlatform/EasyDEX-GUI.
 ## Building
-Change into the react directory and install abd build:
+Change into the react directory and install and build:
 ```bash
 git clone https://github.com/VerusCoin/EasyDEX-GUI.git
 cd EasyDEX-GUI/react
