@@ -194,7 +194,7 @@ class MiningButton extends React.Component {
             { this.state.loading ? translate('INDEX.LOADING_MINING_INFO') : ((translate('INDEX.MINING_STATUS')) + ' ' + (this.state.isMining ? (this.state.isOnlyStaking ? translate('INDEX.STAKING') : translate('INDEX.MINING')) : translate('INDEX.IDLE'))) }
           </div>
           <div>
-            { this.state.loading ? translate('INDEX.LOADING_MINING_INFO') : ((translate('INDEX.MINING_HPS')) + ' ' + (this.state.isMining ? this.state.localHps : '0'))}
+            { this.state.loading ? translate('INDEX.LOADING_MINING_INFO') : ((translate('INDEX.MINING_HPS')) + ' ' + (this.state.isMining ? Number(this.state.localHps / 1000000).toFixed(3) : '0'))}
           </div>
           <div>
             { translate('INDEX.INPUT_THREADS') }

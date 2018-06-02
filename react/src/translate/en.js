@@ -376,7 +376,7 @@ export const LANG_EN = {
     'IDLE': 'Idle',
     'STAKING': 'Staking',
     'UKNOWN_ERROR': 'An uknown error occured',
-    'MINING_HPS': 'Local Hash/s:',
+    'MINING_HPS': 'Local Mega Hash/s:',
     'INPUT_THREADS': 'Thread Count:',
     'LOADING_MINING_INFO': 'Loading...',
     'THREADS_DESC': 'Input the number of threads you would like to mine with, selecting 0 will set the miner to staking only'
