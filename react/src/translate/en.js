@@ -382,7 +382,8 @@ export const LANG_EN = {
     'THREADS_DESC': 'Input the number of threads you would like to mine with, selecting 0 will set the miner to staking only',
     'WITH': 'with',
     'THREAD': 'thread',
-    'THREADS': 'threads'
+    'THREADS': 'threads',
+    'UPDATE': 'Update'
   },
   'ATOMIC': {
     'RAW_OUTPUT': 'Raw Output',

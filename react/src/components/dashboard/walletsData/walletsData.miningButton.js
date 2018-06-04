@@ -48,11 +48,6 @@ class MiningButton extends React.Component {
         responseType = 'object';
         if((_cliResponseParsed.generate !== null) && (_cliResponseParsed.localhashps !== null)){
           this.updateMining(_cliResponseParsed);
-          /*
-          if (this.state.isMining) {
-              this.updateNumThreadsGUI(_cliResponseParsed.genproclimit);
-          }
-          */
         }
       }
 
@@ -129,9 +124,6 @@ class MiningButton extends React.Component {
     this.setState({
       [e.target.name]: e.target.value,
     });
-    if (this.state.isMining) {
-      this.startMining(e.target.value);
-    }
   }
 
   updateCliResponse(_response) {
@@ -164,13 +156,6 @@ class MiningButton extends React.Component {
 
   getMiningInfo(){
     this.execCliCmd('getmininginfo');
-  }
-
-  dynamicallyUpdateMining(){
-    if (this.state.numThreadsGUI !== this.state.numThreadsCli) {
-      this.startMining(this.state.numThreadsGUI);
-      this.updateInput();
-    }
   }
 
   render() {
@@ -215,7 +200,17 @@ class MiningButton extends React.Component {
                 type="button"
                 className="btn btn-primary waves-effect waves-light margin-top-5"
                 disabled={this.state.loading}
-                onClick={ this.state.isMining ? (() => this.stopMining()) : (() => this.startMining(this.state.numThreadsGUI)) }>{ this.state.loading ? translate('INDEX.LOADING_MINING_INFO') : (this.state.isMining ? ((this.state.numThreadsCli === 0 || this.state.numThreadsCli === -1) ? translate('INDEX.STOP_STAKING') : translate('INDEX.STOP_MINING')) : translate('INDEX.START_MINING')) }</button>
+                onClick={ 
+                  !this.state.isMining ? (() => this.startMining(this.state.numThreadsGUI)) : 
+                    !(this.state.numThreadsCli != this.state.numThreadsGUI) ? () => this.stopMining() : 
+                      () => this.startMining(this.state.numThreadsGUI) 
+                    }>
+                    {this.state.loading ? translate('INDEX.LOADING_MINING_INFO') :
+                      !this.state.isMining ? translate('INDEX.START_MINING') :
+                        this.state.numThreadsCli != this.state.numThreadsGUI ? translate('INDEX.UPDATE') :
+                          this.state.numThreadsCli === 0 || this.state.numThreadsCli === -1 ? translate('INDEX.STOP_STAKING') :
+                            translate('INDEX.STOP_MINING')}
+                            </button>
             </div>
             </div>
         </div>
