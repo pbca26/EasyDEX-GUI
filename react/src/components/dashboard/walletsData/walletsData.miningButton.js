@@ -194,8 +194,6 @@ class MiningButton extends React.Component {
                 <ReactTooltip
                     effect="solid"
                     className="text-left" />
-                    {this.state.numThreadsGUI}
-                    {this.state.numThreadsCli}
             </div>
             <div>
             <button
