@@ -372,14 +372,17 @@ export const LANG_EN = {
     'MINING_ERROR': 'An error ocurred',
     'MINING_STARTED': 'Mining initiated',
     'MINING_STOPPED': 'Mining stopped',
-    'MINING': 'Mining & Staking',
+    'MINING': 'Staking & Mining',
     'IDLE': 'Idle',
     'STAKING': 'Staking',
     'UKNOWN_ERROR': 'An uknown error occured',
-    'MINING_HPS': 'Local Hash/s:',
+    'MINING_HPS': 'Local Mega Hash/s:',
     'INPUT_THREADS': 'Thread Count:',
     'LOADING_MINING_INFO': 'Loading...',
-    'THREADS_DESC': 'Input the number of threads you would like to mine with, selecting 0 will set the miner to staking only'
+    'THREADS_DESC': 'Input the number of threads you would like to mine with, selecting 0 will set the miner to staking only',
+    'WITH': 'with',
+    'THREAD': 'thread',
+    'THREADS': 'threads'
   },
   'ATOMIC': {
     'RAW_OUTPUT': 'Raw Output',

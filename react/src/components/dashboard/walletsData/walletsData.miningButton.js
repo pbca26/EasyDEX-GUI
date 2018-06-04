@@ -9,12 +9,12 @@ class MiningButton extends React.Component {
   constructor() {
     super();
     this.state = {
-      numThreads: 0,
+      numThreadsGUI: 0,
       cliResponse: null,
       isMining: false,
       localHps: 0,
       loading: true,
-      isOnlyStaking: false,
+      numThreadsCli: null,
     };
   }
 
@@ -47,19 +47,12 @@ class MiningButton extends React.Component {
           typeof _cliResponseParsed === 'object') {
         responseType = 'object';
         if((_cliResponseParsed.generate !== null) && (_cliResponseParsed.localhashps !== null)){
-          this.updateMiningHPS(_cliResponseParsed.localhashps);
-          this.updateMiningState(_cliResponseParsed.generate);
+          this.updateMining(_cliResponseParsed);
+          /*
           if (this.state.isMining) {
-            if(_cliResponseParsed.genproclimit == -1 || _cliResponseParsed.genproclimit == 0) {
-              this.updateNumThreads(0);
-              this.updateStakingState(true);
-            }
-            else {
-              this.updateNumThreads(_cliResponseParsed.genproclimit);
-              this.updateStakingState(false);
-            } 
-            
+              this.updateNumThreadsGUI(_cliResponseParsed.genproclimit);
           }
+          */
         }
       }
 
@@ -68,8 +61,7 @@ class MiningButton extends React.Component {
           responseType !== 'object' &&
           _cliResponseParsed.indexOf('\n') > -1) {
         _cliResponseParsed = _cliResponseParsed.split('\n');
-          this.updateMiningHPS(0);
-          this.updateMiningState(false);
+        this.startLoading();
       }
   }
       
@@ -107,30 +99,25 @@ class MiningButton extends React.Component {
     );
   }
 
-  updateMiningState(_isMining){
+  updateMining(_cliResponse){
     this.setState({
-      isMining: _isMining,
+      isMining: _cliResponse.generate,
     });
-      this.finishLoading();
-  }
-
-  updateMiningHPS(_localHps){
     this.setState({
-      localHps: _localHps,
+      localHps: _cliResponse.localhashps,
     });
-      this.finishLoading();
+    this.setState({
+      numThreadsCli: _cliResponse.genproclimit,
+    });
+    this.finishLoading();
   }
 
   startMining(_numThreads) {
     this.startLoading();
-    if(_numThreads > 0){
-      this.execCliCmd('setgenerate true ' + _numThreads);
-    }
-    else if (_numThreads == 0){
-      this.execCliCmd('setgenerate true');
-    }
+    this.execCliCmd('setgenerate true ' + _numThreads);
     this.loopUpdateMiningInfoCli();
   }
+
 
   stopMining() {
     this.startLoading();
@@ -142,6 +129,9 @@ class MiningButton extends React.Component {
     this.setState({
       [e.target.name]: e.target.value,
     });
+    if (this.state.isMining) {
+      this.startMining(e.target.value);
+    }
   }
 
   updateCliResponse(_response) {
@@ -166,15 +156,9 @@ class MiningButton extends React.Component {
     }
   }
 
-  updateStakingState(_isOnlyStaking) {
+  updateNumThreadsGUI(_numThreads){
     this.setState({
-      isOnlyStaking: _isOnlyStaking,
-    });
-  }
-
-  updateNumThreads(_numThreads){
-    this.setState({
-      numThreads: _numThreads,
+      numThreadsGUI: _numThreads,
     });
   }
 
@@ -182,45 +166,58 @@ class MiningButton extends React.Component {
     this.execCliCmd('getmininginfo');
   }
 
+  dynamicallyUpdateMining(){
+    if (this.state.numThreadsGUI !== this.state.numThreadsCli) {
+      this.startMining(this.state.numThreadsGUI);
+      this.updateInput();
+    }
+  }
+
   render() {
     return (
       <div className="row">
-        <div className="col-sm-4">
+        <div className="col-sm-5">
         <div>
           <div>
             <strong>{ translate('INDEX.MINING_INFO') }</strong>
           </div>
           <div>
-            { this.state.loading ? translate('INDEX.LOADING_MINING_INFO') : ((translate('INDEX.MINING_STATUS')) + ' ' + (this.state.isMining ? (this.state.isOnlyStaking ? translate('INDEX.STAKING') : translate('INDEX.MINING')) : translate('INDEX.IDLE'))) }
+            { this.state.loading ? translate('INDEX.LOADING_MINING_INFO') : 
+            ((translate('INDEX.MINING_STATUS')) + ' ' + (this.state.isMining ? ((this.state.numThreadsCli === 0 || this.state.numThreadsCli === -1) ? translate('INDEX.STAKING') :
+            (translate('INDEX.MINING') + ' ' + translate('INDEX.WITH') + ' ' + this.state.numThreadsCli + ' ' + (this.state.numThreadsCli === 1 ? translate('INDEX.THREAD') : translate('INDEX.THREADS')))) : 
+            translate('INDEX.IDLE'))) }
           </div>
           <div>
-            { this.state.loading ? translate('INDEX.LOADING_MINING_INFO') : ((translate('INDEX.MINING_HPS')) + ' ' + (this.state.isMining ? this.state.localHps : '0'))}
+            { this.state.loading ? translate('INDEX.LOADING_MINING_INFO') : ((translate('INDEX.MINING_HPS')) + ' ' + (this.state.isMining ? Number(this.state.localHps / 1000000).toFixed(3) : '0'))}
           </div>
-          <div>
-            { translate('INDEX.INPUT_THREADS') }
-            <input
-              type="text"
-              name="numThreads"
-              id="threads"
-              type="number"
-              disabled={ this.state.loading || this.state.isMining }
-              min="0"
-              className="form-control"
-              data-tip={ translate('INDEX.THREADS_DESC') }
-              value={ this.state.numThreads }
-              onChange={ this.updateInput }/>
-              <ReactTooltip
-                  effect="solid"
-                  className="text-left" />
-                  
-          </div>
-          <div>
-          <button
-              type="button"
-              className="btn btn-primary waves-effect waves-light margin-top-5"
-              disabled={this.state.loading}
-              onClick={ this.state.isMining ? (() => this.stopMining()) : (() => this.startMining(this.state.numThreads)) }>{ this.state.loading ? translate('INDEX.LOADING_MINING_INFO') : (this.state.isMining ? (this.state.isOnlyStaking ? translate('INDEX.STOP_STAKING') : translate('INDEX.STOP_MINING')) : translate('INDEX.START_MINING')) }</button>
-          </div>
+      </div>
+      <div className="row">
+        <div className="col-sm-4">
+            <div>
+              { translate('INDEX.INPUT_THREADS') }
+              <input
+                type="text"
+                name="numThreadsGUI"
+                id="threads"
+                type="number"
+                disabled={ this.state.loading }
+                min="0"
+                className="form-control"
+                data-tip={ translate('INDEX.THREADS_DESC') }
+                value={ this.state.numThreadsGUI }
+                onChange={ this.updateInput }/>
+                <ReactTooltip
+                    effect="solid"
+                    className="text-left" />
+            </div>
+            <div>
+            <button
+                type="button"
+                className="btn btn-primary waves-effect waves-light margin-top-5"
+                disabled={this.state.loading}
+                onClick={ this.state.isMining ? (() => this.stopMining()) : (() => this.startMining(this.state.numThreadsGUI)) }>{ this.state.loading ? translate('INDEX.LOADING_MINING_INFO') : (this.state.isMining ? ((this.state.numThreadsCli === 0 || this.state.numThreadsCli === -1) ? translate('INDEX.STOP_STAKING') : translate('INDEX.STOP_MINING')) : translate('INDEX.START_MINING')) }</button>
+            </div>
+            </div>
         </div>
           
           
