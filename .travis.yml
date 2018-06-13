@@ -21,12 +21,10 @@ addons:
       - google-cloud-sdk
 
 install:
-- gcloud auth activate-service-account --key-file AUTH_KEY.json
 - rm AUTH_KEY.json && rm AUTH_KEY.json.enc
 script:
 - ./make-build.sh
 after_script:
-- if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then tar -czvf build.tar.gz build && gsutil cp build.tar.gz gs://$BUCKET/$PROJECT/$TRAVIS_BRANCH/; fi
-before_install:
-- openssl aes-256-cbc -K $encrypted_6b9be889f511_key -iv $encrypted_6b9be889f511_iv
-  -in AUTH_KEY.json.enc -out AUTH_KEY.json -d
+- if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then openssl aes-256-cbc -K $encrypted_6b9be889f511_key -iv $encrypted_6b9be889f511_iv
+  -in AUTH_KEY.json.enc -out AUTH_KEY.json -d && gcloud auth activate-service-account --key-file AUTH_KEY.json &&
+  tar -czvf build.tar.gz build && gsutil cp build.tar.gz gs://$BUCKET/$PROJECT/$TRAVIS_BRANCH/; fi
