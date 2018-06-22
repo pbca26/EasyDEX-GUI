@@ -15,6 +15,7 @@ class MiningButton extends React.Component {
       localHps: 0,
       loading: true,
       numThreadsCli: null,
+      isNew: true,
     };
   }
 
@@ -138,6 +139,10 @@ class MiningButton extends React.Component {
         loading: false,
       });
     }
+    if(this.state.isNew) {
+      this.updateNumThreadsGUI(this.state.numThreadsCli);
+    }
+    this.updateIsNew();
   }
 
   startLoading() {
@@ -154,6 +159,12 @@ class MiningButton extends React.Component {
     });
   }
 
+  updateIsNew(){
+    this.setState({
+      isNew: false,
+    });
+  }
+
   getMiningInfo(){
     this.execCliCmd('getmininginfo');
   }
@@ -167,10 +178,18 @@ class MiningButton extends React.Component {
             <strong>{ translate('INDEX.MINING_INFO') }</strong>
           </div>
           <div>
-            { this.state.loading ? translate('INDEX.LOADING_MINING_INFO') : 
-            ((translate('INDEX.MINING_STATUS')) + ' ' + (this.state.isMining ? ((this.state.numThreadsCli === 0 || this.state.numThreadsCli === -1) ? translate('INDEX.STAKING') :
-            (translate('INDEX.MINING') + ' ' + translate('INDEX.WITH') + ' ' + this.state.numThreadsCli + ' ' + (this.state.numThreadsCli === 1 ? translate('INDEX.THREAD') : translate('INDEX.THREADS')))) : 
-            translate('INDEX.IDLE'))) }
+            {
+              this.state.loading ? translate('INDEX.LOADING_MINING_INFO') :
+              (translate('INDEX.MINING_STATUS')) + ' ' + 
+                (!this.state.isMining ? translate('INDEX.IDLE') :
+                  (this.state.numThreadsCli === 0 || this.state.numThreadsCli === -1) ? 
+                  Number(this.props.ActiveCoin.balance.transparent) === 0 ? translate('INDEX.IDLE') + ' ' + translate('INDEX.SELECT_THREADS'):
+                      translate('INDEX.STAKING') 
+                      : 
+                  Number(this.props.ActiveCoin.balance.transparent) === 0 ? translate('INDEX.MINING') :
+                    translate('INDEX.MINING_AND_STAKING'))
+                        
+            }
           </div>
           <div>
             { this.state.loading ? translate('INDEX.LOADING_MINING_INFO') : ((translate('INDEX.MINING_HPS')) + ' ' + (this.state.isMining ? Number(this.state.localHps / 1000000).toFixed(3) : '0'))}
@@ -205,11 +224,10 @@ class MiningButton extends React.Component {
                     !(this.state.numThreadsCli != this.state.numThreadsGUI) ? () => this.stopMining() : 
                       () => this.startMining(this.state.numThreadsGUI) 
                     }>
-                    {this.state.loading ? translate('INDEX.LOADING_MINING_INFO') :
-                      !this.state.isMining ? translate('INDEX.START_MINING') :
-                        this.state.numThreadsCli != this.state.numThreadsGUI ? translate('INDEX.UPDATE') :
-                          this.state.numThreadsCli === 0 || this.state.numThreadsCli === -1 ? translate('INDEX.STOP_STAKING') :
-                            translate('INDEX.STOP_MINING')}
+                      {this.state.loading ? translate('INDEX.LOADING_MINING_INFO') :
+                        !this.state.isMining ? translate('INDEX.START') :
+                          this.state.numThreadsCli != this.state.numThreadsGUI ? translate('INDEX.UPDATE') :
+                            translate('INDEX.STOP')}
                             </button>
             </div>
             </div>

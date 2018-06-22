@@ -127,7 +127,7 @@ const WalletsTxInfoRender = function(txInfo) {
                               <tr>
                                 <td>{ this.capitalizeFirstLetter('blockstomaturity') }</td>
                                 <td>
-                                  { txInfo.blockstomaturity > 0 ? txInfo.blockstomaturity : translate('TX_INFO.MATURE')}
+                                  { (txInfo.blockstomaturity === 0 || !txInfo.blockstomaturity) ? translate('TX_INFO.MATURE') : txInfo.blockstomaturity + ' (' + this.renderTimeToUnlock(txInfo.blockstomaturity) + ')'}
                                 </td>
                               </tr>
                               }
