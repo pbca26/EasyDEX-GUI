@@ -20,7 +20,7 @@ install:
 
 script:
 - cd react && npm install
-- npm run build && cd ..
+- npm run build 
 
 after_script:
 - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then openssl aes-256-cbc -K $encrypted_6b9be889f511_key -iv $encrypted_6b9be889f511_iv
