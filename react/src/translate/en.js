@@ -68,19 +68,18 @@ export const LANG_EN = {
     'AGAMA_CAPABILITIES': 'Agama includes the following capabilities:',
     'BARTER_DEX_DESC': 'Easily exchange cryptocurrencies via a shapeshift-like service.',
     'AGAMA_NOTE': 'Note: Agama Wallet is still in development. ' +
-                  'It is safe to use, but you should make proper backups. ' +
-                  'We do not recommend using it as the primarily wallet for your cryptocurrencies.',
+                  'It is safe to use, but you should make proper backups regularly and securely.',
     'TESTERS': 'Testers',
     'TESTERS_P1': 'You can help us test Agama. Just',
-    'TESTERS_P2': 'download and install the latest release',
+    'TESTERS_P2': 'download and install the latest release from veruscoin.io',
     'TESTERS_P3': 'Then, report any bugs you encounter to our developers on the',
     'TESTERS_P4': 'Your help is greatly appreciated!',
     'AGAMA_DAPPS': 'Agama also supports the following desktop apps:',
     'JUMBLR_DESC': 'A decentralized Bitcoin blockchain tumbler for privacy and lower fees.',
     'BARTER_DEX_DESC_ALT': 'A decentralized coin exchange.',
     'CHANNEL': 'channel',
-    'GET_AN_INVITE': 'Get an invite',
-    'GET_AN_INVITE_P2': 'to our slack if you\'re not registered yet'
+    'GET_AN_INVITE': 'Join ',
+    'GET_AN_INVITE_P2': 'our discord community',
   },
   'API': {
     'DAEMON_IS_STILL_RUNNING': 'daemon is still running. If you want to completely stop it and remove use stop icon next time.',
@@ -761,7 +760,7 @@ export const LANG_EN = {
     'RESET_TO_DEFAULT': 'Reset to default',
     'PROGRESS': 'Progress',
     'SUPPORT': 'Support',
-    'SUPPORT_TICKETS': 'Support tickets',
+    'SUPPORT_TICKETS': 'Community support',
     'GET_SLACK_INVITE': 'Get Slack invite',
     'ADDRESS_LIST': 'Address',
     'WIF_KEY_LIST': 'WIF (Wallet Import Format) key',
