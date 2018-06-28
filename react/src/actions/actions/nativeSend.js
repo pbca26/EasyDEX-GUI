@@ -12,8 +12,7 @@ export const sendNativeTx = (coin, _payload) => {
   let payload;
   let _apiMethod;
 
-  if ((_payload.addressType === 'public' && // transparent
-      _payload.sendTo.length !== 95) || (!_payload.sendFrom && !_payload.privateAddrList && !_payload.shieldCoinbase)) {
+  if (!_payload.sendFrom && !_payload.privateAddrList && !_payload.shieldCoinbase) {
     _apiMethod = 'sendtoaddress';
   } else if (_payload.shieldCoinbase) {
     _apiMethod = 'z_shieldcoinbase';
@@ -29,8 +28,7 @@ export const sendNativeTx = (coin, _payload) => {
       rpc2cli: Config.rpc2cli,
       token: Config.token,
       params:
-        ((_payload.addressType === 'public' && _payload.sendTo.length !== 95) || 
-        (!_payload.sendFrom && !_payload.privateAddrList) || 
+        ((!_payload.sendFrom && !_payload.privateAddrList) || 
         (_payload.shieldCoinbase && _payload.sendTo.length === 95) ||
         (!_payload.sendFrom && _payload.shieldCoinbase)) ?
         (_payload.shieldCoinbase ? 
@@ -99,16 +97,27 @@ export const sendNativeTx = (coin, _payload) => {
           json.indexOf('"},"id":"jl777"')
         );
 
-        if (json.indexOf('"code":-4') > -1) {
+        if ((json.indexOf('"code":-4') > -1) && coin !== 'VRSC') {
           dispatch(
             triggerToaster(
-              translate('API.WALLETDAT_MISMATCH'),
-              translate('TOASTR.WALLET_NOTIFICATION'),
-              'info',
-              false
+              translate('API.UNKNOWN_ERROR'),
+              translate('TOASTR.UNKNOWN_ERROR'),
+              'error',
             )
           );
-        } else if (json.indexOf('"code":-5') > -1) {
+        } 
+
+        else if ((json.indexOf('"code":-4') > -1) && coin === 'VRSC') {
+          dispatch(
+            triggerToaster(
+              translate('API.UNKNOWN_ERROR_VRSC'),
+              translate('TOASTR.UNKNOWN_ERROR'),
+              'error',
+            )
+          );
+        }
+        
+        else if (json.indexOf('"code":-5') > -1) {
           dispatch(
             triggerToaster(
               translate('TOASTR.INVALID_ADDRESS', coin),
