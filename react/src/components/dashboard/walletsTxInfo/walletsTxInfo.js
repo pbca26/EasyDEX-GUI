@@ -9,6 +9,7 @@ import {
 import Store from '../../../store';
 import WalletsTxInfoRender from './walletsTxInfo.render';
 import explorerList from '../../../util/explorerList';
+import { DASHBOARD_ELECTRUM_TRANSACTIONS } from '../../../actions/storeType';
 
 const shell = window.require('electron').shell;
 
@@ -97,6 +98,63 @@ class WalletsTxInfo extends React.Component {
   openExplorerWindow(txid) {
     const url = explorerList[this.props.ActiveCoin.coin].split('/').length - 1 > 2 ? `${explorerList[this.props.ActiveCoin.coin]}${txid}` : `${explorerList[this.props.ActiveCoin.coin]}/tx/${txid}`;
     return shell.openExternal(url);
+  }
+
+  renderTimeToUnlock(blockstomaturity){
+    const years = ((blockstomaturity/60)/24)/356;
+    const months = (years % 1) * 12;
+    const days = (months % 1) * 30.4375;
+    const hours = (days % 1) * 24;
+    const minutes = (hours % 1) * 60;
+
+    if (years < 1){
+      if (months < 1){
+        if (days < 1){
+          if (hours < 1){
+            if (minutes < 1){
+              return('0 ' + translate('TX_INFO.MINUTES'));
+            }
+            else {
+                return(Math.floor(minutes) + ' ' + this.checkForPlural('MINUTE', minutes));
+            }
+          }
+          else {
+              return(Math.floor(hours) + ' ' + this.checkForPlural('HOUR', hours) + ' ' + 
+              Math.floor(minutes) + ' ' + this.checkForPlural('MINUTE', minutes));
+          }
+        }
+        else {
+            return(
+              Math.floor(days) + ' ' + this.checkForPlural('DAY', days) + ' ' +
+              Math.floor(hours) + ' ' + this.checkForPlural('HOUR', hours) + ' ' + 
+              Math.floor(minutes) + ' ' + this.checkForPlural('MINUTE', minutes));
+        }
+      }
+      else {
+          return(
+            Math.floor(months) + ' ' + this.checkForPlural('MONTH', months) + ' ' +
+            Math.floor(days) + ' ' + this.checkForPlural('DAY', days) + ' ' +
+            Math.floor(hours) + ' ' + this.checkForPlural('HOUR', hours) + ' ' + 
+            Math.floor(minutes) + ' ' + this.checkForPlural('MINUTE', minutes));
+      }
+    }
+    else {
+        return(
+          Math.floor(years) + ' ' + this.checkForPlural('YEAR', years) + ' ' + 
+          Math.floor(months) + ' ' + this.checkForPlural('MONTH', months) + ' ' +
+          Math.floor(days) + ' ' + this.checkForPlural('DAY', days) + ' ' +
+          Math.floor(hours) + ' ' + this.checkForPlural('HOUR', hours) + ' ' + 
+          Math.floor(minutes) + ' ' + this.checkForPlural('MINUTE', minutes));
+    }
+  }
+
+  checkForPlural(term, time) {
+    if (time > 1 && time < 2){
+      return (translate('TX_INFO.' + term));
+    }
+    else {
+      return (translate('TX_INFO.' + term + 'S'));
+    }
   }
 
   render() {
