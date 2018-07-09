@@ -16,6 +16,31 @@ import fetchType from '../../util/fetchType';
 // TODO: dev display errors
 
 // src: atomicexplorer
+export const shepherdGetRemoteTimestamp = () => {
+  return new Promise((resolve, reject) => {
+    fetch(
+      `https://www.atomicexplorer.com/api/timestamp/now`,
+      fetchType.get
+    )
+    .catch((error) => {
+      console.log(error);
+      /*Store.dispatch(
+        triggerToaster(
+          'shepherdGetRemoteBTCFees',
+          'Error',
+          'error'
+        )
+      );*/
+      resolve({ msg: 'error' });
+    })
+    .then(response => response.json())
+    .then(json => {
+      resolve(json);
+    });
+  });
+}
+
+// src: atomicexplorer
 export const shepherdGetRemoteBTCFees = () => {
   return new Promise((resolve, reject) => {
     fetch(
@@ -96,12 +121,13 @@ export const shepherdElectrumSetServer = (coin, address, port) => {
   });
 }
 
-export const shepherdElectrumCheckServerConnection = (address, port) => {
+export const shepherdElectrumCheckServerConnection = (address, port, proto) => {
   return new Promise((resolve, reject) => {
     const _urlParams = {
       token: Config.token,
       address,
       port,
+      proto,
     };
     fetch(
       `http://127.0.0.1:${Config.agamaPort}/shepherd/electrum/servers/test${urlParams(_urlParams)}`,
@@ -177,6 +203,18 @@ export const shepherdElectrumBalance = (coin, address) => {
     })
     .then(response => response.json())
     .then(json => {
+      console.log(json.electrumres);
+      if (json &&
+          json.electrumres &&
+          json.electrumres.code) {
+        dispatch(
+          triggerToaster(
+            json.electrumres.message,
+            'Error',
+            'error'
+          )
+        );
+      }
       dispatch(shepherdElectrumBalanceState(json));
     });
   }
@@ -200,7 +238,7 @@ export const shepherdElectrumTransactions = (coin, address) => {
     };
     return fetch(
       `http://127.0.0.1:${Config.agamaPort}/shepherd/electrum/listtransactions${urlParams(_urlParams)}`,
-      fetchType.get  
+      fetchType.get
     )
     .catch((error) => {
       console.log(error);
@@ -217,6 +255,38 @@ export const shepherdElectrumTransactions = (coin, address) => {
       dispatch(shepherdElectrumTransactionsState(json));
     });
   }
+}
+
+export const shepherdElectrumKVTransactionsPromise = (coin, address) => {
+  return new Promise((resolve, reject) => {
+    const _urlParams = {
+      token: Config.token,
+      address,
+      coin,
+      full: true,
+      maxlength: 20,
+      kv: true,
+    };
+
+    fetch(
+      `http://127.0.0.1:${Config.agamaPort}/shepherd/electrum/listtransactions${urlParams(_urlParams)}`,
+      fetchType.get
+    )
+    .catch((error) => {
+      console.log(error);
+      Store.dispatch(
+        triggerToaster(
+          'shepherdElectrumTransactionsKV',
+          'Error',
+          'error'
+        )
+      );
+    })
+    .then(response => response.json())
+    .then(json => {
+      resolve(json);
+    });
+  });
 }
 
 export const shepherdElectrumTransactionsState= (json) => {
@@ -269,10 +339,21 @@ export const shepherdElectrumCoinsState = (json) => {
 }
 
 // value in sats
-export const shepherdElectrumSend = (coin, value, sendToAddress, changeAddress, btcFee) => {
+export const shepherdElectrumSend = (coin, value, sendToAddress, changeAddress, btcFee, isKv, opreturn) => {
   value = Math.floor(value);
 
   return dispatch => {
+    const payload = {
+      token: Config.token,
+      coin,
+      value,
+      address: changeAddress,
+      change: changeAddress,
+      opreturn,
+      gui: true,
+      verify: true,
+      push: true,
+    };
     const _urlParams = {
       token: Config.token,
       coin,
@@ -280,12 +361,13 @@ export const shepherdElectrumSend = (coin, value, sendToAddress, changeAddress, 
       address: sendToAddress,
       change: changeAddress,
       gui: true,
-      push: true,
       verify: true,
+      push: true,
     };
+
     return fetch(
-      `http://127.0.0.1:${Config.agamaPort}/shepherd/electrum/createrawtx${urlParams(_urlParams)}${btcFee ? '&btcfee=' + btcFee : ''}`,
-      fetchType.get
+      isKv ? `http://127.0.0.1:${Config.agamaPort}/shepherd/electrum/createrawtx` : `http://127.0.0.1:${Config.agamaPort}/shepherd/electrum/createrawtx${urlParams(_urlParams)}${btcFee ? '&btcfee=' + btcFee : ''}`,
+      isKv ? fetchType(JSON.stringify(payload)).post : fetchType.get
     )
     .catch((error) => {
       console.log(error);
@@ -318,9 +400,9 @@ export const shepherdElectrumSendPromise = (coin, value, sendToAddress, changeAd
       verify: true,
       push: true,
     };
-    return fetch(
+    fetch(
       `http://127.0.0.1:${Config.agamaPort}/shepherd/electrum/createrawtx${urlParams(_urlParams)}${btcFee ? '&btcfee=' + btcFee : ''}`,
-      fetchType.get  
+      fetchType.get
     )
     .catch((error) => {
       console.log(error);
@@ -339,10 +421,21 @@ export const shepherdElectrumSendPromise = (coin, value, sendToAddress, changeAd
   });
 }
 
-export const shepherdElectrumSendPreflight = (coin, value, sendToAddress, changeAddress, btcFee) => {
+export const shepherdElectrumSendPreflight = (coin, value, sendToAddress, changeAddress, btcFee, isKv, opreturn) => {
   value = Math.floor(value);
 
   return new Promise((resolve, reject) => {
+    const payload = {
+      token: Config.token,
+      coin,
+      value,
+      address: changeAddress,
+      change: changeAddress,
+      opreturn,
+      gui: true,
+      verify: true,
+      push: false,
+    };
     const _urlParams = {
       token: Config.token,
       coin,
@@ -352,10 +445,11 @@ export const shepherdElectrumSendPreflight = (coin, value, sendToAddress, change
       gui: true,
       verify: true,
       push: false,
-    };  
+    };
+
     fetch(
-      `http://127.0.0.1:${Config.agamaPort}/shepherd/electrum/createrawtx${urlParams(_urlParams)}${btcFee ? '&btcfee=' + btcFee : ''}`,
-      fetchType.get
+      isKv ? `http://127.0.0.1:${Config.agamaPort}/shepherd/electrum/createrawtx` : `http://127.0.0.1:${Config.agamaPort}/shepherd/electrum/createrawtx${urlParams(_urlParams)}${btcFee ? '&btcfee=' + btcFee : ''}`,
+      isKv ? fetchType(JSON.stringify(payload)).post : fetchType.get
     )
     .catch((error) => {
       console.log(error);
@@ -453,6 +547,34 @@ export const shepherdElectrumSplitUtxoPromise = (payload) => {
       Store.dispatch(
         triggerToaster(
           'shepherdElectrumSendPromise',
+          'Error',
+          'error'
+        )
+      );
+    })
+    .then(response => response.json())
+    .then(json => {
+      resolve(json);
+    });
+  });
+}
+
+// get kv electrums list
+export const shepherdElectrumKvServersList = () => {
+  return new Promise((resolve, reject) => {
+    const _urlParams = {
+      token: Config.token,
+      save: true,
+    };
+    return fetch(
+      `http://127.0.0.1:${Config.agamaPort}/shepherd/electrum/kv/servers${urlParams(_urlParams)}`,
+      fetchType.get
+    )
+    .catch((error) => {
+      console.log(error);
+      Store.dispatch(
+        triggerToaster(
+          'shepherdElectrumKvServersList',
           'Error',
           'error'
         )
