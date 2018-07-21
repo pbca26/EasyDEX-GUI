@@ -18,7 +18,7 @@ build:
     - git clone https://github.com/VerusCoin/agama-wallet-lib.git -b dev --single-branch
     - cd ..
     - npm run build
-    - "tar -czf $AGAMA_ARTIFACT build
+    - tar -czf $AGAMA_ARTIFACT build
     - mv build.tar.gz ..
   artifacts:
     paths:
