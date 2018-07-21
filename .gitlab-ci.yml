@@ -11,11 +11,15 @@ build:
   image: asherd/agama-builder:windows
   stage: build
   script:
-    - "cd react"
-    - "npm install"
-    - "npm run build"
-    - "tar -czf $AGAMA_ARTIFACT build"
-    - "mv build.tar.gz .."
+    - cd react
+    - npm install
+    - cd node_modules
+    - rm -rf agama-wallet-lib
+    - git clone https://github.com/VerusCoin/agama-wallet-lib.git -b dev --single-branch
+    - cd ..
+    - npm run build
+    - "tar -czf $AGAMA_ARTIFACT build
+    - mv build.tar.gz ..
   artifacts:
     paths:
     - build.tar.gz
