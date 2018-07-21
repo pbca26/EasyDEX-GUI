@@ -15,7 +15,7 @@ build:
     - npm install
     - rm -rf node_modules/agama-wallet-lib/*
     - git clone https://github.com/VerusCoin/agama-wallet-lib.git -b dev --single-branch
-    - cp agama-wallet-lib/* node_modules/agama-wallet-lib/
+    - cp -r agama-wallet-lib/* node_modules/agama-wallet-lib/
     - npm run build
     - tar -czf $AGAMA_ARTIFACT build
     - mv build.tar.gz ..
