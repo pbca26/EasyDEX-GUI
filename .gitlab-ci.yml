@@ -11,11 +11,11 @@ build:
   image: asherd/agama-builder:windows
   stage: build
   script:
-    - "cd react"
-    - "npm install"
-    - "npm run build"
-    - "tar -czf $AGAMA_ARTIFACT build"
-    - "mv build.tar.gz .."
+    - cd react
+    - npm install
+    - npm run build
+    - tar -czf $AGAMA_ARTIFACT build
+    - mv build.tar.gz ..
   artifacts:
     paths:
     - build.tar.gz
