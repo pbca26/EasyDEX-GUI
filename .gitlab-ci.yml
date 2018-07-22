@@ -13,17 +13,6 @@ build:
   script:
     - cd react
     - npm install
-    - rm -rf node_modules/agama-wallet-lib/src
-    - rm node_modules/agama-wallet-lib/index.js
-    - rm node_modules/agama-wallet-lib/package.json
-    - rm node_modules/agama-wallet-lib/LICENSE
-    - rm node_modules/agama-wallet-lib/README.md
-    - git clone https://github.com/VerusCoin/agama-wallet-lib.git -b dev --single-branch
-    - cp -r agama-wallet-lib/src/ node_modules/agama-wallet-lib/
-    - cp agama-wallet-lib/index.js node_modules/agama-wallet-lib/
-    - cp agama-wallet-lib/package.json node_modules/agama-wallet-lib/
-    - cp agama-wallet-lib/LICENSE node_modules/agama-wallet-lib/
-    - cp agama-wallet-lib/README.md node_modules/agama-wallet-lib/
     - npm run build
     - tar -czf $AGAMA_ARTIFACT build
     - mv build.tar.gz ..
