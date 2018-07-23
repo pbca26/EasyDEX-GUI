@@ -56,6 +56,8 @@ class SendCoin extends React.Component {
       shieldCoinbase: false,
       sendTo: '',
       amount: 0,
+      memo: '',
+      memoHEX: '',
       fee: 0,
       addressSelectorOpen: false,
       renderAddressDropdown: true,
@@ -99,6 +101,7 @@ class SendCoin extends React.Component {
     this.toggleShieldCoinbase = this.toggleShieldCoinbase.bind(this);
     this.toggleKvSend = this.toggleKvSend.bind(this);
     this.verifyPin = this.verifyPin.bind(this);
+    this.setMemoHex = this.setMemoHex.bind(this);
     //this.loadTestData = this.loadTestData.bind(this);
   }
 
@@ -534,6 +537,19 @@ class SendCoin extends React.Component {
     });
   }
 
+  encodeStringToHex(stringToConvert) {
+    var hex;
+    var i;
+
+    var result = "";
+    for (i=0; i<stringToConvert.length; i++) {
+        hex = stringToConvert.charCodeAt(i).toString(16);
+        result += ("000"+hex).slice(-4);
+    }
+
+    return result
+  }
+
   fetchBTCFees() {
     if (this.props.ActiveCoin.mode === 'spv' &&
         this.props.ActiveCoin.coin === 'BTC') {
@@ -720,6 +736,11 @@ class SendCoin extends React.Component {
   validateSendFormData() {
     let valid = true;
 
+    if (this.state.memo && this.state.sendTo.length === 95) {
+      let hexMemo = this.encodeStringToHex(this.state.memo);
+      this.setMemoHex(hexMemo);
+    }
+
     if (this.props.ActiveCoin.mode === 'spv') {
       const _amount = this.state.amount;
       const _amountSats = Math.floor(this.state.amount * 100000000);
@@ -771,7 +792,7 @@ class SendCoin extends React.Component {
       }
     }
 
-    if (!isPositiveNumber(this.state.amount)) {
+    if (!isPositiveNumber(this.state.amount) && Number(this.state.amount) !== 0) {
       Store.dispatch(
         triggerToaster(
           translate('SEND.AMOUNT_POSITIVE_NUMBER'),
@@ -983,6 +1004,12 @@ class SendCoin extends React.Component {
     this.setState({
       btcFeesSize: this.state.btcFees.electrum[value],
       btcFeesAdvancedStep: value,
+    });
+  }
+
+  setMemoHex(value) {
+    this.setState({
+      memoHEX: value,
     });
   }
 
