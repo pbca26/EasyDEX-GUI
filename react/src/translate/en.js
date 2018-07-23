@@ -432,6 +432,7 @@ export const LANG_EN = {
     'THREADS': 'threads',
     'UPDATE': 'Update',
     'SELECT_THREADS': '(Add threads to mine)',
+    'MESSAGE': 'Message',
   },
   'ATOMIC': {
     'RAW_OUTPUT': 'Raw Output',

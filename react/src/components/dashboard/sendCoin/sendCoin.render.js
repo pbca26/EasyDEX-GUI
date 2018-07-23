@@ -160,6 +160,24 @@ export const _SendFormRender = function() {
               placeholder="0.000"
               autoComplete="off" />
           </div>
+          { this.props.ActiveCoin.coin === 'VRSC' && this.state.sendTo.length === 95 &&
+            <div className="col-lg-12 form-group form-material">
+              <label
+                className="control-label"
+                htmlFor="kmdWalletMemo">
+                { translate('INDEX.MESSAGE') }
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                name="memo"
+                value={ this.state.memo !== '' ? this.state.memo : '' }
+                onChange={ this.updateInput }
+                id="kmdWalletMemo"
+                placeholder="Attach a message to your transaction"
+                autoComplete="off" />
+            </div>
+            }
           <div className={ 'col-lg-6 form-group form-material' + (this.isTransparentTx() && this.props.ActiveCoin.mode === 'native' ? '' : ' hide') }>
             { this.state.sendTo.length <= 34 &&
               <span className="pointer">
