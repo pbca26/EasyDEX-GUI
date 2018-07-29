@@ -200,7 +200,6 @@ class MiningButton extends React.Component {
             <div>
               { translate('INDEX.INPUT_THREADS') }
               <input
-                type="text"
                 name="numThreadsGUI"
                 id="threads"
                 type="number"
