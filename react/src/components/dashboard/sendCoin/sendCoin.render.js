@@ -137,7 +137,7 @@ export const _SendFormRender = function() {
             required />
         </div>
         <div className={ this.state.shieldCoinbase ? 'hide' : "col-lg-12 form-group form-material" }>
-          { this.props.ActiveCoin.mode === 'spv' &&
+          { 
               <button
                 type="button"
                 className="btn btn-default btn-send-self"
@@ -179,7 +179,7 @@ export const _SendFormRender = function() {
             </div>
             }
           <div className={ 'col-lg-6 form-group form-material' + (this.isTransparentTx() && this.props.ActiveCoin.mode === 'native' ? '' : ' hide') }>
-            { this.state.sendTo.length <= 34 && !this.state.shieldCoinbase &&
+            { this.state.sendTo.length <= 34 && !this.state.shieldCoinbase && this.props.ActiveCoin.coin !== 'VRSC' &&
               <span className="pointer">
                 <label className="switch">
                   <input

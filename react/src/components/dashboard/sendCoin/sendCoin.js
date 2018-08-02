@@ -151,11 +151,22 @@ class SendCoin extends React.Component {
     let _fees = mainWindow.spvFees;
     _fees.BTC = 0;
 
-    if (this.props.ActiveCoin.mode === 'native' &&
-        this.state.sendFrom) {
-      this.setState({
-        amount: Number(this.state.sendFromAmount) - 0.0001,
-      });
+    if (this.props.ActiveCoin.mode === 'native') {
+      if (this.state.sendFrom){
+        this.setState({
+          amount: Number(this.state.sendFromAmount) - 0.0001,
+        });
+      }
+      else if (!this.state.sendFrom && !this.state.privateAddrList){
+        this.setState({
+          amount: Number(this.props.ActiveCoin.balance.transparent) - 0.0001,
+        });
+      }
+      else {
+        this.setState({
+          amount: translate('DASHBOARD.SEND_FROMADDR_REQ'),
+        });
+      }
     } else {
       this.setState({
         amount: Number((0.00000001 * (_balanceSats - _fees[this.props.ActiveCoin.coin])).toFixed(8)),
