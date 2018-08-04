@@ -1,6 +1,6 @@
 {
   "name": "AgamaGUI",
-  "version": "0.3.11-beta",
+  "version": "0.3.12-beta",
   "description": "Agama Wallet GUI",
   "main": "src/index.js",
   "scripts": {
