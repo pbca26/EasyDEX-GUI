@@ -3,10 +3,16 @@ import ReactTooltip from 'react-tooltip';
 import translate from '../../../translate/translate';
 import ReactTable from 'react-table';
 import TablePaginationRenderer from './pagination';
-import formatValue from '../../../util/formatValue';
+import { formatValue } from 'agama-wallet-lib/src/utils';
 import Config from '../../../config';
 import Spinner from '../spinner/spinner';
 import MiningButton from './walletsData.miningButton';
+
+const kvCoins = {
+  'KV': true,
+  'BEER': true,
+  'PIZZA': true,
+};
 
 export const TxConfsRender = function(confs) {
   if (Number(confs) > -1) {
@@ -60,7 +66,7 @@ export const AddressRender = function(tx) {
     );
   }
 
-  return tx.address;
+  return (<span className="blur">{ tx.address }</span>);
 };
 
 export const AddressItemRender = function(address, type, amount, coin) {
@@ -175,7 +181,7 @@ export const TxAmountRender = function(tx) {
   } else {
     _amountNegative = 1;
   }
-  
+
   if (Config.roundValues) {
     return (
       <span>
@@ -315,7 +321,17 @@ export const WalletsDataRender = function() {
                         className="icon fa-refresh manual-txhistory-refresh pointer"
                         onClick={ this.refreshTxHistory }></i>
                     }
-                    <h4 className="panel-title">{ translate('INDEX.TRANSACTION_HISTORY') }</h4>
+                    <h4 className="panel-title">{ !this.state.kvView ? translate('INDEX.TRANSACTION_HISTORY') : translate('KV.KV_HISTORY') }</h4>
+                    { this.props.ActiveCoin.mode === 'spv' &&
+                      Config.experimentalFeatures &&
+                      kvCoins[this.props.ActiveCoin.coin] &&
+                      <button
+                        type="button"
+                        className="btn btn-default btn-switch-kv"
+                        onClick={ this.toggleKvView }>
+                        { !this.state.kvView ? translate('KV.KV_VIEW') : translate('KV.TX_VIEW') }
+                      </button>
+                    }
                   </header>
                   <div className="panel-body">
                     <div className="row padding-bottom-30 padding-top-10">
@@ -324,12 +340,13 @@ export const WalletsDataRender = function() {
                         this.props.ActiveCoin.txhistory !== 'connection error' &&
                         this.props.ActiveCoin.txhistory !== 'connection error or incomplete data' &&
                         this.props.ActiveCoin.txhistory !== 'cant get current height' &&
+                        !this.state.kvView &&
                         <div className="col-sm-4 search-box">
                           <input
                             className="form-control"
                             onChange={ e => this.onSearchTermChange(e.target.value) }
                             placeholder={ translate('DASHBOARD.SEARCH') } />
-                        </div>  
+                        </div>
                       }
                       { this.props.ActiveCoin.txhistory !== 'loading' &&
                         this.props.ActiveCoin.txhistory !== 'connection error' &&
