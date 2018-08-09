@@ -11,13 +11,27 @@ import fetchType from '../../util/fetchType';
 export const sendNativeTx = (coin, _payload) => {
   let payload;
   let _apiMethod;
+  let memoHex;
 
   if (!_payload.sendFrom && !_payload.privateAddrList && !_payload.shieldCoinbase) {
     _apiMethod = 'sendtoaddress';
   } else if (_payload.shieldCoinbase) {
     _apiMethod = 'z_shieldcoinbase';
-  } else { // private
+  } else { 
     _apiMethod = 'z_sendmany';
+  }
+
+  if(_payload.memo){
+    var hex;
+    var i;
+
+    var result = "";
+    for (i=0; i<_payload.memo.length; i++) {
+        hex = _payload.memo.charCodeAt(i).toString(16);
+        result += ("000"+hex).slice(-4);
+    }
+
+    memoHex = result;
   }
 
   return dispatch => {
@@ -63,6 +77,16 @@ export const sendNativeTx = (coin, _payload) => {
           ]
         ))
         :
+        (_payload.sendTo.length === 95 && _payload.memo !== '' ? 
+        [
+          _payload.sendFrom,
+          [{
+            address: _payload.sendTo,
+            amount: _payload.amount,
+            memo: memoHex
+          }]
+        ]
+        :
         [
           _payload.sendFrom,
           [{
@@ -70,6 +94,7 @@ export const sendNativeTx = (coin, _payload) => {
             amount: _payload.amount
           }]
         ]
+      )
     };
 
     fetch(
