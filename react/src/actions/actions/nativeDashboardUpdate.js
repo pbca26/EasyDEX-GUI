@@ -154,8 +154,6 @@ export const getDashboardUpdateState = (json, coin, privateTxLists, txInfoList, 
     }
 
     let allTransactions = _listtransactions
-    console.log('pooop');
-    console.log(txInfoList);
 
     if (coin === 'CHIPS') {
       return {
@@ -184,7 +182,6 @@ export const getDashboardUpdateState = (json, coin, privateTxLists, txInfoList, 
           _tbalance += _addresses.public[i].spendable;
         }
       }
-      console.log(privateTxLists);
       for (let n = 0; n < privateTxLists.length; n++) {
         let address = privateTxLists[n].address;
         for (let i = 0; i < privateTxLists[n].txList.result.length; i++) {
@@ -228,7 +225,6 @@ export const getDashboardUpdateState = (json, coin, privateTxLists, txInfoList, 
           allTransactions.push(privateTx);
         }
       }
-      console.log(allTransactions);
 
       json.result.z_gettotalbalance.result.transparent = _tbalance.toFixed(8);
       json.result.z_gettotalbalance.result.total = Number(json.result.z_gettotalbalance.result.transparent) + Number(json.result.z_gettotalbalance.result.interest) + Number(json.result.z_gettotalbalance.result.private);
