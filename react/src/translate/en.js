@@ -406,8 +406,8 @@ export const LANG_EN = {
     'TOGGLE_Z_ADDRESS_LIST': 'Send from a private address',
     'TOGGLE_Z_ADDRESS_LIST_DESC': 'This will change the dropdown menu below to display only your private (Z) addresses',
     'Z_ADDR_UNSELECTED': 'Select a private (Z) address',
-    'TOGGLE_SHIELD_COINBASE': 'Shield a coinbase transaction',
-    'TOGGLE_SHIELD_COINBASE_DESC': 'Mining generated transactions must be sent in full to one of your private (Z) addresses',
+    'TOGGLE_SHIELD_COINBASE': 'Shield all recent coinbase transactions',
+    'TOGGLE_SHIELD_COINBASE_DESC': 'Enter an address and press shield to shield up to 50 of your most recent mined transactions',
     'SHIELD_ADDR': 'Shield Funds',
     'UNSHIELDED_FUNDS': 'Unshielded funds',
     'MINING_STATUS': 'Mining Status:',
@@ -720,6 +720,7 @@ export const LANG_EN = {
   },
   'IAPI': {
     'PUBLIC_SM': 'public',
+    'PRIVATE_SM': 'private',
     'CON_STATUS': 'Connection status',
   },
   'KMD_NATIVE': {

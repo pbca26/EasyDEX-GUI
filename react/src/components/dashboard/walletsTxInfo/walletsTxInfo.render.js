@@ -63,9 +63,9 @@ const WalletsTxInfoRender = function(txInfo) {
                     </a>
                   </li>
                 </ul>
-                <div className="panel-body">
+                <div className="panel-body padding-0">
                   { this.state.txDetails &&
-                    <div className="tab-content">
+                    <div className="tab-content overflow-x">
                       { this.state.activeTab === 0 &&
                         <div className="tab-pane active">
                           <table className="table table-striped">
@@ -73,7 +73,7 @@ const WalletsTxInfoRender = function(txInfo) {
                               <tr>
                                 <td>{ this.capitalizeFirstLetter(translate('TX_INFO.ADDRESS')) }</td>
                                 <td className="blur">
-                                  { this.props.ActiveCoin.mode === 'spv' ? this.state.txDetails.address : this.state.txDetails.details[0].address }
+                                  { this.props.ActiveCoin.mode === 'spv' ? this.state.txDetails.address : (txInfo.address ? txInfo.address : this.state.txDetails.details[0].address) }
                                 </td>
                               </tr>
                               <tr>
@@ -85,7 +85,7 @@ const WalletsTxInfoRender = function(txInfo) {
                               <tr>
                                 <td>{ this.capitalizeFirstLetter(translate('TX_INFO.CATEGORY')) }</td>
                                 <td>
-                                  { this.props.ActiveCoin.mode === 'spv' ? this.state.txDetails.type : this.state.txDetails.details[0].category || txInfo.type }
+                                  { txInfo.memo ? 'receive' : (this.props.ActiveCoin.mode === 'spv' ? this.state.txDetails.type : this.state.txDetails.details[0].category || txInfo.type) }
                                 </td>
                               </tr>
                               <tr>
@@ -149,6 +149,15 @@ const WalletsTxInfoRender = function(txInfo) {
                                 <td>{ this.capitalizeFirstLetter('blockstomaturity') }</td>
                                 <td>
                                   { (txInfo.blockstomaturity === 0 || !txInfo.blockstomaturity) ? translate('TX_INFO.MATURE') : txInfo.blockstomaturity + ' (' + this.renderTimeToUnlock(txInfo.blockstomaturity) + ')'}
+                                </td>
+                              </tr>
+                              }
+                              { this.props.ActiveCoin.mode !== 'spv' && txInfo.memo && txInfo.memo !== "f600000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" 
+                              &&
+                              <tr>
+                                <td>{ this.capitalizeFirstLetter('memo') }</td>
+                                <td>
+                                  { this.decodeMemo(txInfo.memo) }
                                 </td>
                               </tr>
                               }

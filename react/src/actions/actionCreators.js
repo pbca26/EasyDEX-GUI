@@ -49,6 +49,8 @@ export * from './actions/jumblr';
 export * from './actions/interest';
 export * from './actions/nativeDashboardUpdate';
 export * from './actions/getTxDetails';
+export * from './actions/getPrivateTxList';
+export * from './actions/getTransaction';
 export * from './actions/electrum';
 export * from './actions/mm';
 export * from './actions/nativeNetwork';

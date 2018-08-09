@@ -239,12 +239,13 @@ class WalletsData extends React.Component {
 
     if (this.props.ActiveCoin.mode === 'native') {
       _col = {
+        id: 'type',
         Header: translate('INDEX.TYPE'),
         Footer: translate('INDEX.TYPE'),
         className: 'colum--type',
         headerClassName: 'colum--type',
         footerClassName: 'colum--type',
-        Cell: AddressTypeRender(),
+        accessor: (tx) => AddressTypeRender.call(this, tx),
       };
 
       if (itemsCount <= BOTTOM_BAR_DISPLAY_THRESHOLD) {
