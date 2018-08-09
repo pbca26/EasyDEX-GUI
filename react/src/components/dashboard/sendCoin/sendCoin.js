@@ -531,6 +531,11 @@ class SendCoin extends React.Component {
     this.setState({
       shieldCoinbase: !this.state.shieldCoinbase,
     });
+    if(this.state.shieldCoinbase){
+      this.setState({
+        sendFrom: null,
+      });
+    }
   }
 
   updateAddressSelection(address, type, amount) {

@@ -90,7 +90,7 @@ export const AddressListRender = function() {
                 style={{ display: this.state.sendFrom === null ? 'inline-block' : 'none' }}></span>
             </a>
           </li>
-          { this.state.privateAddrList ? this.renderAddressByType('private') : this.renderAddressByType('public') }
+          { this.state.shieldCoinbase ? null : (this.state.privateAddrList ? this.renderAddressByType('private') : this.renderAddressByType('public')) }
         </ul>
       </div>
     </div>

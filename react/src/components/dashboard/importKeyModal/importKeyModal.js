@@ -165,7 +165,7 @@ class ImportKeyModal extends React.Component {
             }
           }, 2000);
 
-          Store.dispatch(getDashboardUpdateState(null, this.props.ActiveCoin.coin, true));
+          Store.dispatch(getDashboardUpdateState(null, this.props.ActiveCoin.coin, null, null, true));
           Store.dispatch(
             triggerToaster(
               translate(multi ? 'INDEX.ADDRESSES_IMPORTED_RESCAN_IN_PROGRESS' : 'INDEX.ADDRESS_IMPORTED_RESCAN_IN_PROGRESS'),
