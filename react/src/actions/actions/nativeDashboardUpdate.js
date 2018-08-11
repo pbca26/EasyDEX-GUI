@@ -45,18 +45,14 @@ export const getDashboardUpdate = (coin, activeCoinProps) => {
     .then(response => response.json())
     .then(json => {
       let resultObj = {mainJson: json, privateTxLists: null, privateAddrList: null, txInfoList: null};
-      return resultObj;
-    })
-    .then(resultObj => {
+
       const _addresses = resultObj.mainJson.result.addresses;
       let privateAddrs = [];
       for (let i = 0; i < _addresses.private.length; i++) {
         privateAddrs.push(_addresses.private[i].address);
       }
       resultObj.privateAddrList = privateAddrs;
-      return resultObj;
-    })
-    .then(resultObj => {
+
       let promiseArray = [];
       for (let i = 0; i < resultObj.privateAddrList.length; i++) {
         let getPrivateTxListPromise = getPrivateTxList(coin, resultObj.privateAddrList[i]);
@@ -74,9 +70,7 @@ export const getDashboardUpdate = (coin, activeCoinProps) => {
       }
 
       resultObj.privateTxLists = _privateTxLists;
-      return resultObj;
-    })
-    .then(resultObj => {
+
       let promiseArray = [];
 
       for (let n = 0; n < resultObj.privateTxLists.length; n++) {
@@ -98,9 +92,7 @@ export const getDashboardUpdate = (coin, activeCoinProps) => {
       }
 
       resultObj.txInfoList = _txInfoList;
-      return resultObj;
-    })
-    .then(resultObj => {
+
       let json = resultObj.mainJson;
       // dirty hack to trigger dashboard render
       if (!activeCoinProps ||
@@ -109,9 +101,7 @@ export const getDashboardUpdate = (coin, activeCoinProps) => {
           dispatch(getDashboardUpdateState(json, coin, resultObj.privateTxLists, resultObj.txInfoList, false));
         }, 100);
       }
-      else {
-        dispatch(getDashboardUpdateState(json, coin, resultObj.privateTxLists, resultObj.txInfoList, false));
-      }
+      dispatch(getDashboardUpdateState(json, coin, resultObj.privateTxLists, resultObj.txInfoList, false));
     });
   }
 }
@@ -153,7 +143,7 @@ export const getDashboardUpdateState = (json, coin, privateTxLists, txInfoList, 
       _listtransactions = 'no data';
     }
 
-    let allTransactions = _listtransactions
+    let allTransactions = _listtransactions.slice();
 
     if (coin === 'CHIPS') {
       return {
@@ -175,6 +165,10 @@ export const getDashboardUpdateState = (json, coin, privateTxLists, txInfoList, 
       const _addresses = json.result.addresses;
       let _tbalance = 0;
 
+      txInfoList.sort((a, b) => {
+        return (a.txid < b.txid) ? -1 : (a.txid > b.txid) ? 1 : 0;
+      });
+
       if (_addresses &&
           _addresses.public &&
           _addresses.public.length) {
@@ -182,28 +176,31 @@ export const getDashboardUpdateState = (json, coin, privateTxLists, txInfoList, 
           _tbalance += _addresses.public[i].spendable;
         }
       }
+
       for (let n = 0; n < privateTxLists.length; n++) {
         let address = privateTxLists[n].address;
-        for (let i = 0; i < privateTxLists[n].txList.result.length; i++) {
+        let result = privateTxLists[n].txList.result;
+        result.sort((a, b) => {
+          return (a.txid < b.txid) ? -1 : (a.txid > b.txid) ? 1 : 0;
+        });
+        for (let i = 0; i < result.length; i++) {
           let blockhash, blockindex, blocktime, confirmations, expiryheight, fee, 
               time, timereceived, vjoinsplit, walletconflicts = null;
           let txid = privateTxLists[n].txList.result[i].txid;
-            for (let i = 0; i < txInfoList.length; i++) {
-              if (txInfoList[i].txid === txid) {
-                blockhash = txInfoList[i].blockhash;
-                blockindex = txInfoList[i].blockindex;
-                blocktime = txInfoList[i].blocktime;
-                confirmations = txInfoList[i].confirmations;
-                expiryheight = txInfoList[i].expiryheight;
-                fee = txInfoList[i].fee;
-                time = txInfoList[i].time;
-                timereceived = txInfoList[i].timereceived;
-                vjoinsplit = txInfoList[i].vjoinsplit;
-                walletconflicts = txInfoList[i].walletconflicts;
-              }
-            }
           let amount = privateTxLists[n].txList.result[i].amount;
           let memo = privateTxLists[n].txList.result[i].memo;
+
+              blockhash = txInfoList[i].blockhash;
+              blockindex = txInfoList[i].blockindex;
+              blocktime = txInfoList[i].blocktime;
+              confirmations = txInfoList[i].confirmations;
+              expiryheight = txInfoList[i].expiryheight;
+              fee = txInfoList[i].fee;
+              time = txInfoList[i].time;
+              timereceived = txInfoList[i].timereceived;
+              vjoinsplit = txInfoList[i].vjoinsplit;
+              walletconflicts = txInfoList[i].walletconflicts;
+
           let privateTx = {account: "", 
                           address: address, 
                           amount: amount, 
