@@ -44,69 +44,98 @@ export const getDashboardUpdate = (coin, activeCoinProps) => {
     })
     .then(response => response.json())
     .then(json => {
-      let resultObj = {mainJson: json, privateTxLists: null, privateAddrList: null, txInfoList: null};
+      let resultObj = {mainJson: json, privateTxList: [], txInfoList: null};
 
       const _addresses = resultObj.mainJson.result.addresses;
       let privateAddrs = [];
       for (let i = 0; i < _addresses.private.length; i++) {
         privateAddrs.push(_addresses.private[i].address);
       }
-      resultObj.privateAddrList = privateAddrs;
 
       let promiseArray = [];
-      for (let i = 0; i < resultObj.privateAddrList.length; i++) {
-        let getPrivateTxListPromise = getPrivateTxList(coin, resultObj.privateAddrList[i]);
+      for (let i = 0; i < privateAddrs.length; i++) {
+        let getPrivateTxListPromise = getPrivateTxList(coin, privateAddrs[i]);
         promiseArray.push(getPrivateTxListPromise);
       }
+
       promiseArray.push(resultObj);
       return Promise.all(promiseArray);
     })
+    .catch((error) => {
+      console.log(error);
+    })
     .then(returnList => {
-      let _privateTxLists = [];
-      let resultObj = returnList.pop();
-
-      for (let i = 0; i < returnList.length; i++) {
-        _privateTxLists.push(returnList[i]);
-      }
-
-      resultObj.privateTxLists = _privateTxLists;
-
       let promiseArray = [];
+      let resultObj = returnList.pop();
+      let _privateTxList = returnList[0] ? returnList[0] : [];
 
-      for (let n = 0; n < resultObj.privateTxLists.length; n++) {
-        for(let i = 0; i < resultObj.privateTxLists[n].txList.result.length; i++) {
-          let getTransactionInfo = getTransaction(coin, resultObj.privateTxLists[n].txList.result[i].txid);
-          promiseArray.push(getTransactionInfo);
-        }
+      let privateTxData = [resultObj];
+
+      if (_privateTxList.length > 0) {
+        _privateTxList.sort((a, b) => {
+          return (a.txid < b.txid) ? -1 : (a.txid > b.txid) ? 1 : 0;
+        });
       }
 
-      promiseArray.push(resultObj);
-      return Promise.all(promiseArray);
+      resultObj.privateTxList = _privateTxList;
+
+      return getTransactionGroups(coin, _privateTxList, privateTxData);
     })
     .then(returnList => {
-      let _txInfoList = [];
-      let resultObj = returnList.pop();
+      let resultObj = returnList.shift();
 
       for (let i = 0; i < returnList.length; i++) {
-        _txInfoList.push(returnList[i]);
+        let tx = returnList[i];
+        let pvtx = resultObj.privateTxList[i];
+        tx.amount = pvtx.amount;
+        tx.memo = pvtx.memo;
+        tx.address = pvtx.address;
+        tx.category = 'receive';
       }
-
-      resultObj.txInfoList = _txInfoList;
 
       let json = resultObj.mainJson;
+
       // dirty hack to trigger dashboard render
       if (!activeCoinProps ||
           (activeCoinProps && !activeCoinProps.balance && !activeCoinProps.addresses)) {
         setTimeout(() => {
-          dispatch(getDashboardUpdateState(json, coin, resultObj.privateTxLists, resultObj.txInfoList, false));
+          dispatch(getDashboardUpdateState(json, coin, returnList, false));
         }, 100);
       }
-      dispatch(getDashboardUpdateState(json, coin, resultObj.privateTxLists, resultObj.txInfoList, false));
+      dispatch(getDashboardUpdateState(json, coin, returnList, false));
     });
   }
 }
 
-export const getDashboardUpdateState = (json, coin, privateTxLists, txInfoList, fakeResponse) => {
+export const getTransactionGroups = (coin, array, results) => {
+  let txInputGroups = [{ coin: coin, group: array.slice(0, 100)}];
+  let numCounted = txInputGroups[0].group.length;
+
+  while (numCounted < array.length) {
+    txInputGroups.push({coin: coin, group: array.slice(numCounted, numCounted + 100)});
+    numCounted += txInputGroups[txInputGroups.length - 1].group.length;
+  }
+
+  return txInputGroups.reduce((p, a) => {
+    return p.then(chainResults => {
+      return getTransactions(a.coin, a.group).then( txGroup => {
+        return chainResults.concat(txGroup);
+      })
+    })},
+    Promise.resolve(results)
+  )
+}
+
+export const getTransactions = (coin, array) => {
+  let promiseArray = [];
+  for (let i = 0; i < array.length; i++)
+  {
+    promiseArray.push(getTransaction(coin, array[i].txid));
+  }
+  return Promise.all(promiseArray);
+}
+
+export const getDashboardUpdateState = (json, coin, privateTransactions, fakeResponse) => {
   // rescan or similar resource heavy process
   if (fakeResponse ||
       ((json.result.getinfo.error && json.result.getinfo.error === 'daemon is busy') &&
@@ -143,8 +172,6 @@ export const getDashboardUpdateState = (json, coin, privateTxLists, txInfoList, 
       _listtransactions = 'no data';
     }
 
-    let allTransactions = _listtransactions.slice();
-
     if (coin === 'CHIPS') {
       return {
         type: DASHBOARD_UPDATE,
@@ -161,65 +188,17 @@ export const getDashboardUpdateState = (json, coin, privateTxLists, txInfoList, 
         rescanInProgress: false,
       };
     } else {
+      let allTransactions = _listtransactions.concat(privateTransactions);
+
       // calc transparent balance properly
       const _addresses = json.result.addresses;
       let _tbalance = 0;
-
-      txInfoList.sort((a, b) => {
-        return (a.txid < b.txid) ? -1 : (a.txid > b.txid) ? 1 : 0;
-      });
 
       if (_addresses &&
           _addresses.public &&
           _addresses.public.length) {
         for (let i = 0; i < _addresses.public.length; i++) {
           _tbalance += _addresses.public[i].spendable;
-        }
-      }
-
-      for (let n = 0; n < privateTxLists.length; n++) {
-        let address = privateTxLists[n].address;
-        let result = privateTxLists[n].txList.result;
-        result.sort((a, b) => {
-          return (a.txid < b.txid) ? -1 : (a.txid > b.txid) ? 1 : 0;
-        });
-        for (let i = 0; i < result.length; i++) {
-          let blockhash, blockindex, blocktime, confirmations, expiryheight, fee, 
-              time, timereceived, vjoinsplit, walletconflicts = null;
-          let txid = privateTxLists[n].txList.result[i].txid;
-          let amount = privateTxLists[n].txList.result[i].amount;
-          let memo = privateTxLists[n].txList.result[i].memo;
-
-              blockhash = txInfoList[i].blockhash;
-              blockindex = txInfoList[i].blockindex;
-              blocktime = txInfoList[i].blocktime;
-              confirmations = txInfoList[i].confirmations;
-              expiryheight = txInfoList[i].expiryheight;
-              fee = txInfoList[i].fee;
-              time = txInfoList[i].time;
-              timereceived = txInfoList[i].timereceived;
-              vjoinsplit = txInfoList[i].vjoinsplit;
-              walletconflicts = txInfoList[i].walletconflicts;
-
-          let privateTx = {account: "", 
-                          address: address, 
-                          amount: amount, 
-                          blockhash: blockhash, 
-                          blockindex: blockindex, 
-                          blocktime: blocktime, 
-                          category: 'receive', 
-                          confirmations: confirmations, 
-                          expiryheight: expiryheight, 
-                          fee: fee,
-                          size: null, 
-                          time: time,
-                          timereceived: timereceived, 
-                          txid: txid, 
-                          vjoinsplit: vjoinsplit, 
-                          vout: null, 
-                          walletconflicts: walletconflicts, 
-                          memo: memo};
-          allTransactions.push(privateTx);
         }
       }
 
