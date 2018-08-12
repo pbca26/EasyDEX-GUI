@@ -4,6 +4,7 @@ import Store from '../../store';
 import fetchType from '../../util/fetchType';
 
 export const getTransaction = (coin, txid) => {
+
   return new Promise((resolve, reject) => {
     let payload = {
       mode: null,

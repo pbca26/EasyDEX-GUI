@@ -32,8 +32,13 @@ export const getPrivateTxList = (coin, addr) => {
     })
     .then(response => response.json())
     .then(json => {
-      var txListObj = {address: addr, txList: json};
-      resolve(txListObj);
+      let result = json.result ? json.result : json;
+      for (let i = 0; i < result.length; i++)
+      {
+        result[i].address = addr;
+      }
+
+      resolve(result);
     });
   });
 }
