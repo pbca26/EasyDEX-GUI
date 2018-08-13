@@ -157,6 +157,17 @@ class WalletsTxInfo extends React.Component {
     }
   }
 
+  decodeMemo(memoEncoded) {
+    var j;
+    var hexes = memoEncoded.match(/.{1,4}/g) || [];
+    var memoDecoded = "";
+    for(j = 0; j<hexes.length; j++) {
+        memoDecoded += String.fromCharCode(parseInt(hexes[j], 16));
+    }
+
+    return memoDecoded;
+  }
+
   render() {
     if (this.props &&
         this.props.ActiveCoin &&

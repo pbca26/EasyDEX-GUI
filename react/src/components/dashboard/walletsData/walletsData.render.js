@@ -33,12 +33,12 @@ export const TxConfsRender = function(confs) {
   }
 }
 
-export const AddressTypeRender = function() {
+export const AddressTypeRender = function(tx) {
   return (
     <span>
-      <span className="label label-default">
-        <i className="icon fa-eye"></i>&nbsp;
-        { translate('IAPI.PUBLIC_SM') }
+      <span className={!tx.memo ? "label label-default" : "label label-dark"}>
+        <i className={ 'icon fa-eye' + (!tx.memo ? '' : '-slash')}></i>&nbsp;
+        { !tx.memo ? translate('IAPI.PUBLIC_SM') : translate('IAPI.PRIVATE_SM') }
       </span>
     </span>
   );
@@ -186,7 +186,7 @@ export const TxAmountRender = function(tx) {
     return (
       <span>
         <span data-tip={ tx.amount * _amountNegative }>
-          { Math.abs(tx.interest) !== Math.abs(tx.amount) ? (formatValue(tx.amount) * _amountNegative || translate('DASHBOARD.UNKNOWN')) : '' }
+          { Math.abs(tx.interest) !== Math.abs(tx.amount) ? (formatValue(tx.amount) * _amountNegative === null ? translate('DASHBOARD.UNKNOWN') : tx.amount * _amountNegative) : '' }
           { tx.interest &&
             <span
               className="tx-interest"
@@ -218,7 +218,7 @@ export const TxAmountRender = function(tx) {
 
   return (
     <span>
-      { Math.abs(tx.interest) !== Math.abs(tx.amount) ? (tx.amount * _amountNegative || translate('DASHBOARD.UNKNOWN')) : '' }
+      { Math.abs(tx.interest) !== Math.abs(tx.amount) ? (tx.amount * _amountNegative === null ? translate('DASHBOARD.UNKNOWN') : tx.amount * _amountNegative) : '' }
       { tx.interest &&
         <span
           className="tx-interest"

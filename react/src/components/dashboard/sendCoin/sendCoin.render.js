@@ -90,7 +90,7 @@ export const AddressListRender = function() {
                 style={{ display: this.state.sendFrom === null ? 'inline-block' : 'none' }}></span>
             </a>
           </li>
-          { this.state.privateAddrList ? this.renderAddressByType('private') : this.renderAddressByType('public') }
+          { this.state.shieldCoinbase ? null : (this.state.privateAddrList ? this.renderAddressByType('private') : this.renderAddressByType('public')) }
         </ul>
       </div>
     </div>
@@ -137,7 +137,7 @@ export const _SendFormRender = function() {
             required />
         </div>
         <div className={ this.state.shieldCoinbase ? 'hide' : "col-lg-12 form-group form-material" }>
-          { this.props.ActiveCoin.mode === 'spv' &&
+          { 
               <button
                 type="button"
                 className="btn btn-default btn-send-self"
@@ -160,7 +160,7 @@ export const _SendFormRender = function() {
               placeholder="0.000"
               autoComplete="off" />
           </div>
-          { this.props.ActiveCoin.coin === 'VRSC' && this.state.sendTo.length === 95 &&
+          { this.props.ActiveCoin.coin === 'VRSC' && this.state.sendTo.length === 95 && !this.state.shieldCoinbase &&
             <div className="col-lg-12 form-group form-material">
               <label
                 className="control-label"
@@ -179,7 +179,7 @@ export const _SendFormRender = function() {
             </div>
             }
           <div className={ 'col-lg-6 form-group form-material' + (this.isTransparentTx() && this.props.ActiveCoin.mode === 'native' ? '' : ' hide') }>
-            { this.state.sendTo.length <= 34 &&
+            { this.state.sendTo.length <= 34 && !this.state.shieldCoinbase && this.props.ActiveCoin.coin !== 'VRSC' &&
               <span className="pointer">
                 <label className="switch">
                   <input

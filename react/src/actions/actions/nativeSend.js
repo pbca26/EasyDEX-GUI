@@ -21,18 +21,18 @@ export const sendNativeTx = (coin, _payload) => {
     _apiMethod = 'z_sendmany';
   }
 
-if(_payload.memo){
-  var hex;
-  var i;
+  if(_payload.memo){
+    var hex;
+    var i;
 
-  var result = "";
-  for (i=0; i<_payload.memo.length; i++) {
-      hex = _payload.memo.charCodeAt(i).toString(16);
-      result += ("000"+hex).slice(-4);
+    var result = "";
+    for (i=0; i<_payload.memo.length; i++) {
+        hex = _payload.memo.charCodeAt(i).toString(16);
+        result += ("000"+hex).slice(-4);
+    }
+
+    memoHex = result;
   }
-
-  memoHex = result;
-}
 
   return dispatch => {
     payload = {

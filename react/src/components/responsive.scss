@@ -3,13 +3,18 @@
     .flex {
       display: flex;
       flex-wrap: wrap;
+      justify-content: space-between;
     }
     > div {
       display: flex;
-
-      .widget,
+      flex: 1;
+      
+      .widget {
+        flex: 1;
+      }
       .widget-content {
         height: 100%;
+        width: 100%;
 
         > div,
         .clearfix {
@@ -283,5 +288,27 @@
         width: 100%;
       }
     }
+  }
+}
+
+@media screen {
+  .min-width-200 {
+    min-width: 200px;
+  }
+  .min-width-150l {
+    min-width: 150px;
+    text-align: left;
+  }
+  .min-width-160l {
+    min-width: 160px;
+    text-align: left;
+  }
+  .min-width-150r {
+    min-width: 150px;
+    text-align: right;
+  }
+  .min-width-160r {
+    min-width: 160px;
+    text-align: right;
   }
 }

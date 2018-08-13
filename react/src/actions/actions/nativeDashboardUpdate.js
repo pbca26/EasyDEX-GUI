@@ -1,7 +1,12 @@
-import { triggerToaster } from '../actionCreators';
+import { 
+  triggerToaster,
+  getPrivateTxList,
+  getTransaction
+ } from '../actionCreators';
 import Config from '../../config';
 import { DASHBOARD_UPDATE } from '../storeType';
 import fetchType from '../../util/fetchType';
+import { resolve } from 'path';
 
 export const getDashboardUpdate = (coin, activeCoinProps) => {
   return dispatch => {
@@ -39,20 +44,98 @@ export const getDashboardUpdate = (coin, activeCoinProps) => {
     })
     .then(response => response.json())
     .then(json => {
-      dispatch(getDashboardUpdateState(json, coin));
+      let resultObj = {mainJson: json, privateTxList: [], txInfoList: null};
+
+      const _addresses = resultObj.mainJson.result.addresses;
+      let privateAddrs = [];
+      for (let i = 0; i < _addresses.private.length; i++) {
+        privateAddrs.push(_addresses.private[i].address);
+      }
+
+      let promiseArray = [];
+      for (let i = 0; i < privateAddrs.length; i++) {
+        let getPrivateTxListPromise = getPrivateTxList(coin, privateAddrs[i]);
+        promiseArray.push(getPrivateTxListPromise);
+      }
+
+      promiseArray.push(resultObj);
+      return Promise.all(promiseArray);
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+    .then(returnList => {
+      let promiseArray = [];
+      let resultObj = returnList.pop();
+      let _privateTxList = returnList[0] ? returnList[0] : [];
+
+      let privateTxData = [resultObj];
+
+      if (_privateTxList.length > 0) {
+        _privateTxList.sort((a, b) => {
+          return (a.txid < b.txid) ? -1 : (a.txid > b.txid) ? 1 : 0;
+        });
+      }
+
+      resultObj.privateTxList = _privateTxList;
+
+      return getTransactionGroups(coin, _privateTxList, privateTxData);
+    })
+    .then(returnList => {
+      let resultObj = returnList.shift();
+
+      for (let i = 0; i < returnList.length; i++) {
+        let tx = returnList[i];
+        let pvtx = resultObj.privateTxList[i];
+        tx.amount = pvtx.amount;
+        tx.memo = pvtx.memo;
+        tx.address = pvtx.address;
+        tx.category = 'receive';
+      }
+
+      let json = resultObj.mainJson;
 
       // dirty hack to trigger dashboard render
       if (!activeCoinProps ||
           (activeCoinProps && !activeCoinProps.balance && !activeCoinProps.addresses)) {
         setTimeout(() => {
-          dispatch(getDashboardUpdateState(json, coin));
+          dispatch(getDashboardUpdateState(json, coin, returnList, false));
         }, 100);
       }
+      dispatch(getDashboardUpdateState(json, coin, returnList, false));
     });
   }
 }
 
-export const getDashboardUpdateState = (json, coin, fakeResponse) => {
+export const getTransactionGroups = (coin, array, results) => {
+  let txInputGroups = [{ coin: coin, group: array.slice(0, 100)}];
+  let numCounted = txInputGroups[0].group.length;
+
+  while (numCounted < array.length) {
+    txInputGroups.push({coin: coin, group: array.slice(numCounted, numCounted + 100)});
+    numCounted += txInputGroups[txInputGroups.length - 1].group.length;
+  }
+
+  return txInputGroups.reduce((p, a) => {
+    return p.then(chainResults => {
+      return getTransactions(a.coin, a.group).then( txGroup => {
+        return chainResults.concat(txGroup);
+      })
+    })},
+    Promise.resolve(results)
+  )
+}
+
+export const getTransactions = (coin, array) => {
+  let promiseArray = [];
+  for (let i = 0; i < array.length; i++)
+  {
+    promiseArray.push(getTransaction(coin, array[i].txid));
+  }
+  return Promise.all(promiseArray);
+}
+
+export const getDashboardUpdateState = (json, coin, privateTransactions, fakeResponse) => {
   // rescan or similar resource heavy process
   if (fakeResponse ||
       ((json.result.getinfo.error && json.result.getinfo.error === 'daemon is busy') &&
@@ -105,6 +188,8 @@ export const getDashboardUpdateState = (json, coin, fakeResponse) => {
         rescanInProgress: false,
       };
     } else {
+      let allTransactions = _listtransactions.concat(privateTransactions);
+
       // calc transparent balance properly
       const _addresses = json.result.addresses;
       let _tbalance = 0;
@@ -125,7 +210,7 @@ export const getDashboardUpdateState = (json, coin, fakeResponse) => {
         type: DASHBOARD_UPDATE,
         progress: json.result.getinfo.result,
         opids: json.result.z_getoperationstatus.result,
-        txhistory: _listtransactions,
+        txhistory: allTransactions,
         balance: json.result.z_gettotalbalance.result,
         addresses: json.result.addresses,
         coin: coin,
