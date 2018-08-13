@@ -457,7 +457,14 @@ class WalletsData extends React.Component {
   }
 
   toggleTxInfoModal(display, txIndex) {
-    Store.dispatch(toggleDashboardTxInfoModal(display, txIndex));
+    if (this.state.searchTerm) {
+      let transaction = this.state.filteredItemsList[txIndex];
+      txIndex = this.state.itemsList.findIndex(k => k === transaction);
+      Store.dispatch(toggleDashboardTxInfoModal(display, txIndex));
+    }
+    else {
+      Store.dispatch(toggleDashboardTxInfoModal(display, txIndex));
+    }
   }
 
   toggleMiningButton() {
