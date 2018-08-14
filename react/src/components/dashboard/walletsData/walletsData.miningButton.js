@@ -170,6 +170,7 @@ class MiningButton extends React.Component {
   }
 
   render() {
+    if (this.props.ActiveCoin.coin === 'VRSC'){
     return (
       <div className="row">
         <div className="col-sm-5">
@@ -241,6 +242,10 @@ class MiningButton extends React.Component {
         </div>
       </div>
     );
+  }
+  else {
+    return (<div></div>);
+  }
   };
 }
 
