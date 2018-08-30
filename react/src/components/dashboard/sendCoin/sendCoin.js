@@ -153,13 +153,19 @@ class SendCoin extends React.Component {
 
     if (this.props.ActiveCoin.mode === 'native') {
       if (this.state.sendFrom){
+        let _sendFromAmount = Number(this.state.sendFromAmount);
+        let _sendFromAmountSats = _sendFromAmount * 100000000;
+        let _sendToAmount = (_sendFromAmountSats - 10000)/100000000;
         this.setState({
-          amount: Number(this.state.sendFromAmount) - 0.0001,
+          amount: _sendToAmount,
         });
       }
       else if (!this.state.sendFrom && !this.state.privateAddrList){
+        let _sendFromAmount = Number(this.props.ActiveCoin.balance.transparent);
+        let _sendFromAmountSats = _sendFromAmount * 100000000;
+        let _sendToAmount = (_sendFromAmountSats - 10000)/100000000;
         this.setState({
-          amount: Number(this.props.ActiveCoin.balance.transparent) - 0.0001,
+          amount: _sendToAmount,
         });
       }
       else {
