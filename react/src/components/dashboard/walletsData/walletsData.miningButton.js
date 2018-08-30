@@ -1,7 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import translate from '../../../translate/translate';
-import { shepherdCli } from '../../../actions/actionCreators';
+import { 
+  getMiningInfo,
+  setGenerate
+} from '../../../actions/actionCreators';
 import Store from '../../../store';
 import ReactTooltip from 'react-tooltip';
 
@@ -13,112 +16,57 @@ class MiningButton extends React.Component {
       cliResponse: null,
       isMining: false,
       localHps: 0,
-      loading: true,
       numThreadsCli: null,
-      isNew: true,
+      loading: false,
+      firstTime: true
     };
   }
 
   componentDidMount() {
-    this.loopUpdateMiningInfoCli();
-    this.intervalUpdate = setInterval(() => this.loopUpdateMiningInfoCli(), 15000);
+    this.updateMiningStatus();
+    this.intervalUpdate = setInterval(() => this.updateMiningStatus(), 15000);
   }
 
   componentWillUnmount() {
     clearInterval(this.intervalUpdate);
-    clearInterval(this.intervalDelay);
   }
 
-   // TODO: rerender only if prop is changed
+  // TODO: rerender only if prop is changed
   updateMiningStatus() {
-    const _cliResponse = this.props.Settings.cli;
-    let _items = [];
-
-    if (_cliResponse) {
-      let _cliResponseParsed;
-      let responseType;
-
-      try {
-        _cliResponseParsed = JSON.parse(_cliResponse.result);
-      } catch(e) {
-        _cliResponseParsed = _cliResponse.result;
-      }
-
-      if (Object.prototype.toString.call(_cliResponseParsed) === '[object]' ||
-          typeof _cliResponseParsed === 'object') {
-        responseType = 'object';
-        if((_cliResponseParsed.generate !== null) && (_cliResponseParsed.localhashps !== null)){
-          this.updateMining(_cliResponseParsed);
-        }
-      }
-
-      if (responseType !== 'number' &&
-          responseType !== 'array' &&
-          responseType !== 'object' &&
-          _cliResponseParsed.indexOf('\n') > -1) {
-        _cliResponseParsed = _cliResponseParsed.split('\n');
-        this.startLoading();
-      }
-  }
-      
-}
-
-  loopUpdateMiningInfoCli(){
-    let i = 100;
-    this.updateMiningInfoCli(i);
-    this.intervalDelay = setInterval(() => this.tickInfoDelay(i, this.intervalDelay), 1000);
-  }
-
-  tickInfoDelay(_i, interval){
-    if (this.state.loading && _i !== 500) 
-      {
-        _i += 50;
-        this.updateMiningInfoCli(_i);
-        return;
-      }
-    clearInterval(interval);
-    _i = 100;
-  }
-
-  updateMiningInfoCli(_timeout){
-    setTimeout(() => this.getMiningInfo(), _timeout);
-    setTimeout(() => this.updateMiningStatus(), (_timeout*2));
-  }
-
-  execCliCmd(_command) {
-    Store.dispatch(
-      shepherdCli(
-        'passthru',
-        this.props.ActiveCoin.coin,
-        _command
-      )
-    );
+    getMiningInfo(this.props.ActiveCoin.coin)
+    .then(json => {
+      this.updateMining(json);
+    });
   }
 
   updateMining(_cliResponse){
     this.setState({
       isMining: _cliResponse.generate,
-    });
-    this.setState({
-      localHps: _cliResponse.localhashps,
-    });
-    this.setState({
       numThreadsCli: _cliResponse.genproclimit,
+      localHps: _cliResponse.localhashps,
+    }, () => {
+      this.updateNumThreadsGUI(this.state.numThreadsCli);
     });
-    this.finishLoading();
   }
 
   startMining(_numThreads) {
-    this.startLoading();
-    this.execCliCmd('setgenerate true ' + _numThreads);
-    this.loopUpdateMiningInfoCli();
+    setGenerate(this.props.ActiveCoin.coin, true, Number(_numThreads))
+    .then(result => {
+      return getMiningInfo(this.props.ActiveCoin.coin);
+    })
+    .then(json => {
+      this.updateMining(json);
+    });
   }
 
-
   stopMining() {
-    this.startLoading();
-    this.execCliCmd('setgenerate false');
-    this.loopUpdateMiningInfoCli();
+    setGenerate(this.props.ActiveCoin.coin, false, 0)
+    .then(() => {
+      return getMiningInfo(this.props.ActiveCoin.coin);
+    })
+    .then(json => {
+      this.updateMining(json);
+    });
   }
 
   updateInput = (e) => {
@@ -127,46 +75,11 @@ class MiningButton extends React.Component {
     });
   }
 
-  updateCliResponse(_response) {
-      this.setState({
-        cliResponse: _response,
-      });
-  }
-
-  finishLoading() {
-    if(this.state.loading){
-      this.setState({
-        loading: false,
-      });
-    }
-    if(this.state.isNew) {
-      this.updateNumThreadsGUI(this.state.numThreadsCli);
-    }
-    this.updateIsNew();
-  }
-
-  startLoading() {
-    if(!this.state.loading){
-      this.setState({
-        loading: true,
-      });
-    }
-  }
-
   updateNumThreadsGUI(_numThreads){
     this.setState({
       numThreadsGUI: _numThreads,
+      firstTime: false
     });
-  }
-
-  updateIsNew(){
-    this.setState({
-      isNew: false,
-    });
-  }
-
-  getMiningInfo(){
-    this.execCliCmd('getmininginfo');
   }
 
   render() {
@@ -189,7 +102,6 @@ class MiningButton extends React.Component {
                       : 
                   Number(this.props.ActiveCoin.balance.transparent) === 0 ? translate('INDEX.MINING') :
                     translate('INDEX.MINING_AND_STAKING'))
-                        
             }
           </div>
           <div>
@@ -232,13 +144,6 @@ class MiningButton extends React.Component {
             </div>
             </div>
         </div>
-          
-          
-          <div className="col-sm-12 col-xs-12 text-align-left">
-            <div className="padding-top-40 padding-bottom-20 horizontal-padding-0">
-
-            </div>
-          </div>
         </div>
       </div>
     );

@@ -190,6 +190,7 @@ export const LANG_EN = {
     'NONE': 'none',
     'DAEMON_PARAM': 'Daemon param',
     'FILTER_BY_ADDRESS': 'Filter by address',
+    'FILTER_BY_ADDRESS_TYPE': 'Filter by address type',
     'RESCANNING_LAST_BLOCKS': 'Rescanning last blocks...',
     'NO_DATA_AVAILABLE': 'No data available',
     'LOADING': 'Loading',
@@ -433,6 +434,19 @@ export const LANG_EN = {
     'UPDATE': 'Update',
     'SELECT_THREADS': '(Add threads to mine)',
     'MESSAGE': 'Message',
+  },
+  'FILTER': {
+    'PRIVATE': 'Private',
+    'PUBLIC': 'Public',
+    'IMMATURE': 'Immature',
+    'MATURE': 'Mature',
+    'MINED': 'Mined',
+    'FILTER_BY': 'View exclusively:',
+    'SENT': 'Sent',
+    'RECEIVED': 'Received',
+    'FILTER_OPTIONS': 'Filter',
+    'FILTER_DESC_CONTRACT': 'Contract filter options',
+    'FILTER_DESC_EXPAND': 'Expand filter options'
   },
   'ATOMIC': {
     'RAW_OUTPUT': 'Raw Output',

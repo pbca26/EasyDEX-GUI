@@ -65,9 +65,11 @@ export const getDashboardUpdate = (coin, activeCoinProps) => {
       console.log(error);
     })
     .then(returnList => {
-      let promiseArray = [];
       let resultObj = returnList.pop();
-      let _privateTxList = returnList[0] ? returnList[0] : [];
+      let _privateTxList = [];
+      for (let i = 0; i < returnList.length; i++) {
+        _privateTxList = _privateTxList.concat(returnList[i]);
+      }
 
       let privateTxData = [resultObj];
 
