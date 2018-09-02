@@ -928,20 +928,18 @@ class WalletsData extends React.Component {
           return false;
         }
       }
-      else {
-        if (!term)
-        {
-          return true;
-        }
-        else if (
+      if (!term)
+      {
+        return true;
+      }
+      else if (
         (this.contains(tx.address, term) ||
         this.contains(tx.confirmations, term) ||
         this.contains(tx.amount, term) ||
         this.contains(tx.type, term) ||
         this.contains(secondsToString(tx.blocktime || tx.timestamp || tx.time), term))) 
-        {
-          return true;
-        }
+      {
+        return true;
       }
 
 
