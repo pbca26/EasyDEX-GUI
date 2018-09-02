@@ -137,7 +137,7 @@ export const getDashboardUpdate = (coin, activeCoinProps) => {
             let _ibalance = resultObj.walletInfo.immature_balance;
       
             json.result.z_gettotalbalance.result.transparent = _tbalance.toFixed(8);
-            json.result.z_gettotalbalance.result.total = Number(json.result.z_gettotalbalance.result.transparent) + Number(json.result.z_gettotalbalance.result.interest) + Number(json.result.z_gettotalbalance.result.private);
+            json.result.z_gettotalbalance.result.total = Number(json.result.z_gettotalbalance.result.transparent) + Number(json.result.z_gettotalbalance.result.interest) + Number(json.result.z_gettotalbalance.result.private) + Number(_ibalance);
             json.result.z_gettotalbalance.result.total = json.result.z_gettotalbalance.result.total.toFixed(8);
             json.result.z_gettotalbalance.result.immature = _ibalance.toFixed(8);
             
@@ -157,11 +157,11 @@ export const getDashboardUpdate = (coin, activeCoinProps) => {
 }
 
 export const getTransactionGroups = (coin, array, results) => {
-  let txInputGroups = [{ coin: coin, group: array.slice(0, 16)}];
+  let txInputGroups = [{ coin: coin, group: array.slice(0, 100)}];
   let numCounted = txInputGroups[0].group.length;
 
   while (numCounted < array.length) {
-    txInputGroups.push({coin: coin, group: array.slice(numCounted, numCounted + 16)});
+    txInputGroups.push({coin: coin, group: array.slice(numCounted, numCounted + 100)});
     numCounted += txInputGroups[txInputGroups.length - 1].group.length;
   }
 

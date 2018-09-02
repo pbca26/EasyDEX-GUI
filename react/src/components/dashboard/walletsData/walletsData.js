@@ -897,7 +897,58 @@ class WalletsData extends React.Component {
   }
 
   filterTransaction(tx, term) {
-    if (
+
+      if (!this.state.filterPrivateTx){
+        if (this.isPrivate(tx)){
+          return false;
+        }
+      }
+      if (!this.state.filterPublicTx){
+        if (this.isPublic(tx)){
+          return false;
+        }
+      }
+      if (!this.state.filterImmatureTx){
+        if (this.isImmature(tx)){
+          return false;
+        }
+      }
+      if (!this.state.filterMatureTx){
+        if (this.isMature(tx)){
+          return false;
+        }
+      }
+      if (!this.state.filterSentTx){
+        if (this.isSent(tx)){
+          return false;
+        }
+      }
+      if (!this.state.filterReceivedTx){
+        if (this.isReceived(tx)){
+          return false;
+        }
+      }
+      else {
+        if (!term)
+        {
+          return true;
+        }
+        else if (
+        (this.contains(tx.address, term) ||
+        this.contains(tx.confirmations, term) ||
+        this.contains(tx.amount, term) ||
+        this.contains(tx.type, term) ||
+        this.contains(secondsToString(tx.blocktime || tx.timestamp || tx.time), term))) 
+        {
+          return true;
+        }
+      }
+
+
+
+
+      
+   /* if (
       (this.state.filterPrivateTx ? this.isPrivate(tx) : false) || 
       (this.state.filterPublicTx ? this.isPublic(tx) : false) || 
       (this.state.filterImmatureTx ? this.isImmature(tx) : false) || 
@@ -925,15 +976,22 @@ class WalletsData extends React.Component {
     else {
       return false;
     }
+    */
   }
 
   isPrivate(tx){
-    if(tx.memo){
-      return true;
+    if(tx.address) {
+      if(tx.memo || tx.address.length === 95){
+        return true;
+      }
+    }
+    else if (!tx.address) {
+      return true
     }
     else {
       return false;
     }
+
   }
 
   isPublic(tx){
