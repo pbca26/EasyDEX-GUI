@@ -50,6 +50,7 @@ export * from './actions/interest';
 export * from './actions/nativeDashboardUpdate';
 export * from './actions/getTxDetails';
 export * from './actions/getPrivateTxList';
+export * from './actions/getWalletInfo';
 export * from './actions/getTransaction';
 export * from './actions/getMiningInfo';
 export * from './actions/setGenerate';
