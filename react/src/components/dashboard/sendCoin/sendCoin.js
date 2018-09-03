@@ -540,6 +540,7 @@ class SendCoin extends React.Component {
     if(this.state.shieldCoinbase){
       this.setState({
         sendFrom: null,
+        amount: 0,
       });
     }
   }
