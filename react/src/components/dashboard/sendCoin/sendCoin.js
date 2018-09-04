@@ -536,13 +536,14 @@ class SendCoin extends React.Component {
   toggleShieldCoinbase() {
     this.setState({
       shieldCoinbase: !this.state.shieldCoinbase,
+    }, () => {
+      if(this.state.shieldCoinbase){
+        this.setState({
+          sendFrom: null,
+          amount: 0,
+        });
+      }
     });
-    if(this.state.shieldCoinbase){
-      this.setState({
-        sendFrom: null,
-        amount: 0,
-      });
-    }
   }
 
   updateAddressSelection(address, type, amount) {
