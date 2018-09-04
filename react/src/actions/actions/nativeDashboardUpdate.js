@@ -1,7 +1,8 @@
 import { 
   triggerToaster,
   getPrivateTxList,
-  getTransaction
+  getTransaction,
+  getWalletInfo
  } from '../actionCreators';
 import Config from '../../config';
 import { DASHBOARD_UPDATE } from '../storeType';
@@ -58,6 +59,9 @@ export const getDashboardUpdate = (coin, activeCoinProps) => {
         promiseArray.push(getPrivateTxListPromise);
       }
 
+      let getWalletInfoPromise = getWalletInfo(coin);
+
+      promiseArray.push(getWalletInfoPromise);
       promiseArray.push(resultObj);
       return Promise.all(promiseArray);
     })
@@ -65,9 +69,13 @@ export const getDashboardUpdate = (coin, activeCoinProps) => {
       console.log(error);
     })
     .then(returnList => {
-      let promiseArray = [];
       let resultObj = returnList.pop();
-      let _privateTxList = returnList[0] ? returnList[0] : [];
+      resultObj.walletInfo = returnList.pop();
+
+      let _privateTxList = [];
+      for (let i = 0; i < returnList.length; i++) {
+        _privateTxList = _privateTxList.concat(returnList[i]);
+      }
 
       let privateTxData = [resultObj];
 
@@ -95,14 +103,55 @@ export const getDashboardUpdate = (coin, activeCoinProps) => {
 
       let json = resultObj.mainJson;
 
-      // dirty hack to trigger dashboard render
-      if (!activeCoinProps ||
-          (activeCoinProps && !activeCoinProps.balance && !activeCoinProps.addresses)) {
-        setTimeout(() => {
-          dispatch(getDashboardUpdateState(json, coin, returnList, false));
-        }, 100);
-      }
-      dispatch(getDashboardUpdateState(json, coin, returnList, false));
+      if ((json.result.getinfo.error && json.result.getinfo.error === 'daemon is busy') &&
+        (json.result.z_getoperationstatus.error && json.result.z_getoperationstatus.error === 'daemon is busy') &&
+        (json.result.listtransactions.error && json.result.listtransactions.error === 'daemon is busy') &&
+        (json.result.listtransactions.error && json.result.listtransactions.error === 'daemon is busy')) {
+          dispatch(getDashboardUpdateState('error', false, coin, json, null, null));
+        } else {
+          let _listtransactions = json.result.listtransactions;
+      
+          if (_listtransactions &&
+              _listtransactions.error) {
+            _listtransactions = null;
+          } else if (
+            _listtransactions &&
+            _listtransactions.result &&
+            _listtransactions.result.length
+          ) {
+            _listtransactions = _listtransactions.result;
+          } else if (
+            !_listtransactions ||
+            (!_listtransactions.result || !_listtransactions.result.length)
+          ) {
+            _listtransactions = 'no data';
+          }
+      
+          if (coin === 'CHIPS') {
+            dispatch(getDashboardUpdateState('chips', false, coin, json, _listtransactions, null));
+          } else {
+            let allTransactions = _listtransactions.concat(returnList);
+      
+            // calc transparent balance properly
+            let _tbalance = resultObj.walletInfo.balance;
+            let _ibalance = resultObj.walletInfo.immature_balance;
+      
+            json.result.z_gettotalbalance.result.transparent = _tbalance.toFixed(8);
+            json.result.z_gettotalbalance.result.total = Number(json.result.z_gettotalbalance.result.transparent) + Number(json.result.z_gettotalbalance.result.interest) + Number(json.result.z_gettotalbalance.result.private) + Number(_ibalance);
+            json.result.z_gettotalbalance.result.total = json.result.z_gettotalbalance.result.total.toFixed(8);
+            json.result.z_gettotalbalance.result.immature = _ibalance.toFixed(8);
+            
+            // dirty hack to trigger dashboard render
+            if (!activeCoinProps ||
+                (activeCoinProps && !activeCoinProps.balance && !activeCoinProps.addresses)) {
+                setTimeout(() => {
+                  dispatch(getDashboardUpdateState('standard', false, coin, json, _listtransactions, allTransactions));
+                }, 100);
+              }
+              dispatch(getDashboardUpdateState('standard', false, coin, json, _listtransactions, allTransactions));
+          }
+        }
+
     });
   }
 }
@@ -135,13 +184,9 @@ export const getTransactions = (coin, array) => {
   return Promise.all(promiseArray);
 }
 
-export const getDashboardUpdateState = (json, coin, privateTransactions, fakeResponse) => {
-  // rescan or similar resource heavy process
-  if (fakeResponse ||
-      ((json.result.getinfo.error && json.result.getinfo.error === 'daemon is busy') &&
-      (json.result.z_getoperationstatus.error && json.result.z_getoperationstatus.error === 'daemon is busy') &&
-      (json.result.listtransactions.error && json.result.listtransactions.error === 'daemon is busy') &&
-      (json.result.listtransactions.error && json.result.listtransactions.error === 'daemon is busy'))) {
+export const getDashboardUpdateState = (type, fakeResponse, coin, json, _listtransactions, allTransactions) => {
+  
+  if (fakeResponse || type === 'error') {
     return {
       type: DASHBOARD_UPDATE,
       progress: null,
@@ -153,70 +198,36 @@ export const getDashboardUpdateState = (json, coin, privateTransactions, fakeRes
       getinfoFetchFailures: 0,
       rescanInProgress: true,
     };
-  } else {
-    let _listtransactions = json.result.listtransactions;
+  }
 
-    if (_listtransactions &&
-        _listtransactions.error) {
-      _listtransactions = null;
-    } else if (
-      _listtransactions &&
-      _listtransactions.result &&
-      _listtransactions.result.length
-    ) {
-      _listtransactions = _listtransactions.result;
-    } else if (
-      !_listtransactions ||
-      (!_listtransactions.result || !_listtransactions.result.length)
-    ) {
-      _listtransactions = 'no data';
-    }
+  else if (type === 'chips') {
+    return {
+      type: DASHBOARD_UPDATE,
+      progress: json.result.getinfo.result,
+      opids: null,
+      txhistory: _listtransactions,
+      balance: {
+        transparent: json.result.getbalance.result,
+        total: json.result.getbalance.result,
+      },
+      addresses: json.result.addresses,
+      coin: coin,
+      getinfoFetchFailures: 0,
+      rescanInProgress: false,
+    };
+  }
 
-    if (coin === 'CHIPS') {
-      return {
-        type: DASHBOARD_UPDATE,
-        progress: json.result.getinfo.result,
-        opids: null,
-        txhistory: _listtransactions,
-        balance: {
-          transparent: json.result.getbalance.result,
-          total: json.result.getbalance.result,
-        },
-        addresses: json.result.addresses,
-        coin: coin,
-        getinfoFetchFailures: 0,
-        rescanInProgress: false,
-      };
-    } else {
-      let allTransactions = _listtransactions.concat(privateTransactions);
-
-      // calc transparent balance properly
-      const _addresses = json.result.addresses;
-      let _tbalance = 0;
-
-      if (_addresses &&
-          _addresses.public &&
-          _addresses.public.length) {
-        for (let i = 0; i < _addresses.public.length; i++) {
-          _tbalance += _addresses.public[i].spendable;
-        }
-      }
-
-      json.result.z_gettotalbalance.result.transparent = _tbalance.toFixed(8);
-      json.result.z_gettotalbalance.result.total = Number(json.result.z_gettotalbalance.result.transparent) + Number(json.result.z_gettotalbalance.result.interest) + Number(json.result.z_gettotalbalance.result.private);
-      json.result.z_gettotalbalance.result.total = json.result.z_gettotalbalance.result.total.toFixed(8);
-
-      return {
-        type: DASHBOARD_UPDATE,
-        progress: json.result.getinfo.result,
-        opids: json.result.z_getoperationstatus.result,
-        txhistory: allTransactions,
-        balance: json.result.z_gettotalbalance.result,
-        addresses: json.result.addresses,
-        coin: coin,
-        getinfoFetchFailures: 0,
-        rescanInProgress: false,
-      };
-    }
+  else if (type === 'standard') {
+    return {
+      type: DASHBOARD_UPDATE,
+      progress: json.result.getinfo.result,
+      opids: json.result.z_getoperationstatus.result,
+      txhistory: allTransactions,
+      balance: json.result.z_gettotalbalance.result,
+      addresses: json.result.addresses,
+      coin: coin,
+      getinfoFetchFailures: 0,
+      rescanInProgress: false,
+    };
   }
 }

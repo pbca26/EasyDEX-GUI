@@ -153,13 +153,19 @@ class SendCoin extends React.Component {
 
     if (this.props.ActiveCoin.mode === 'native') {
       if (this.state.sendFrom){
+        let _sendFromAmount = Number(this.state.sendFromAmount);
+        let _sendFromAmountSats = _sendFromAmount * 100000000;
+        let _sendToAmount = (_sendFromAmountSats - 10000)/100000000;
         this.setState({
-          amount: Number(this.state.sendFromAmount) - 0.0001,
+          amount: _sendToAmount,
         });
       }
       else if (!this.state.sendFrom && !this.state.privateAddrList){
+        let _sendFromAmount = Number(this.props.ActiveCoin.balance.transparent);
+        let _sendFromAmountSats = _sendFromAmount * 100000000;
+        let _sendToAmount = (_sendFromAmountSats - 10000)/100000000;
         this.setState({
-          amount: Number(this.props.ActiveCoin.balance.transparent) - 0.0001,
+          amount: _sendToAmount,
         });
       }
       else {
@@ -534,6 +540,7 @@ class SendCoin extends React.Component {
     if(this.state.shieldCoinbase){
       this.setState({
         sendFrom: null,
+        amount: 0,
       });
     }
   }
@@ -925,7 +932,7 @@ class SendCoin extends React.Component {
             }
           }
           else if (this.state.sendTo) {
-            if (Number(Number(this.state.amount) + (this.state.subtractFee ? 0 : 0.0001)) > (Number(this.props.ActiveCoin.balance.total) - Number(this.props.ActiveCoin.balance.transparent))){
+            if (Number(Number(this.state.amount) + (this.state.subtractFee ? 0 : 0.0001)) > (Number(this.props.ActiveCoin.balance.total) - Number(this.props.ActiveCoin.balance.transparent) - (this.props.ActiveCoin.balance.immature ? Number(this.props.ActiveCoin.balance.immature) : 0))){
               Store.dispatch(
                 triggerToaster(
                   `${translate('SEND.INSUFFICIENT_FUNDS')} ${translate('SEND.MAX_AVAIL_BALANCE_IN_ADDR')} ${Number(this.state.sendFromAmount)} ${this.props.ActiveCoin.coin}`,

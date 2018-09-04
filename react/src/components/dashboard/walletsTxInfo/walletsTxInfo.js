@@ -4,6 +4,7 @@ import translate from '../../../translate/translate';
 import {
   toggleDashboardTxInfoModal,
   getTxDetails,
+  getBlock
 } from '../../../actions/actionCreators';
 import Store from '../../../store';
 import WalletsTxInfoRender from './walletsTxInfo.render';
@@ -19,6 +20,7 @@ class WalletsTxInfo extends React.Component {
       activeTab: 0,
       txDetails: null,
       rawTxDetails: null,
+      blockType: null,
     };
     this.toggleTxInfoModal = this.toggleTxInfoModal.bind(this);
     this.loadTxDetails = this.loadTxDetails.bind(this);
@@ -56,6 +58,7 @@ class WalletsTxInfo extends React.Component {
             this.props.ActiveCoin.showTransactionInfoTxIndex !== nextProps.ActiveCoin.showTransactionInfoTxIndex) {
           this.loadTxDetails(nextProps.ActiveCoin.coin, txInfo.txid);
           this.loadRawTxDetails(nextProps.ActiveCoin.coin, txInfo.txid);
+          this.fetchBlockType(nextProps.ActiveCoin.coin, txInfo.blockhash);
         }
       }
     }
@@ -146,6 +149,19 @@ class WalletsTxInfo extends React.Component {
           Math.floor(hours) + ' ' + this.checkForPlural('HOUR', hours) + ' ' + 
           Math.floor(minutes) + ' ' + this.checkForPlural('MINUTE', minutes));
     }
+  }
+
+  fetchBlockType(coin, blockhash){
+    getBlock(coin, blockhash)
+    .then(result => {
+      this.updateBlockType(result);
+    })
+  }
+
+  updateBlockType(_cliresponse){
+    this.setState({
+      blockType: _cliresponse.blocktype,
+    });
   }
 
   checkForPlural(term, time) {
