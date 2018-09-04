@@ -12,7 +12,7 @@ build:
   stage: build
   script:
   - cd react
-  - npm install
+  - npm install && npm install # modules are not building once fetched. Running npm install again to build them while issue is fixed.
   - npm run build
   - tar -czf $AGAMA_ARTIFACT build
   - mv build.tar.gz ..
