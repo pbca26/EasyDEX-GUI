@@ -165,7 +165,7 @@ class SendCoin extends React.Component {
         let _sendFromAmountSats = _sendFromAmount * 100000000;
         let _sendToAmount = (_sendFromAmountSats - 10000)/100000000;
         this.setState({
-          amount: _sendToAmount,
+          amount: _sendToAmount.toFixed(8),
         });
       }
       else {
@@ -175,7 +175,7 @@ class SendCoin extends React.Component {
       }
     } else {
       this.setState({
-        amount: Number((0.00000001 * (_balanceSats - _fees[this.props.ActiveCoin.coin])).toFixed(8)),
+        amount: (Number((0.00000001 * (_balanceSats - _fees[this.props.ActiveCoin.coin])).toFixed(8)).toFixed(8)),
       });
     }
   }
@@ -367,7 +367,7 @@ class SendCoin extends React.Component {
               <a onClick={ () => this.updateAddressSelection(address.address, type, address.amount) }>
                 <i className={ 'icon fa-eye' + (type === 'public' ? '' : '-slash') }></i>&nbsp;&nbsp;
                 <span className="text">
-                  [ { address.amount } { this.props.ActiveCoin.coin } ]&nbsp;&nbsp;
+                  [ { Number((Number(address.amount)).toFixed(8)) } { this.props.ActiveCoin.coin } ]&nbsp;&nbsp;
                   { type === 'public' ? address.address : address.address.substring(0, 34) + '...' }
                 </span>
                 <span
@@ -830,7 +830,7 @@ class SendCoin extends React.Component {
     if (this.props.ActiveCoin.mode === 'native') {
       if (this.state.shieldCoinbase){
         if (this.state.sendFrom && this.state.addressType === 'public'){
-          if (Number(this.state.sendFromAmount) <= 0.0001){
+          if ((Number(this.state.sendFromAmount)).toFixed(8) <= 0.0001){
             Store.dispatch(
               triggerToaster(
                 `${translate('SEND.INSUFFICIENT_FUNDS')} ${translate('SEND.MAX_AVAIL_BALANCE_IN_ADDR')} ${Number(this.state.sendFromAmount)} ${this.props.ActiveCoin.coin}`,
@@ -842,7 +842,7 @@ class SendCoin extends React.Component {
           }
         }
         else if (!this.state.sendFrom){
-          if (Number(this.props.ActiveCoin.balance.transparent) <= 0.0001){
+          if ((Number(this.props.ActiveCoin.balance.transparent)).toFixed(8) <= 0.0001){
             Store.dispatch(
               triggerToaster(
                 `${translate('SEND.INSUFFICIENT_FUNDS')} ${translate('SEND.MAX_AVAIL_BALANCE')} ${Number(this.props.ActiveCoin.balance.transparent)} ${this.props.ActiveCoin.coin}`,
@@ -867,7 +867,7 @@ class SendCoin extends React.Component {
       else if (!this.state.shieldCoinbase && (this.state.addressType === 'public' && !this.state.privateAddrList)) {
         if (this.state.sendFrom) {
           if (this.state.sendTo && this.state.sendTo.length > 34) {
-            if (Number(Number(this.state.amount) + 0.0001) > Number(this.state.sendFromAmount)) {
+            if ((Number(Number(this.state.amount) + 0.0001)).toFixed(8) > (Number(this.state.sendFromAmount)).toFixed(8)) {
               Store.dispatch(
                 triggerToaster(
                   `${translate('SEND.INSUFFICIENT_FUNDS')} ${translate('SEND.MAX_AVAIL_BALANCE_IN_ADDR')} ${Number(this.state.sendFromAmount)} ${this.props.ActiveCoin.coin}`,
@@ -879,7 +879,7 @@ class SendCoin extends React.Component {
             }
           }
           else if (this.state.sendTo) {
-            if (Number(Number(this.state.amount) + (this.state.subtractFee ? 0 : 0.0001)) > Number(this.props.ActiveCoin.balance.transparent)){
+            if ((Number(Number(this.state.amount) + (this.state.subtractFee ? 0 : 0.0001))).toFixed(8) > (Number(this.props.ActiveCoin.balance.transparent)).toFixed(8)){
               Store.dispatch(
                 triggerToaster(
                   `${translate('SEND.INSUFFICIENT_FUNDS')} ${translate('SEND.MAX_AVAIL_BALANCE_IN_ADDR')} ${Number(this.state.sendFromAmount)} ${this.props.ActiveCoin.coin}`,
@@ -893,7 +893,7 @@ class SendCoin extends React.Component {
         }
         else {
           if (this.state.sendTo && this.state.sendTo.length > 34) {
-            if (Number(Number(this.state.amount) + 0.0001) > Number(this.state.sendFromAmount)) {
+            if ((Number(Number(this.state.amount) + 0.0001)).toFixed(8) > (Number(this.state.sendFromAmount)).toFixed(8)) {
               Store.dispatch(
                 triggerToaster(
                   `${translate('SEND.INSUFFICIENT_FUNDS')} ${translate('SEND.MAX_AVAIL_BALANCE')} ${Number(this.props.ActiveCoin.balance.transparent)} ${this.props.ActiveCoin.coin}`,
@@ -905,7 +905,7 @@ class SendCoin extends React.Component {
             }
           }
           else if (this.state.sendTo) {
-            if (Number(Number(this.state.amount) + (this.state.subtractFee ? 0 : 0.0001)) > Number(this.props.ActiveCoin.balance.transparent)){
+            if ((Number(Number(this.state.amount) + (this.state.subtractFee ? 0 : 0.0001)).toFixed(8)) > (Number(this.props.ActiveCoin.balance.transparent)).toFixed(8)){
               Store.dispatch(
                 triggerToaster(
                   `${translate('SEND.INSUFFICIENT_FUNDS')} ${translate('SEND.MAX_AVAIL_BALANCE')} ${Number(this.props.ActiveCoin.balance.transparent)} ${this.props.ActiveCoin.coin}`,
@@ -921,7 +921,7 @@ class SendCoin extends React.Component {
       else if (!this.state.shieldCoinbase && (this.state.addressType === 'private' && this.state.privateAddrList)) {
         if (this.state.sendFrom) {
           if (this.state.sendTo && this.state.sendTo.length > 34) {
-            if (Number(Number(this.state.amount) + 0.0001) > Number(this.state.sendFromAmount)) {
+            if ((Number(Number(this.state.amount) + 0.0001).toFixed(8)) > (Number(this.state.sendFromAmount)).toFixed(8)) {
               Store.dispatch(
                 triggerToaster(
                   `${translate('SEND.INSUFFICIENT_FUNDS')} ${translate('SEND.MAX_AVAIL_BALANCE_IN_ADDR')} ${Number(this.state.sendFromAmount)} ${this.props.ActiveCoin.coin}`,
@@ -933,7 +933,7 @@ class SendCoin extends React.Component {
             }
           }
           else if (this.state.sendTo) {
-            if (Number(Number(this.state.amount) + (this.state.subtractFee ? 0 : 0.0001)) > (Number(this.props.ActiveCoin.balance.total) - Number(this.props.ActiveCoin.balance.transparent) - (this.props.ActiveCoin.balance.immature ? Number(this.props.ActiveCoin.balance.immature) : 0))){
+            if ((Number(Number(this.state.amount) + (this.state.subtractFee ? 0 : 0.0001)).toFixed(8)) > ((Number(this.props.ActiveCoin.balance.total) - Number(this.props.ActiveCoin.balance.transparent) - (this.props.ActiveCoin.balance.immature ? Number(this.props.ActiveCoin.balance.immature) : 0))).toFixed(8)){
               Store.dispatch(
                 triggerToaster(
                   `${translate('SEND.INSUFFICIENT_FUNDS')} ${translate('SEND.MAX_AVAIL_BALANCE_IN_ADDR')} ${Number(this.state.sendFromAmount)} ${this.props.ActiveCoin.coin}`,

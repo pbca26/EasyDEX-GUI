@@ -71,7 +71,7 @@ export const AddressItemRender = function(address, type) {
         }
       </td>
       <td>
-        <span>{ address.amount }</span>
+        <span>{ Number((Number(address.amount)).toFixed(8)) }</span>
         { !address.canspend &&
           type === 'public' &&
           this.props.mode !== 'spv' &&
