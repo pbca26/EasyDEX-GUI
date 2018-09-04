@@ -68,9 +68,19 @@ class WalletsData extends React.Component {
       kvHistory: null,
       txhistoryCopy: null,
       generatingCSV: false,
+      filterSelectorOpen: false,
+      addressFilterType: null,
+      filterPrivateTx: true,
+      filterPublicTx: true,
+      filterImmatureTx: true,
+      filterMatureTx: true,
+      filterSentTx: true,
+      filterReceivedTx: true,
+      filterMenuOpen: false
     };
     this.kvHistoryInterval = null;
     this.openDropMenu = this.openDropMenu.bind(this);
+    this.openFilterDropMenu = this.openFilterDropMenu.bind(this);
     this.handleClickOutside = this.handleClickOutside.bind(this);
     this.refreshTxHistory = this.refreshTxHistory.bind(this);
     this.openClaimInterestModal = this.openClaimInterestModal.bind(this);
@@ -80,6 +90,13 @@ class WalletsData extends React.Component {
     this.toggleKvView = this.toggleKvView.bind(this);
     this._setTxHistory = this._setTxHistory.bind(this);
     this.exportToCSV = this.exportToCSV.bind(this);
+    this.toggleFilterPrivateTx = this.toggleFilterPrivateTx.bind(this);
+    this.toggleFilterPublicTx = this.toggleFilterPublicTx.bind(this);
+    this.toggleFilterImmatureTx = this.toggleFilterImmatureTx.bind(this);
+    this.toggleFilterMatureTx = this.toggleFilterMatureTx.bind(this);
+    this.toggleFilterSentTx = this.toggleFilterSentTx.bind(this);
+    this.toggleFilterReceivedTx = this.toggleFilterReceivedTx.bind(this);
+    this.toggleFilterMenuOpen = this.toggleFilterMenuOpen.bind(this);
   }
 
   componentWillMount() {
@@ -457,7 +474,7 @@ class WalletsData extends React.Component {
   }
 
   toggleTxInfoModal(display, txIndex) {
-    if (this.state.searchTerm) {
+    if (this.state.searchTerm || this.state.addressFilterType) {
       let transaction = this.state.filteredItemsList[txIndex];
       txIndex = this.state.itemsList.findIndex(k => k === transaction);
       Store.dispatch(toggleDashboardTxInfoModal(display, txIndex));
@@ -465,6 +482,12 @@ class WalletsData extends React.Component {
     else {
       Store.dispatch(toggleDashboardTxInfoModal(display, txIndex));
     }
+  }
+
+  toggleFilterMenuOpen() {
+    this.setState({
+      filterMenuOpen: !this.state.filterMenuOpen,
+    });
   }
 
   toggleMiningButton() {
@@ -660,9 +683,74 @@ class WalletsData extends React.Component {
     }));
   }
 
+  updateAddressTypeSelection(filter) {
+
+    this.setState({
+      addressFilterType: filter,
+      filteredItemsList: this.filterTransactions(this.state.itemsList, this.state.searchTerm),
+      filterSelectorOpen: false,
+    }, () => {
+      this._setTxHistory();
+    });
+  }
+
+  toggleFilterPrivateTx(){
+    this.setState({
+      filterPrivateTx: !this.state.filterPrivateTx,
+    }, () => {
+      this._setTxHistory();
+    });
+  }
+
+  toggleFilterPublicTx(){
+    this.setState({
+      filterPublicTx: !this.state.filterPublicTx,
+    }, () => {
+      this._setTxHistory();
+    });
+  }
+
+  toggleFilterImmatureTx(){
+    this.setState({
+      filterImmatureTx: !this.state.filterImmatureTx,
+    }, () => {
+      this._setTxHistory();
+    });
+  }
+
+  toggleFilterMatureTx(){
+    this.setState({
+      filterMatureTx: !this.state.filterMatureTx,
+    }, () => {
+      this._setTxHistory();
+    });
+  }
+
+  toggleFilterSentTx(){
+    this.setState({
+      filterSentTx: !this.state.filterSentTx,
+    }, () => {
+      this._setTxHistory();
+    });
+  }
+
+  toggleFilterReceivedTx(){
+    this.setState({
+      filterReceivedTx: !this.state.filterReceivedTx,
+    }, () => {
+      this._setTxHistory();
+    });
+  }
+
   openDropMenu() {
     this.setState(Object.assign({}, this.state, {
       addressSelectorOpen: !this.state.addressSelectorOpen,
+    }));
+  }
+
+  openFilterDropMenu() {
+    this.setState(Object.assign({}, this.state, {
+      filterSelectorOpen: !this.state.filterSelectorOpen,
     }));
   }
 
@@ -692,6 +780,25 @@ class WalletsData extends React.Component {
     }
 
     return null;
+  }
+
+  renderFilterListItems() {
+    const addressTypeList = ['All', 'Private', 'Public'];
+    let _list = [];
+    for (let i = 0; i < addressTypeList.length; i++) {
+      _list.push(
+      <li
+        key={ addressTypeList[i] }
+        className={ addressTypeList[i] === this.state.addressFilterType ? 'selected' : '' }>
+        <a onClick={ () => this.updateAddressTypeSelection(addressTypeList[i]) }>
+          <i className={ 'icon fa-eye' + (addressTypeList[i] === 'Private' ? '-slash' : '') }></i>&nbsp;&nbsp;
+          <span className="text">{addressTypeList[i]}</span>
+          <span className="glyphicon glyphicon-ok check-mark"></span>
+        </a>
+      </li>
+      );
+    }
+    return _list;
   }
 
   hasPublicAddresses() {
@@ -753,10 +860,35 @@ class WalletsData extends React.Component {
     }
   }
 
+  renderSelectorCurrentFilterLabel() {
+    const _currentSelection = this.state.addressFilterType;
+
+    if (_currentSelection) {
+      return (
+        <span>
+          <i className={ 'icon fa-eye' + (_currentSelection === 'private' ? '-slash' : '') }></i>&nbsp;&nbsp;
+          <span className="text">
+            {_currentSelection}
+          </span>
+        </span>
+      );
+    } else {
+      return (
+        <span>{ translate('INDEX.FILTER_BY_ADDRESS_TYPE') }</span>
+      );
+    }
+  }
+
   onSearchTermChange(newSearchTerm) {
     this.setState(Object.assign({}, this.state, {
       searchTerm: newSearchTerm,
       filteredItemsList: this.filterTransactions(this.state.itemsList, newSearchTerm),
+    }));
+  }
+
+  refreshFilterItemsList() {
+    this.setState(Object.assign({}, this.state, {
+      filteredItemsList: this.filterTransactions(this.state.itemsList, this.state.searchTerm),
     }));
   }
 
@@ -765,15 +897,119 @@ class WalletsData extends React.Component {
   }
 
   filterTransaction(tx, term) {
-    if (!term) {
-      return true;
+
+      if (!this.state.filterPrivateTx){
+        if (this.isPrivate(tx)){
+          return false;
+        }
+      }
+      if (!this.state.filterPublicTx){
+        if (this.isPublic(tx)){
+          return false;
+        }
+      }
+      if (!this.state.filterImmatureTx){
+        if (this.isImmature(tx)){
+          return false;
+        }
+      }
+      if (!this.state.filterMatureTx){
+        if (this.isMature(tx)){
+          return false;
+        }
+      }
+      if (!this.state.filterSentTx){
+        if (this.isSent(tx)){
+          return false;
+        }
+      }
+      if (!this.state.filterReceivedTx){
+        if (this.isReceived(tx)){
+          return false;
+        }
+      }
+      if (!term)
+      {
+        return true;
+      }
+      else if (
+        (this.contains(tx.address, term) ||
+        this.contains(tx.confirmations, term) ||
+        this.contains(tx.amount, term) ||
+        this.contains(tx.type, term) ||
+        this.contains(secondsToString(tx.blocktime || tx.timestamp || tx.time), term))) 
+      {
+        return true;
+      }
+
+
+
+
+      
+   /* if (
+      (this.state.filterPrivateTx ? this.isPrivate(tx) : false) || 
+      (this.state.filterPublicTx ? this.isPublic(tx) : false) || 
+      (this.state.filterImmatureTx ? this.isImmature(tx) : false) || 
+      (this.state.filterMatureTx ? this.isMature(tx) : false) || 
+      (this.state.filterSentTx ? this.isSent(tx) : false) || 
+      (this.state.filterReceivedTx ? this.isReceived(tx) : false)) {
+        if (!term)
+        {
+          return true;
+        }
+        else if (
+        (this.contains(tx.address, term) ||
+        this.contains(tx.confirmations, term) ||
+        this.contains(tx.amount, term) ||
+        this.contains(tx.type, term) ||
+        this.contains(secondsToString(tx.blocktime || tx.timestamp || tx.time), term))) 
+        {
+          return true;
+        }
+        else 
+        {
+          return false;
+        }
+    }
+    else {
+      return false;
+    }
+    */
+  }
+
+  isPrivate(tx){
+    if(tx.address) {
+      if(tx.memo || tx.address.length === 95){
+        return true;
+      }
+    }
+    else if (!tx.address) {
+      return true
+    }
+    else {
+      return false;
     }
 
-    return this.contains(tx.address, term) ||
-      this.contains(tx.confirmations, term) ||
-      this.contains(tx.amount, term) ||
-      this.contains(tx.type, term) ||
-      this.contains(secondsToString(tx.blocktime || tx.timestamp || tx.time), term);
+  }
+
+  isPublic(tx){
+    return !this.isPrivate(tx);
+  }
+
+  isImmature(tx){
+    return tx.category === 'immature';
+  }
+
+  isSent(tx){
+    return tx.category === 'send';
+  }
+
+  isReceived(tx){
+    return tx.category === 'receive';
+  } 
+
+  isMature(tx){
+    return tx.category === 'generate';
   }
 
   contains(value, property) {

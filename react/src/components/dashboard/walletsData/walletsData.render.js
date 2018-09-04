@@ -250,7 +250,7 @@ export const TxHistoryListRender = function() {
       data={ this.state.filteredItemsList }
       columns={ this.state.itemsListColumns }
       minRows="0"
-      sortable={ true }
+      sortable={ false }
       className="-striped -highlight"
       PaginationComponent={ TablePaginationRenderer }
       nextText={ translate('INDEX.NEXT_PAGE') }
@@ -341,12 +341,17 @@ export const WalletsDataRender = function() {
                         this.props.ActiveCoin.txhistory !== 'connection error or incomplete data' &&
                         this.props.ActiveCoin.txhistory !== 'cant get current height' &&
                         !this.state.kvView &&
-                        <div className="col-sm-4 search-box">
-                          <input
-                            className="form-control"
-                            onChange={ e => this.onSearchTermChange(e.target.value) }
-                            placeholder={ translate('DASHBOARD.SEARCH') } />
-                        </div>
+                          <div className="search-box">
+                            <button
+                              type="button"
+                              className="btn btn-primary waves-effect waves-light col-sm-4"
+                              data-tip={ this.state.filterMenuOpen ? translate('FILTER.FILTER_DESC_CONTRACT') : translate('FILTER.FILTER_DESC_EXPAND') }
+                              onClick={ this.toggleFilterMenuOpen }>{ translate('FILTER.FILTER_OPTIONS') }</button>
+                            <input
+                              className="form-control"
+                              onChange={ e => this.onSearchTermChange(e.target.value) }
+                              placeholder={ translate('DASHBOARD.SEARCH') } />
+                          </div>
                       }
                       { this.props.ActiveCoin.txhistory !== 'loading' &&
                         this.props.ActiveCoin.txhistory !== 'connection error' &&
@@ -373,7 +378,106 @@ export const WalletsDataRender = function() {
                         this.state.showMiningButton && 
                         <MiningButton />
                       }
-                      
+                      { this.props.ActiveCoin.txhistory !== 'loading' &&
+                        this.props.ActiveCoin.txhistory !== 'connection error' &&
+                        this.props.ActiveCoin.txhistory !== 'connection error or incomplete data' &&
+                        this.props.ActiveCoin.txhistory !== 'cant get current height' &&
+                        this.state.filterMenuOpen && 
+                        <div className="filter-options-wrapper">
+                          <div className="filter-option">
+                            <span className = "filter-option-child">
+                              <div>
+                              { translate('FILTER.PRIVATE') }
+                              </div>
+                              <div>
+                                <label className="switch">
+                                <input
+                                    type="checkbox"
+                                    checked={ this.state.filterPrivateTx } />
+                                    <div
+                                    className="slider"
+                                    onClick={ this.toggleFilterPrivateTx }></div>
+                                </label>
+                              </div>
+                            </span>
+                            <span className = "filter-option-child">
+                              <div>
+                              { translate('FILTER.PUBLIC') }
+                              </div>
+                              <div>
+                                <label className="switch">
+                                <input
+                                    type="checkbox"
+                                    checked={ this.state.filterPublicTx } />
+                                    <div
+                                    className="slider"
+                                    onClick={ this.toggleFilterPublicTx }></div>
+                                </label>
+                              </div>
+                            </span>
+                            <span className = "filter-option-child">
+                              <div>
+                              { translate('FILTER.IMMATURE') }
+                              </div>
+                              <div>
+                                <label className="switch">
+                                <input
+                                    type="checkbox"
+                                    checked={ this.state.filterImmatureTx } />
+                                    <div
+                                    className="slider"
+                                    onClick={ this.toggleFilterImmatureTx }></div>
+                                </label>
+                              </div>
+                            </span>
+                            <span className = "filter-option-child">
+                              <div>
+                              { translate('FILTER.MATURE') }
+                              </div>
+                              <div>
+                                <label className="switch">
+                                <input
+                                    type="checkbox"
+                                    checked={ this.state.filterMatureTx } />
+                                    <div
+                                    className="slider"
+                                    onClick={ this.toggleFilterMatureTx }></div>
+                                </label>
+                              </div>
+                            </span>
+                            <span className = "filter-option-child">
+                              <div>
+                              { translate('FILTER.SENT') }
+                              </div>
+                              <div>
+                                <label className="switch">
+                                <input
+                                    type="checkbox"
+                                    checked={ this.state.filterSentTx } />
+                                    <div
+                                    className="slider"
+                                    onClick={ this.toggleFilterSentTx }></div>
+                                </label>
+                              </div>
+                            </span>
+                            <span className = "filter-option-child">
+                              <div>
+                              { translate('FILTER.RECEIVED') }
+                              </div>
+                              <div>
+                                <label className="switch">
+                                <input
+                                    type="checkbox"
+                                    checked={ this.state.filterReceivedTx } />
+                                    <div
+                                    className="slider"
+                                    onClick={ this.toggleFilterReceivedTx }></div>
+                                </label>
+                              </div>
+                            </span>
+                          </div>
+                        </div>
+                      }
                     </div>
                     <div className="row">
                       { this.renderTxHistoryList() }

@@ -161,6 +161,14 @@ const WalletsTxInfoRender = function(txInfo) {
                                 </td>
                               </tr>
                               }
+                              { this.props.ActiveCoin.mode !== 'spv' && this.state.blockType &&
+                              <tr>
+                                <td>{ this.capitalizeFirstLetter('blocktype') }</td>
+                                <td>
+                                  { this.state.blockType }
+                                </td>
+                              </tr>
+                              }
                             </tbody>
                           </table>
                         </div>

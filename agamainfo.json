@@ -1,7 +1,7 @@
 {
-	"version": "0.3.12",
+	"version": "0.3.13",
 	"msg": "",
-	"msgtype":, "critical"
+	"msgtype": "critical"
 }
 
 /* msg types: critical, normal, low */

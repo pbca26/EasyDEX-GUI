@@ -219,6 +219,29 @@ class Login extends React.Component {
   }
 
   componentDidMount() {
+    if(Config.autoStartVRSC) {
+      
+    console.log('Mounted');
+    mainWindow.startKMDNative('VRSC');
+
+    setTimeout(() => {
+      Store.dispatch(activeHandle());
+      Store.dispatch(shepherdElectrumCoins());
+      Store.dispatch(getDexCoins());
+    }, 5500);
+    setTimeout(() => {
+      Store.dispatch(activeHandle());
+      Store.dispatch(shepherdElectrumCoins());
+      Store.dispatch(getDexCoins());
+    }, 6000);
+    setTimeout(() => {
+      Store.dispatch(activeHandle());
+      Store.dispatch(shepherdElectrumCoins());
+      Store.dispatch(getDexCoins());
+    }, 10000);
+    
+  }
+
     this.setState({
       isExperimentalOn: mainWindow.experimentalFeatures,
     });

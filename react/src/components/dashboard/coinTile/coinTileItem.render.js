@@ -2,6 +2,7 @@ import React from 'react';
 import translate from '../../../translate/translate';
 import ReactTooltip from 'react-tooltip';
 import { acConfig } from '../../addcoin/payload';
+import Config from '../../../config';
 import mainWindow from '../../../util/mainWindow';
 
 const CoinTileItemRender = function() {
@@ -78,8 +79,8 @@ const CoinTileItemRender = function() {
         <div className="coin-tile-context-menu">
           <ul>
             { this.renderStopCoinButton() &&
-              item.mode === 'native' &&
-              <li onClick={ () => this.stopCoind(item.coin, item.mode) }>
+              item.mode === 'native' && 
+              <li className={this.props.ActiveCoin.coin === 'VRSC' ? (Config.autoStartVRSC ? "hide" : "") : ""} onClick={ () => this.stopCoind(item.coin, item.mode) }>
                 <i className="icon fa-stop-circle margin-right-5"></i> { translate('DASHBOARD.STOP') }
               </li>
             }
