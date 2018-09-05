@@ -879,7 +879,7 @@ class SendCoin extends React.Component {
             }
           }
           else if (this.state.sendTo) {
-            if ((Number(Number(this.state.amount) + (this.state.subtractFee ? 0 : 0.0001))).toFixed(8) > (Number(this.props.ActiveCoin.balance.transparent)).toFixed(8)){
+            if ((Number(Number(this.state.amount) + (this.state.subtractFee ? 0 : 0.0001))).toFixed(8) > (Number(this.state.sendFromAmount)).toFixed(8)){
               Store.dispatch(
                 triggerToaster(
                   `${translate('SEND.INSUFFICIENT_FUNDS')} ${translate('SEND.MAX_AVAIL_BALANCE_IN_ADDR')} ${Number(this.state.sendFromAmount)} ${this.props.ActiveCoin.coin}`,
