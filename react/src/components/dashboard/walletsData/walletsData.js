@@ -474,7 +474,13 @@ class WalletsData extends React.Component {
   }
 
   toggleTxInfoModal(display, txIndex) {
-    if (this.state.searchTerm || this.state.addressFilterType) {
+    if (this.state.searchTerm || 
+        !this.state.filterPrivateTx ||
+        !this.state.filterPublicTx ||
+        !this.state.filterImmatureTx ||
+        !this.state.filterMatureTx ||
+        !this.state.filterSentTx ||
+        !this.state.filterReceivedTx) {
       let transaction = this.state.filteredItemsList[txIndex];
       txIndex = this.state.itemsList.findIndex(k => k === transaction);
       Store.dispatch(toggleDashboardTxInfoModal(display, txIndex));
