@@ -865,12 +865,13 @@ class SendCoin extends React.Component {
         }
       }
       else if (!this.state.shieldCoinbase && (this.state.addressType === 'public' && !this.state.privateAddrList)) {
+        //TODO: Change back from diagnostic change
         if (this.state.sendFrom) {
           if (this.state.sendTo && this.state.sendTo.length > 34) {
             if ((Number(Number(this.state.amount) + 0.0001)).toFixed(8) > (Number(this.state.sendFromAmount)).toFixed(8)) {
               Store.dispatch(
                 triggerToaster(
-                  `${translate('SEND.INSUFFICIENT_FUNDS')} ${translate('SEND.MAX_AVAIL_BALANCE_IN_ADDR')} ${Number(this.state.sendFromAmount)} ${this.props.ActiveCoin.coin}`,
+                  `${translate('SEND.TRANSPARENT_BALANCE1')} ${Number(this.props.ActiveCoin.balance.transparent)} ${this.props.ActiveCoin.coin}`,
                   translate('TOASTR.WALLET_NOTIFICATION'),
                   'error'
                 )
@@ -882,7 +883,7 @@ class SendCoin extends React.Component {
             if ((Number(Number(this.state.amount) + (this.state.subtractFee ? 0 : 0.0001))).toFixed(8) > (Number(this.state.sendFromAmount)).toFixed(8)){
               Store.dispatch(
                 triggerToaster(
-                  `${translate('SEND.INSUFFICIENT_FUNDS')} ${translate('SEND.MAX_AVAIL_BALANCE_IN_ADDR')} ${Number(this.state.sendFromAmount)} ${this.props.ActiveCoin.coin}`,
+                  `${translate('SEND.TRANSPARENT_BALANCE2')} ${Number(this.props.ActiveCoin.balance.transparent)} ${this.props.ActiveCoin.coin}`,
                   translate('TOASTR.WALLET_NOTIFICATION'),
                   'error'
                 )
