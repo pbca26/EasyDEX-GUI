@@ -85,7 +85,7 @@ const WalletsTxInfoRender = function(txInfo) {
                               <tr>
                                 <td>{ this.capitalizeFirstLetter(translate('TX_INFO.CATEGORY')) }</td>
                                 <td>
-                                  { txInfo.memo ? 'receive' : (this.props.ActiveCoin.mode === 'spv' ? this.state.txDetails.type : this.state.txDetails.details[0].category || txInfo.type) }
+                                  { this.props.ActiveCoin.mode === 'spv' ? this.state.txDetails.type : (txInfo.memo ? 'receive' : this.state.txDetails.details[0].category || txInfo.type) }
                                 </td>
                               </tr>
                               <tr>

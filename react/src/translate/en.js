@@ -445,6 +445,7 @@ export const LANG_EN = {
     'FILTER_BY': 'Include:',
     'SENT': 'Sent',
     'RECEIVED': 'Received',
+    'SELF': 'Self',
     'FILTER_OPTIONS': 'Filter',
     'FILTER_DESC_CONTRACT': 'Contract filter options',
     'FILTER_DESC_EXPAND': 'Expand filter options'
