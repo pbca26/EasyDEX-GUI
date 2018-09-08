@@ -65,7 +65,7 @@ export const LANG_EN = {
   },
   'ABOUT': {
     'AGAMA_WALLET': 'Agama Wallet',
-    'ABOUT_AGAMA': 'About Agama',
+    'ABOUT_AGAMA': 'About Verus Enhanced Agama',
     'AGAMA_MODES': 'Agama Wallet is a desktop app that you can use to manage multiple cryptocurrency wallets. ' +
                    'When you set up a wallet, you can configure it to operate in one of the following modes:',
     'NATIVE_MODE_DESC': 'Only available for a few currencies. Like \'Full Mode\' but provides advanced functionality.',
@@ -77,8 +77,11 @@ export const LANG_EN = {
     'TESTERS_P1': 'You can help us test Agama. Just',
     'TESTERS_P2': 'download and install the latest release from veruscoin.io',
     'TESTERS_P3': 'Then, report any bugs you encounter to our developers on the',
-    'TESTERS_P4': 'Your help is greatly appreciated!',
+    'TESTERS_P4': ' Your help is greatly appreciated!',
     'AGAMA_DAPPS': 'Agama also supports the following desktop apps:',
+    'SPECIAL_THANKS_P1': 'Special thanks to @0x03 on ',
+    'SPECIAL_THANKS_P2': 'our discord',
+    'SPECIAL_THANKS_P3': ' for setting up and maintaining the first Verus lite mode servers!',
     'JUMBLR_DESC': 'A decentralized Bitcoin blockchain tumbler for privacy and lower fees.',
     'BARTER_DEX_DESC_ALT': 'A decentralized coin exchange.',
     'CHANNEL': 'channel',
@@ -839,11 +842,6 @@ export const LANG_EN = {
     'EDEX_MOTTO': 'Most Secure, Easy and Native Decentralised Exchange',
     'JUMBLR_MOTTO': 'Secure, Native and Decentralised Coin Anonymizer',
   },
-  'SUPPORT': {
-    'FOR_GUIDES': 'For guides & FAQ please navigate to',
-    'TO_SEND_FEEDBACK_P1': 'For Feedback please open a ticket',
-    'TO_SEND_FEEDBACK_P2': 'or send an email to support@komodoplatform.com',
-  },
   'SETTINGS': {
     'DOWNLOAD_KV_ELECTRUMS_DONE': 'KV Electrum servers list is downloaded. Please restart the app.',
     'DOWNLOAD_KV_ELECTRUMS_ERR': 'Unable to retrieve remote KV Electrum servers list',
@@ -1345,6 +1343,9 @@ export const LANG_EN = {
   },
 'SUPPORT': {
     'FOR_GUIDES': 'For guides on using agama',
-    'TO_SEND_FEEDBACK': 'To send feedback'
+    'TO_SEND_FEEDBACK': 'To send feedback',
+    'TO_SEND_FEEDBACK_P1': 'For Feedback please open a ticket',
+    'TO_SEND_FEEDBACK_P2': 'or send an email to support@komodoplatform.com',
+    'ELECTRUM_SERVICES': 'Verus Agama Electrum services by: ',
 }
 };
