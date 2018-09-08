@@ -16,7 +16,7 @@ class About extends React.Component {
     return (
       <div className="page margin-left-0">
         <div className="page-content">
-          <h2>{ translate('ABOUT.ABOUT_AGAMA') }</h2>
+          <h2>{ translate('ABOUT.ABOUT_VERUS_AGAMA') }</h2>
           <p>{ translate('ABOUT.AGAMA_MODES') }</p>
           <ul>
             <li>

@@ -65,7 +65,8 @@ export const LANG_EN = {
   },
   'ABOUT': {
     'AGAMA_WALLET': 'Agama Wallet',
-    'ABOUT_AGAMA': 'About Verus Enhanced Agama',
+    'ABOUT_AGAMA': 'About',
+    'ABOUT_VERUS_AGAMA': 'About Verus Enhanced Agama',
     'AGAMA_MODES': 'Agama Wallet is a desktop app that you can use to manage multiple cryptocurrency wallets. ' +
                    'When you set up a wallet, you can configure it to operate in one of the following modes:',
     'NATIVE_MODE_DESC': 'Only available for a few currencies. Like \'Full Mode\' but provides advanced functionality.',
