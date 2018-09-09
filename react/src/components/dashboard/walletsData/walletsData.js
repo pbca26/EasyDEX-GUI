@@ -76,6 +76,7 @@ class WalletsData extends React.Component {
       filterMatureTx: true,
       filterSentTx: true,
       filterReceivedTx: true,
+      filterSelfTx: true,
       filterMenuOpen: false
     };
     this.kvHistoryInterval = null;
@@ -96,6 +97,7 @@ class WalletsData extends React.Component {
     this.toggleFilterMatureTx = this.toggleFilterMatureTx.bind(this);
     this.toggleFilterSentTx = this.toggleFilterSentTx.bind(this);
     this.toggleFilterReceivedTx = this.toggleFilterReceivedTx.bind(this);
+    this.toggleFilterSelfTx = this.toggleFilterSelfTx.bind(this);
     this.toggleFilterMenuOpen = this.toggleFilterMenuOpen.bind(this);
   }
 
@@ -480,7 +482,8 @@ class WalletsData extends React.Component {
         !this.state.filterImmatureTx ||
         !this.state.filterMatureTx ||
         !this.state.filterSentTx ||
-        !this.state.filterReceivedTx) {
+        !this.state.filterReceivedTx ||
+        !this.state.filterSelfTx) {
       let transaction = this.state.filteredItemsList[txIndex];
       txIndex = this.state.itemsList.findIndex(k => k === transaction);
       Store.dispatch(toggleDashboardTxInfoModal(display, txIndex));
@@ -748,6 +751,14 @@ class WalletsData extends React.Component {
     });
   }
 
+  toggleFilterSelfTx(){
+    this.setState({
+      filterSelfTx: !this.state.filterSelfTx,
+    }, () => {
+      this._setTxHistory();
+    });
+  }
+
   openDropMenu() {
     this.setState(Object.assign({}, this.state, {
       addressSelectorOpen: !this.state.addressSelectorOpen,
@@ -903,7 +914,6 @@ class WalletsData extends React.Component {
   }
 
   filterTransaction(tx, term) {
-
       if (!this.state.filterPrivateTx){
         if (this.isPrivate(tx)){
           return false;
@@ -931,6 +941,11 @@ class WalletsData extends React.Component {
       }
       if (!this.state.filterReceivedTx){
         if (this.isReceived(tx)){
+          return false;
+        }
+      }
+      if (!this.state.filterSelfTx){
+        if (this.isSelf(tx)){
           return false;
         }
       }
@@ -1007,15 +1022,19 @@ class WalletsData extends React.Component {
   }
 
   isSent(tx){
-    return tx.category === 'send';
+    return tx.category === 'send' || tx.type === 'sent';
   }
 
   isReceived(tx){
-    return tx.category === 'receive';
+    return tx.category === 'receive' || tx.type === 'received';
   } 
 
   isMature(tx){
     return tx.category === 'generate';
+  }
+
+  isSelf(tx){
+    return tx.type === 'self';
   }
 
   contains(value, property) {

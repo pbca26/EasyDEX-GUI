@@ -939,7 +939,6 @@ class SendCoin extends React.Component {
     }
     
 
-    //Error checking for VRSC because it bypasses electrum
     if (this.props.ActiveCoin.coin === 'VRSC'){
       if(!this.state.sendTo){
         Store.dispatch(

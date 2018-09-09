@@ -362,7 +362,7 @@ export const WalletsDataRender = function() {
                           <div className="col-sm-4">
                             <button
                               type="button"
-                              className="btn btn-dark waves-effect waves-light margin-top-5"
+                              className={this.props.ActiveCoin.mode === 'spv' ? 'hide' : "btn btn-dark waves-effect waves-light margin-top-5"}
                               data-tip={ this.state.showMiningButton ? translate('DASHBOARD.MINING_DESC_CONTRACT') : translate('DASHBOARD.MINING_DESC_EXPAND') }
                               onClick={ () => this.toggleMiningButton() }><i className="icon fa-cogs"></i>{ this.state.showMiningButton ? translate('DASHBOARD.CONTRACT_MINING') : translate('DASHBOARD.EXPAND_MINING') }</button>
                                 <ReactTooltip
@@ -376,6 +376,7 @@ export const WalletsDataRender = function() {
                         this.props.ActiveCoin.txhistory !== 'connection error or incomplete data' &&
                         this.props.ActiveCoin.txhistory !== 'cant get current height' &&
                         this.state.showMiningButton && 
+                        this.props.ActiveCoin.mode !== 'spv' &&
                         <MiningButton />
                       }
                       { this.props.ActiveCoin.txhistory !== 'loading' &&
@@ -385,7 +386,7 @@ export const WalletsDataRender = function() {
                         this.state.filterMenuOpen && 
                         <div className="filter-options-wrapper">
                           <div className="filter-option">
-                            <span className = "filter-option-child">
+                            <span className = {this.props.ActiveCoin.mode === 'spv' ? 'hide' : "filter-option-child"}>
                               <div>
                               { translate('FILTER.PRIVATE') }
                               </div>
@@ -400,7 +401,7 @@ export const WalletsDataRender = function() {
                                 </label>
                               </div>
                             </span>
-                            <span className = "filter-option-child">
+                            <span className = {this.props.ActiveCoin.mode === 'spv' ? 'hide' : "filter-option-child"}>
                               <div>
                               { translate('FILTER.PUBLIC') }
                               </div>
@@ -415,7 +416,7 @@ export const WalletsDataRender = function() {
                                 </label>
                               </div>
                             </span>
-                            <span className = "filter-option-child">
+                            <span className = {this.props.ActiveCoin.mode === 'spv' ? 'hide' : "filter-option-child"}>
                               <div>
                               { translate('FILTER.IMMATURE') }
                               </div>
@@ -430,7 +431,7 @@ export const WalletsDataRender = function() {
                                 </label>
                               </div>
                             </span>
-                            <span className = "filter-option-child">
+                            <span className = {this.props.ActiveCoin.mode === 'spv' ? 'hide' : "filter-option-child"}>
                               <div>
                               { translate('FILTER.MATURE') }
                               </div>
@@ -472,6 +473,21 @@ export const WalletsDataRender = function() {
                                     <div
                                     className="slider"
                                     onClick={ this.toggleFilterReceivedTx }></div>
+                                </label>
+                              </div>
+                            </span>
+                            <span className = {this.props.ActiveCoin.mode === 'native' ? 'hide' : "filter-option-child"}>
+                              <div>
+                              { translate('FILTER.SELF') }
+                              </div>
+                              <div>
+                                <label className="switch">
+                                <input
+                                    type="checkbox"
+                                    checked={ this.state.filterSelfTx } />
+                                    <div
+                                    className="slider"
+                                    onClick={ this.toggleFilterSelfTx }></div>
                                 </label>
                               </div>
                             </span>
