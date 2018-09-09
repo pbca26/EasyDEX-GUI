@@ -15,7 +15,7 @@ const WalletsBalanceRender = function() {
             (this.props.ActiveCoin.coin === 'CHIPS' ||
             (this.props.ActiveCoin.mode === 'spv' && this.props.ActiveCoin.coin !== 'KMD') ||
             this.renderBalance('total') === this.renderBalance('transparent') ||
-            this.renderBalance('total') === 0) && this.renderBalance('immature') === 0 ? 'col-lg-12 col-xs-12 balance-placeholder--bold' : 'col-lg-4 col-xs-12'
+            (this.renderBalance('total') === 0) && this.renderBalance('immature') === 0) ? 'col-lg-12 col-xs-12 balance-placeholder--bold' : 'col-lg-4 col-xs-12'
           }>
             <div className="widget widget-shadow">
               <div className="widget-content">

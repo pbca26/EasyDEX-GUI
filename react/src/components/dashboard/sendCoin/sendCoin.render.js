@@ -41,7 +41,7 @@ export const AddressListRender = function() {
       </span>
     </div>
     }
-    <div className= { !this.state.privateAddrList && this.props.ActiveCoin.coin === 'VRSC' ? "toggle-box padding-top-0" : 'hide'}>
+    <div className= { !this.state.privateAddrList && this.props.ActiveCoin.coin === 'VRSC' && this.props.ActiveCoin.mode !== 'spv' ? "toggle-box padding-top-0" : 'hide'}>
       <span className="pointer">
        <label className="switch">
          <input
@@ -454,7 +454,7 @@ export const SendRender = function() {
                   { this.state.spvPreflightRes.change > 0 &&
                     <div className="col-lg-12 col-sm-12 col-xs-12">
                       <strong>{ translate('SEND.TOTAL_AMOUNT_DESC') }</strong>&nbsp;
-                      { formatValue((this.state.spvPreflightRes.value * 0.00000001) + (this.state.spvPreflightRes.fee * 0.00000001)) }
+                      { Number((((this.state.spvPreflightRes.fee) * 0.00000001) + ((this.state.spvPreflightRes.value) * 0.00000001)).toFixed(8)) }
                     </div>
                   }
                 </div>

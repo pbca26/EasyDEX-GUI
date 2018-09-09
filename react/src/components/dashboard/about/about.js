@@ -16,7 +16,7 @@ class About extends React.Component {
     return (
       <div className="page margin-left-0">
         <div className="page-content">
-          <h2>{ translate('ABOUT.ABOUT_AGAMA') }</h2>
+          <h2>{ translate('ABOUT.ABOUT_VERUS_AGAMA') }</h2>
           <p>{ translate('ABOUT.AGAMA_MODES') }</p>
           <ul>
             <li>
@@ -35,8 +35,7 @@ class About extends React.Component {
           <br /><br />
 
           <div className="font-weight-600">{ translate('ABOUT.TESTERS') }</div>
-          { translate('ABOUT.TESTERS_P1') } <a className="link" onClick={ () => this.openExternalWindow('https://komodoplatform.com/komodo-wallets') }>{ translate('ABOUT.TESTERS_P2') }</a>.
-          { translate('ABOUT.TESTERS_P3') } <a className="link" onClick={ () => this.openExternalWindow('https://sprnt.slack.com/messages/C0HT9MH96/') }>#testing-agama</a> Slack { translate('ABOUT.CHANNEL') }. <a className="link" onClick={ () => this.openExternalWindow('http://slackinvite.supernet.org/') }>{ translate('ABOUT.GET_AN_INVITE') }</a> { translate('ABOUT.GET_AN_INVITE_P2') }.
+          { translate('ABOUT.TESTERS_P1') } <a className="link" onClick={ () => this.openExternalWindow('https://veruscoin.io') }>{ translate('ABOUT.TESTERS_P2') }</a>. 
           { translate('ABOUT.TESTERS_P4') }
 
           <br /><br />
@@ -50,6 +49,10 @@ class About extends React.Component {
               <span className="font-weight-600">BarterDEX</span>: { translate('ABOUT.BARTER_DEX_DESC_ALT') }
             </li>
           </ul>
+
+          <br /><br />
+
+          { translate('ABOUT.SPECIAL_THANKS_P1') } <a className="link" onClick={ () => this.openExternalWindow('https://discord.gg/rSG82Wb') }>{translate('ABOUT.SPECIAL_THANKS_P2')}</a> {translate('ABOUT.SPECIAL_THANKS_P3')}
         </div>
       </div>
     );
