@@ -228,13 +228,30 @@ class WalletsData extends React.Component {
   }
 
   // https://react-table.js.org/#/custom-sorting
-  tableSorting(a, b) { // ugly workaround, override default sort
+  tableDateSorting(a, b) { // ugly workaround, override default sort
     if (Date.parse(a)) { // convert date to timestamp
       a = Date.parse(a);
     }
     if (Date.parse(b)) {
       b = Date.parse(b);
     }
+    // force null and undefined to the bottom
+    a = (a === null || a === undefined) ? -Infinity : a;
+    b = (b === null || b === undefined) ? -Infinity : b;
+    // Return either 1 or -1 to indicate a sort priority
+    if (a > b) {
+      return 1;
+    }
+    if (a < b) {
+      return -1;
+    }
+    // returning 0 or undefined will use any subsequent column sorting methods or the row index as a tiebreaker
+    return 0;
+  }
+
+  amountSorting(a, b) {
+    a = a.props.children[0];
+    b = b.props.children[0];
     // force null and undefined to the bottom
     a = (a === null || a === undefined) ? -Infinity : a;
     b = (b === null || b === undefined) ? -Infinity : b;
@@ -252,6 +269,124 @@ class WalletsData extends React.Component {
     return 0;
   }
 
+  defaultSorting(a, b) {
+    // force null and undefined to the bottom
+    a = (a === null || a === undefined) ? -Infinity : a;
+    b = (b === null || b === undefined) ? -Infinity : b;
+    // force any string values to lowercase
+    a = typeof a === 'string' ? a.toLowerCase() : a;
+    b = typeof b === 'string' ? b.toLowerCase() : b;
+    // Return either 1 or -1 to indicate a sort priority
+    if (a > b) {
+      return 1;
+    }
+    if (a < b) {
+      return -1;
+    }
+    // returning 0 or undefined will use any subsequent column sorting methods or the row index as a tiebreaker
+    return 0;
+  }
+
+  typeSorting(a, b) {
+    a = a.props.children.props.className;
+    b = b.props.children.props.className;
+    // force null and undefined to the bottom
+    a = (a === null || a === undefined) ? -Infinity : a;
+    b = (b === null || b === undefined) ? -Infinity : b;
+    // force any string values to lowercase
+    a = typeof a === 'string' ? a.toLowerCase() : a;
+    b = typeof b === 'string' ? b.toLowerCase() : b;
+    // Return either 1 or -1 to indicate a sort priority
+    if (a > b) {
+      return 1;
+    }
+    if (a < b) {
+      return -1;
+    }
+    // returning 0 or undefined will use any subsequent column sorting methods or the row index as a tiebreaker
+    return 0;
+  }
+
+  destSorting(a, b) {
+    a = a.props.children;
+    b = b.props.children;
+    // force null and undefined to the bottom
+    a = (a === null || a === undefined) ? -Infinity : a;
+    b = (b === null || b === undefined) ? -Infinity : b;
+    // force any string values to lowercase
+    a = typeof a === 'string' ? a.toLowerCase() : a;
+    b = typeof b === 'string' ? b.toLowerCase() : b;
+    // Return either 1 or -1 to indicate a sort priority
+    if (a > b) {
+      return 1;
+    }
+    if (a < b) {
+      return -1;
+    }
+    // returning 0 or undefined will use any subsequent column sorting methods or the row index as a tiebreaker
+    return 0;
+  }
+
+  directionSorting(a, b) { // ugly workaround, override default sort
+    let aBtm = null;
+    let bBtm = null;
+    if (Array.isArray(a.props.children[2].props.children)) {
+      a = a.props.children[2].props.children[0];
+    }
+    else {
+      if (a.props.children[2].props.children === 'Immature'){
+        aBtm = a.props.children[4].props.children.match(/\d+/g);
+      }
+      else {
+        a = a.props.children[2].props.children
+      }
+    }
+
+    if (Array.isArray(b.props.children[2].props.children)) {
+      b = b.props.children[2].props.children[0];
+    }
+    else {
+      if (b.props.children[2].props.children === 'Immature'){
+        bBtm = b.props.children[4].props.children.match(/\d+/g);
+      }
+      else {
+        b = b.props.children[2].props.children
+      }
+    }
+
+    // force null and undefined to the bottom
+    a = (a === null || a === undefined) ? -Infinity : a;
+    b = (b === null || b === undefined) ? -Infinity : b;
+    // force any string values to lowercase
+    a = typeof a === 'string' ? a.toLowerCase() : a;
+    b = typeof b === 'string' ? b.toLowerCase() : b;
+    // Return either 1 or -1 to indicate a sort priority
+    if (aBtm && bBtm) {
+      if (aBtm > bBtm) {
+        return 1;
+      }
+      if (aBtm < bBtm) {
+        return -1;
+      }
+    }
+    else if (aBtm && !bBtm) {
+      return 1;
+    }
+    else if (!aBtm && bBtm) {
+      return -1;
+    }
+    else {
+      if (a > b) {
+        return 1;
+      }
+      if (a < b) {
+        return -1;
+      }
+    }
+    // returning 0 or undefined will use any subsequent column sorting methods or the row index as a tiebreaker
+    return 0;
+  }
+
   generateItemsListColumns(itemsCount) {
     let columns = [];
     let _col;
@@ -264,6 +399,7 @@ class WalletsData extends React.Component {
         className: 'colum--type',
         headerClassName: 'colum--type',
         footerClassName: 'colum--type',
+        sortMethod: this.typeSorting,
         accessor: (tx) => AddressTypeRender.call(this, tx),
       };
 
@@ -281,6 +417,7 @@ class WalletsData extends React.Component {
       className: 'colum--direction',
       headerClassName: 'colum--direction',
       footerClassName: 'colum--direction',
+      sortMethod: this.directionSorting,
       accessor: (tx) => TxTypeRender.call(this, tx),
     },
     {
@@ -296,12 +433,14 @@ class WalletsData extends React.Component {
       id: 'amount',
       Header: translate('INDEX.AMOUNT'),
       Footer: translate('INDEX.AMOUNT'),
+      sortMethod: this.amountSorting,
       accessor: (tx) => TxAmountRender.call(this, tx),
     },
     {
       id: 'timestamp',
       Header: translate('INDEX.TIME'),
       Footer: translate('INDEX.TIME'),
+      sortMethod: this.tableDateSorting,
       accessor: (tx) => secondsToString(tx.timestamp || tx.time || tx.blocktime),
     }];
 
@@ -318,6 +457,7 @@ class WalletsData extends React.Component {
       id: 'destination-address',
       Header: translate('INDEX.DEST_ADDRESS'),
       Footer: translate('INDEX.DEST_ADDRESS'),
+      sortMethod: this.destSorting,
       accessor: (tx) => AddressRender.call(this, tx),
     };
 
