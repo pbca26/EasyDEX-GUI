@@ -68,8 +68,26 @@ class MiningButton extends React.Component {
     });
   }
 
+  updateGenerate(_numThreads) {
+    if (Number(_numThreads) == 0) {
+      this.stopMining();
+    }
+    else {
+      this.startMining(_numThreads);
+    }
+  }
+
   stopMining() {
+    const wasStaking = this.state.isStaking;
     setGenerate(this.props.ActiveCoin.coin, false, 0)
+    .then(() => {
+      if (wasStaking) {
+        return this.startMining('stake');
+      }
+      else {
+        return true;
+      }
+    })
     .then(() => {
       return getMiningInfo(this.props.ActiveCoin.coin);
     })
@@ -150,7 +168,7 @@ class MiningButton extends React.Component {
                 id="threads"
                 type="number"
                 disabled={ this.state.loading }
-                min="1"
+                min="0"
                 className="form-control"
                 data-tip={ translate('INDEX.THREADS_DESC') }
                 value={ this.state.numThreadsGUI }
@@ -165,7 +183,7 @@ class MiningButton extends React.Component {
                 onClick={ 
                   !this.state.isMining ? (() => this.startMining(this.state.numThreadsGUI)) : 
                     !(this.state.numThreadsCli != this.state.numThreadsGUI) ? () => this.stopMining() : 
-                      () => this.startMining(this.state.numThreadsGUI) 
+                      () => this.updateGenerate(this.state.numThreadsGUI) 
                     }>
                       {this.state.loading ? translate('INDEX.LOADING_MINING_INFO') :
                         !this.state.isMining ? translate('INDEX.START_MINING') :

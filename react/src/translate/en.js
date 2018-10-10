@@ -436,7 +436,7 @@ export const LANG_EN = {
     'MINING_HPS': 'Local Mega Hash/s:',
     'INPUT_THREADS': 'Thread Count:',
     'LOADING_MINING_INFO': 'Loading...',
-    'THREADS_DESC': 'Input the number of threads you would like to mine with, selecting 0 will set the miner to staking only',
+    'THREADS_DESC': 'Input the number of threads you would like to mine with, selecting 0 will turn off mining',
     'WITH': 'with',
     'THREAD': 'thread',
     'THREADS': 'threads',
