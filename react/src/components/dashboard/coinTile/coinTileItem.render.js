@@ -41,7 +41,7 @@ const CoinTileItemRender = function() {
       { acConfig[item.coin.toUpperCase()] &&
         acConfig[item.coin.toUpperCase()]['ac_reward'] &&
         !acConfig[item.coin.toUpperCase()]['ac_stake'] &&
-        (this.props.ActiveCoin.coin !== 'VRSC' && this.props.ActiveCoin.mode !== 'spv') &&
+        ((this.props.ActiveCoin.coin !== 'VRSC' && this.props.ActiveCoin.coin !== 'VERUSTEST') && this.props.ActiveCoin.mode !== 'spv') &&
         <span>
           <i
             data-tip={ translate('INDEX.MINING_IS_ENABLED') }
@@ -81,7 +81,7 @@ const CoinTileItemRender = function() {
           <ul>
             { this.renderStopCoinButton() &&
               item.mode === 'native' && 
-              <li className={this.props.ActiveCoin.coin === 'VRSC' ? (Config.autoStartVRSC ? "hide" : "") : ""} onClick={ () => this.stopCoind(item.coin, item.mode) }>
+              <li className={(this.props.ActiveCoin.coin === 'VRSC' || this.props.ActiveCoin.coin === 'VERUSTEST') ? (Config.autoStartVRSC ? "hide" : "") : ""} onClick={ () => this.stopCoind(item.coin, item.mode) }>
                 <i className="icon fa-stop-circle margin-right-5"></i> { translate('DASHBOARD.STOP') }
               </li>
             }

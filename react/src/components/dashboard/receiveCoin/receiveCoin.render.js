@@ -193,9 +193,14 @@ export const ReceiveCoinRender = function() {
                                 <i className="icon fa-eye"></i> { translate('INDEX.TRANSPARENT_ADDRESS') }
                               </a>
                             </li>
+                            <li className={ (this.props.coin !== 'VRSC' && this.props.coin !== 'VERUSTEST') ? 'hide' : '' }>
+                              <a onClick={ () => this.getNewAddress('sapling') }>
+                                <i className="icon fa-leaf"></i> { translate('INDEX.SAPLING_Z_ADDRESS') }
+                              </a>
+                            </li>
                             <li className={ this.props.coin === 'CHIPS' ? 'hide' : '' }>
-                              <a onClick={ () => this.getNewAddress('private') }>
-                                <i className="icon fa-eye-slash"></i> { translate('INDEX.PRIVATE_Z_ADDRESS') }
+                              <a onClick={ () => this.getNewAddress('sprout') }>
+                                <i className="icon fa-eye-slash"></i> { (this.props.coin !== 'VRSC' && this.props.coin !== 'VERUSTEST') ? translate('INDEX.PRIVATE_Z_ADDRESS') : translate('INDEX.LEGACY_PRIVATE_ADDRESS')}
                               </a>
                             </li>
                           </ul>

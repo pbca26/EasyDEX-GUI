@@ -6,12 +6,15 @@ import {
 import Config from '../../config';
 import fetchType from '../../util/fetchType';
 
-export const getNewKMDAddresses = (coin, pubpriv, mode) => {
+export const getNewKMDAddresses = (coin, type, mode) => {
   return dispatch => {
     const payload = {
       mode: null,
       chain: coin,
-      cmd: pubpriv === 'public' ? 'getnewaddress' : 'z_getnewaddress',
+      cmd: type === 'public' ? 'getnewaddress' : 'z_getnewaddress',
+      params: [
+        type === 'sprout' ? 'sprout' : (type === 'sapling' ? 'sapling' : ' ')
+      ],
       rpc2cli: Config.rpc2cli,
       token: Config.token,
     };

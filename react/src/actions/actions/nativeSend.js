@@ -43,7 +43,7 @@ export const sendNativeTx = (coin, _payload) => {
       token: Config.token,
       params:
         ((!_payload.sendFrom && !_payload.privateAddrList) || 
-        (_payload.shieldCoinbase && _payload.sendTo.length === 95) ||
+        (_payload.shieldCoinbase && (_payload.sendTo.length === 95 || _payload.sendTo.length === 77)) ||
         (!_payload.sendFrom && _payload.shieldCoinbase)) ?
         (_payload.shieldCoinbase ? 
           (!_payload.sendFrom ? 
@@ -77,7 +77,7 @@ export const sendNativeTx = (coin, _payload) => {
           ]
         ))
         :
-        (_payload.sendTo.length === 95 && _payload.memo !== '' ? 
+        ((_payload.sendTo.length === 95 || _payload.sendTo.length === 77) && _payload.memo !== '' ? 
         [
           _payload.sendFrom,
           [{
@@ -122,7 +122,7 @@ export const sendNativeTx = (coin, _payload) => {
           json.indexOf('"},"id":"jl777"')
         );
 
-        if ((json.indexOf('"code":-4') > -1) && coin !== 'VRSC') {
+        if ((json.indexOf('"code":-4') > -1) && (coin !== 'VRSC' && coin !== 'VERUSTEST')) {
           dispatch(
             triggerToaster(
               translate('API.UNKNOWN_ERROR'),
@@ -132,7 +132,7 @@ export const sendNativeTx = (coin, _payload) => {
           );
         } 
 
-        else if ((json.indexOf('"code":-4') > -1) && coin === 'VRSC') {
+        else if ((json.indexOf('"code":-4') > -1) && (coin === 'VRSC' || coin === 'VERUSTEST')) {
           dispatch(
             triggerToaster(
               translate('API.UNKNOWN_ERROR_VRSC'),

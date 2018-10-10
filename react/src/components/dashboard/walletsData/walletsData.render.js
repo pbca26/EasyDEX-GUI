@@ -357,7 +357,7 @@ export const WalletsDataRender = function() {
                         this.props.ActiveCoin.txhistory !== 'connection error' &&
                         this.props.ActiveCoin.txhistory !== 'connection error or incomplete data' &&
                         this.props.ActiveCoin.txhistory !== 'cant get current height' &&
-                        this.props.ActiveCoin.coin === 'VRSC' &&
+                        (this.props.ActiveCoin.coin === 'VRSC' || this.props.ActiveCoin.coin === 'VERUSTEST') &&
                         <div className="row">
                           <div className="col-sm-4">
                             <button

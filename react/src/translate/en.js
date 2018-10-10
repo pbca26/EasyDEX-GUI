@@ -343,7 +343,9 @@ export const LANG_EN = {
     'ZT_BALANCE': 'Total (Z+T) Balance',
     'GET_NEW_ADDRESS': 'Get New Address',
     'TRANSPARENT_ADDRESS': 'Transparent Address',
+    'LEGACY_Z_ADDRESS': 'Legacy Private Address',
     'PRIVATE_Z_ADDRESS': 'Private (Z) Address',
+    'SAPLING_Z_ADDRESS': 'Private Address (Sapling)',
     'OPERATIONS_STATUSES': 'Operations Statuses',
     'STATUS': 'Status',
     'RESULT': 'Result',
@@ -420,7 +422,9 @@ export const LANG_EN = {
     'MINING_INFO': 'Mining Info',
     'START_MINING': 'Start Mining',
     'STOP_MINING': 'Stop Mining',
+    'UPDATE_MINING': 'Update Mining',
     'STOP_STAKING': 'Stop Staking',
+    'START_STAKING': 'Start Staking',
     'MINING_ERROR': 'An error ocurred',
     'MINING_STARTED': 'Mining initiated',
     'MINING_STOPPED': 'Mining stopped',
@@ -439,6 +443,9 @@ export const LANG_EN = {
     'UPDATE': 'Update',
     'SELECT_THREADS': '(Add threads to mine)',
     'MESSAGE': 'Message',
+    'TRUE': 'True',
+    'FALSE': 'False',
+    'STAKING_STATUS': 'Staking Status'
   },
   'FILTER': {
     'PRIVATE': 'Private',
@@ -1085,6 +1092,7 @@ export const LANG_EN = {
   },
   'ASSETCHAINS': {
     'VRSC': 'Verus',
+    'VERUSTEST': 'Verus Testnet',
     'BET': 'BET',
     'BOTS': 'BOTS',
     'CEAL': 'CEAL NET',
@@ -1245,6 +1253,7 @@ export const LANG_EN = {
     'PPC': 'Peercoin',
     'MZC': 'Mazacoin',
     'SDC': 'ShadowCash',
+    'VERUSTEST': 'VerusTest',
   },
   'TOOLS': {
     'TOOLS': 'Tools',
