@@ -234,7 +234,7 @@ export const shepherdHerd = (coin, mode, path, startupParams, genproclimit) => {
       console.log('VRSC Staking set to default');
     }
     if(Config.cheatCatcher.length === 78) {
-      herdData['ac_options'].push('-' + Config.cheatCatcher);
+      herdData['ac_options'].push('-cheatcatcher=' + Config.cheatCatcher);
       console.log('Cheatcatching enabled at address ' + Config.cheatCatcher);
     }
     
