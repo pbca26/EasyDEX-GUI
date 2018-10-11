@@ -1140,7 +1140,7 @@ class WalletsData extends React.Component {
 
   isPrivate(tx){
     if(tx.address) {
-      if(tx.memo || (tx.address.length === 95 || tx.address.length === 77)){
+      if(tx.memo || (tx.address.length === 95 || tx.address.length === 78)){
         return true;
       }
     }

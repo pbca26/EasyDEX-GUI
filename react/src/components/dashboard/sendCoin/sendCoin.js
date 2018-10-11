@@ -760,7 +760,7 @@ class SendCoin extends React.Component {
   validateSendFormData() {
     let valid = true;
 
-    if (this.state.memo && (this.state.sendTo.length === 95 || this.state.sendTo.length === 77)) {
+    if (this.state.memo && (this.state.sendTo.length === 95 || this.state.sendTo.length === 78)) {
       let hexMemo = this.encodeStringToHex(this.state.memo);
       this.setMemoHex(hexMemo);
     }

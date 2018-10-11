@@ -43,7 +43,7 @@ export const sendNativeTx = (coin, _payload) => {
       token: Config.token,
       params:
         ((!_payload.sendFrom && !_payload.privateAddrList) || 
-        (_payload.shieldCoinbase && (_payload.sendTo.length === 95 || _payload.sendTo.length === 77)) ||
+        (_payload.shieldCoinbase && (_payload.sendTo.length === 95 || _payload.sendTo.length === 78)) ||
         (!_payload.sendFrom && _payload.shieldCoinbase)) ?
         (_payload.shieldCoinbase ? 
           (!_payload.sendFrom ? 
@@ -77,7 +77,7 @@ export const sendNativeTx = (coin, _payload) => {
           ]
         ))
         :
-        ((_payload.sendTo.length === 95 || _payload.sendTo.length === 77) && _payload.memo !== '' ? 
+        ((_payload.sendTo.length === 95 || _payload.sendTo.length === 78) && _payload.memo !== '' ? 
         [
           _payload.sendFrom,
           [{
