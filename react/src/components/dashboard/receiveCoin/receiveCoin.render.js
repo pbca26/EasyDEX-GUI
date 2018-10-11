@@ -200,7 +200,7 @@ export const ReceiveCoinRender = function() {
                             </li>
                             <li className={ this.props.coin === 'CHIPS' ? 'hide' : '' }>
                               <a onClick={ () => this.getNewAddress('sprout') }>
-                                <i className="icon fa-eye-slash"></i> { (this.props.coin !== 'VRSC' && this.props.coin !== 'VERUSTEST') ? translate('INDEX.PRIVATE_Z_ADDRESS') : translate('INDEX.LEGACY_PRIVATE_ADDRESS')}
+                                <i className="icon fa-eye-slash"></i> { (this.props.coin !== 'VRSC' && this.props.coin !== 'VERUSTEST') ? translate('INDEX.PRIVATE_Z_ADDRESS') : translate('INDEX.LEGACY_Z_ADDRESS')}
                               </a>
                             </li>
                           </ul>
