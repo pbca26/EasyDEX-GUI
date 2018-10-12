@@ -287,6 +287,26 @@ class WalletsData extends React.Component {
     return 0;
   }
 
+  confSorting(a, b) {
+    a = a.props.children;
+    b = b.props.children;
+    // force null and undefined to the bottom
+    a = (a === null || a === undefined) ? -Infinity : a;
+    b = (b === null || b === undefined) ? -Infinity : b;
+    // force any string values to lowercase
+    a = typeof a === 'string' ? a.toLowerCase() : a;
+    b = typeof b === 'string' ? b.toLowerCase() : b;
+    // Return either 1 or -1 to indicate a sort priority
+    if (a > b) {
+      return 1;
+    }
+    if (a < b) {
+      return -1;
+    }
+    // returning 0 or undefined will use any subsequent column sorting methods or the row index as a tiebreaker
+    return 0;
+  }
+
   typeSorting(a, b) {
     a = a.props.children.props.className;
     b = b.props.children.props.className;
@@ -427,6 +447,7 @@ class WalletsData extends React.Component {
       headerClassName: 'hidden-xs hidden-sm',
       footerClassName: 'hidden-xs hidden-sm',
       className: 'hidden-xs hidden-sm',
+      sortMethod: this.confSorting,
       accessor: (tx) => TxConfsRender.call(this, tx.confirmations),
     },
     {
