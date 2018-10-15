@@ -206,29 +206,38 @@ export const shepherdHerd = (coin, mode, path, startupParams, genproclimit) => {
   }
 
   if (coin === 'VRSC') { 
-    herdData = {
-      'ac_name': 'VRSC',
-      'ac_options': [
-        '-daemon=0',
-        '-server',
-        '-ac_algo=verushash',
-        '-ac_cc=1',
-        '-ac_supply=0',
-        '-ac_eras=3',
-        '-ac_reward=0,38400000000,2400000000',
-        '-ac_halving=1,43200,1051920',
-        '-ac_decay=100000000,0,0',
-        '-ac_end=10080,226080,0',
-        '-addnode=185.25.48.236',
-        '-addnode=185.64.105.111',
-        '-ac_timelockgte=19200000000',
-        '-ac_timeunlockfrom=129600',
-        '-ac_timeunlockto=1180800',
-        '-ac_veruspos=50',
-        '-gen',
-        '-genproclimit=0',
-      ]
-    };
+      herdData = {
+        'ac_name': 'VRSC',
+        'ac_options': [
+          '-daemon=0',
+          '-server',
+          '-ac_algo=verushash',
+          '-ac_cc=1',
+          '-ac_supply=0',
+          '-ac_eras=3',
+          '-ac_reward=0,38400000000,2400000000',
+          '-ac_halving=1,43200,1051920',
+          '-ac_decay=100000000,0,0',
+          '-ac_end=10080,226080,0',
+          '-addnode=185.25.48.236',
+          '-addnode=185.64.105.111',
+          '-ac_timelockgte=19200000000',
+          '-ac_timeunlockfrom=129600',
+          '-ac_timeunlockto=1180800',
+          '-ac_veruspos=50',
+        ]
+      };
+
+    //Checking for VRSC specific config commands  
+    if(Config.autoStakeVRSC) {
+      herdData['ac_options'].push('-mint');
+      console.log('VRSC Staking set to default');
+    }
+    if(Config.cheatCatcher.length === 78) {
+      herdData['ac_options'].push('-cheatcatcher=' + Config.cheatCatcher);
+      console.log('Cheatcatching enabled at address ' + Config.cheatCatcher);
+    }
+    
   }
 
   if (startupParams) {
