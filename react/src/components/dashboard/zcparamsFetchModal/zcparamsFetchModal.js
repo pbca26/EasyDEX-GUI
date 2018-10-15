@@ -30,7 +30,7 @@ class ZcparamsFetchModal extends React.Component {
       display: true,
       updateLog: [],
       zcparamsSources: {},
-      dlOption: 'agama.komodoplatform.com',
+      dlOption: 'z.cash',
       done: false,
     };
     this.dismiss = this.dismiss.bind(this);
