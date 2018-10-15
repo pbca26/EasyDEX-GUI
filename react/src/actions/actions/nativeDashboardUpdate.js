@@ -77,6 +77,12 @@ export const getDashboardUpdate = (coin, activeCoinProps) => {
         _privateTxList = _privateTxList.concat(returnList[i]);
       }
 
+      //Cut down private tx list to 1000 to improve performance
+      //on massive wallets
+      if (_privateTxList.length >= 1000){
+        _privateTxList = _privateTxList.slice(0, 1001);
+      }
+
       let privateTxData = [resultObj];
 
       if (_privateTxList.length > 0) {

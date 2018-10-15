@@ -250,14 +250,14 @@ export const TxHistoryListRender = function() {
       data={ this.state.filteredItemsList }
       columns={ this.state.itemsListColumns }
       minRows="0"
-      sortable={ false }
+      sortable={ true }
       className="-striped -highlight"
       PaginationComponent={ TablePaginationRenderer }
       nextText={ translate('INDEX.NEXT_PAGE') }
       previousText={ translate('INDEX.PREVIOUS_PAGE') }
       showPaginationBottom={ this.state.showPagination }
       pageSize={ this.state.pageSize }
-      defaultSortMethod={ this.tableSorting }
+      defaultSortMethod={ this.defaultSorting }
       defaultSorted={[{ // default sort
         id: 'timestamp',
         desc: true,
@@ -357,7 +357,7 @@ export const WalletsDataRender = function() {
                         this.props.ActiveCoin.txhistory !== 'connection error' &&
                         this.props.ActiveCoin.txhistory !== 'connection error or incomplete data' &&
                         this.props.ActiveCoin.txhistory !== 'cant get current height' &&
-                        this.props.ActiveCoin.coin === 'VRSC' &&
+                        (this.props.ActiveCoin.coin === 'VRSC' || this.props.ActiveCoin.coin === 'VERUSTEST') &&
                         <div className="row">
                           <div className="col-sm-4">
                             <button

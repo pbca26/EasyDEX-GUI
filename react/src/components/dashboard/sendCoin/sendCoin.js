@@ -224,7 +224,7 @@ class SendCoin extends React.Component {
   componentWillReceiveProps(props) {
 
     if (this.props.ActiveCoin.coin !== props.ActiveCoin.coin) {
-      if(this.props.ActiveCoin.coin !== 'VRSC'){
+      if((this.props.ActiveCoin.coin !== 'VRSC' && this.props.ActiveCoin.coin !== 'VERUSTEST')){
         this.setState({
           shieldCoinbase: false,
         });
@@ -760,7 +760,7 @@ class SendCoin extends React.Component {
   validateSendFormData() {
     let valid = true;
 
-    if (this.state.memo && this.state.sendTo.length === 95) {
+    if (this.state.memo && (this.state.sendTo.length === 95 || this.state.sendTo.length === 78)) {
       let hexMemo = this.encodeStringToHex(this.state.memo);
       this.setMemoHex(hexMemo);
     }
@@ -794,7 +794,7 @@ class SendCoin extends React.Component {
     }
 
     if (!this.state.sendTo ||
-        (this.state.sendTo && this.state.sendTo.substring(0, 2) !== 'zc')) {
+        (this.state.sendTo && (this.state.sendTo.substring(0, 2) !== 'zc' && this.state.sendTo.substring(0, 2) !== 'zs'))) {
       const _validateAddress = mainWindow.addressVersionCheck(this.props.ActiveCoin.coin, this.state.sendTo);
       let _msg;
 
@@ -914,7 +914,7 @@ class SendCoin extends React.Component {
       
       
       if (this.state.sendTo.length > 34 &&
-        this.state.sendTo.substring(0, 2) === 'zc' &&
+        (this.state.sendTo.substring(0, 2) === 'zc' || this.state.sendTo.substring(0, 2) === 'zs') &&
         (!this.state.sendFrom && !this.state.privateAddrList) && 
         !this.state.shieldCoinbase) {
       Store.dispatch(
@@ -939,7 +939,7 @@ class SendCoin extends React.Component {
     }
     
 
-    if (this.props.ActiveCoin.coin === 'VRSC'){
+    if ((this.props.ActiveCoin.coin === 'VRSC' || this.props.ActiveCoin.coin === 'VERUSTEST')){
       if(!this.state.sendTo){
         Store.dispatch(
           triggerToaster(
@@ -951,7 +951,7 @@ class SendCoin extends React.Component {
         valid = false;
       }
 
-      if(this.state.shieldCoinbase && (!(this.state.sendTo.length > 34 && this.state.sendTo.substring(0, 2) === 'zc'))){
+      if(this.state.shieldCoinbase && (!(this.state.sendTo.length > 34 && (this.state.sendTo.substring(0, 2) === 'zc' || this.state.sendTo.substring(0, 2) === 'zs')))){
         Store.dispatch(
           triggerToaster(
             translate('SEND.MUST_BE_Z_ADDR'),
