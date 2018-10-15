@@ -169,7 +169,7 @@ class MiningButton extends React.Component {
                 type="number"
                 disabled={ this.state.loading }
                 min="0"
-                className="form-control"
+                className="form-control stakemineinput"
                 data-tip={ translate('INDEX.THREADS_DESC') }
                 value={ this.state.numThreadsGUI }
                 onChange={ this.updateInput }/>
@@ -178,7 +178,7 @@ class MiningButton extends React.Component {
                     className="text-left" />
             <button
                 type="button"
-                className="btn btn-primary waves-effect waves-light margin-top-5"
+                className="btn btn-primary waves-effect waves-light margin-top-5 stakemineinput"
                 disabled={this.state.loading}
                 onClick={ 
                   !this.state.isMining ? (() => this.startMining(this.state.numThreadsGUI)) : 
@@ -192,7 +192,7 @@ class MiningButton extends React.Component {
                             </button>            
             <button
                 type="button"
-                className="btn btn-primary waves-effect waves-light margin-top-5"
+                className="btn btn-primary waves-effect waves-light margin-top-5 stakemineinput"
                 disabled={this.state.loading}
                 onClick={ 
                   !this.state.isStaking ? (() => this.startStaking()) : 

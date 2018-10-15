@@ -770,6 +770,9 @@ export const LANG_EN = {
     'ZCASH_PARAMS_MISSING_VERIFYING_KEY': '- missing verifying key',
     'ZCASH_PARAMS_MISSING_PROVING_KEY_SIZE': '- proving key size is incorrect',
     'ZCASH_PARAMS_MISSING_VERIFYING_KEY_SIZE': '- verifying key size is incorrect',
+    'ZCASH_PARAMS_MISSING_SPEND': '- missing sapling spend params',
+    'ZCASH_PARAMS_MISSING_OUTPUT': '- missing sapling output params',
+    'ZCASH_PARAMS_MISSING_GROTH16': '- missing groth16 params',
   },
   'LOGIN': {
     'QMENU_REMOVE_SPV': 'Remove all SPV coins',
@@ -964,7 +967,7 @@ export const LANG_EN = {
   },
   'ZCPARAMS_FETCH': {
     'DOWNLOADING_ZCASH_KEYS': 'Downloading Zcash keys',
-    'BOTH_KEYS_VERIFIED': 'Both Zcash param keys are downloaded and verified!',
+    'BOTH_KEYS_VERIFIED': 'All sprout and sapling keys are downloaded and verified!',
     'CLOSE_THE_MODAL': 'Close the modal and try to add a coin again.',
     'ZCPARAMS_VERIFICATION_ERROR_P1': 'Zcash param',
     'ZCPARAMS_VERIFICATION_ERROR_P2': 'verification error!',
