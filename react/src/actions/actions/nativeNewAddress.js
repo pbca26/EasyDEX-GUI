@@ -13,7 +13,7 @@ export const getNewKMDAddresses = (coin, type, mode) => {
       chain: coin,
       cmd: type === 'public' ? 'getnewaddress' : 'z_getnewaddress',
       params: [
-        type === 'sprout' ? 'sprout' : (type === 'sapling' ? 'sapling' : ' ')
+        type === 'sprout' ? 'sprout' : (type === 'sapling' ? 'sapling' : '')
       ],
       rpc2cli: Config.rpc2cli,
       token: Config.token,
