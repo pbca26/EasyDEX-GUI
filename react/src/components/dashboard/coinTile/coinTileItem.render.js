@@ -41,7 +41,6 @@ const CoinTileItemRender = function() {
       { acConfig[item.coin.toUpperCase()] &&
         acConfig[item.coin.toUpperCase()]['ac_reward'] &&
         !acConfig[item.coin.toUpperCase()]['ac_stake'] &&
-        ((this.props.ActiveCoin.coin !== 'VRSC' && this.props.ActiveCoin.coin !== 'VERUSTEST') && this.props.ActiveCoin.mode !== 'spv') &&
         <span>
           <i
             data-tip={ translate('INDEX.MINING_IS_ENABLED') }
