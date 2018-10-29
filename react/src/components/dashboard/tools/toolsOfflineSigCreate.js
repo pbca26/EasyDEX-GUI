@@ -211,7 +211,7 @@ class ToolsOfflineSigCreate extends React.Component {
             value={ this.state.amount }
             onChange={ this.updateInput }
             id="kmdWalletAmount"
-            placeholder="0.000"
+            placeholder="Enter an amount"
             autoComplete="off" />
         </div>
         <div className="col-sm-12 form-group form-material no-padding-left margin-top-20">

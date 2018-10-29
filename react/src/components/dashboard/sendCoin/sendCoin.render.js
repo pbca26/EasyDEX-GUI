@@ -157,7 +157,7 @@ export const _SendFormRender = function() {
               value={ this.state.amount !== 0 ? this.state.amount : '' }
               onChange={ this.updateInput }
               id="kmdWalletAmount"
-              placeholder="0.000"
+              placeholder="Enter an amount"
               autoComplete="off" />
           </div>
           { (this.props.ActiveCoin.coin === 'VRSC' || this.props.ActiveCoin.coin === 'VERUSTEST') && (this.state.sendTo.length === 95 || this.state.sendTo.length === 78) && !this.state.shieldCoinbase &&
@@ -210,7 +210,7 @@ export const _SendFormRender = function() {
               name="fee"
               onChange={ this.updateInput }
               id="kmdWalletFee"
-              placeholder="0.000"
+              placeholder="Enter an amount"
               value={ this.state.fee !== 0 ? this.state.fee : '' }
               autoComplete="off" />
           </div>
