@@ -10,6 +10,14 @@
   background: #f3f4f5;
 }
 
+.page-main-dark {
+  background: #252526;
+}
+
+.page-darkmode {
+  background: #252526;
+}
+
 #kmd_header_button {
   button {
     margin-right: 5px;
@@ -160,6 +168,10 @@ select{
   background: #f3f4f5;
 }
 
+.backround-gray-dark {
+  background: #252526;
+}
+
 .table-striped {
   > tbody {
     > tr.hover--none {
@@ -261,6 +273,9 @@ select{
 #section-iguana-wallet-settings {
   > .row {
     background: #f3f4f5;
+  }
+  > .row-dark {
+    background: #252526;
   }
 }
 

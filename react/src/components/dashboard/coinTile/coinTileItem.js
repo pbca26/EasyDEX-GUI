@@ -36,7 +36,6 @@ import CoinTileItemRender from './coinTileItem.render';
 
 const SPV_DASHBOARD_UPDATE_TIMEOUT = 60000;
 const ACTIVE_HANDLE_TIMEOUT_COIND_NATIVE = 15000;
-const ACTIVE_HANDLE_TIMEOUT_COIND_NATIVE_LOADING = 5000;
 const ACTIVE_HANDLE_TIMEOUT_COIND_NATIVE_RCP2CLI = 40000;
 const COIND_DOWN_MODAL_FETCH_FAILURES_THRESHOLD = mainWindow.appConfig.failedRPCAttemptsThreshold || 10;
 
@@ -314,19 +313,11 @@ class CoinTileItem extends React.Component {
       }
 
       if (mode === 'native') {
-        let _iguanaActiveHandleLoading = setInterval(() => {
+        const _iguanaActiveHandle = setInterval(() => {
           this.dispatchCoinActions(coin, mode);
-          if(this.props.ActiveCoin){
-            if(this.props.ActiveCoin.progress.blocks) {
-              clearInterval(_iguanaActiveHandleLoading);
-              const _iguanaActiveHandle = setInterval(() => {
-                this.dispatchCoinActions(coin, mode);
-              }, Config.rpc2cli ? ACTIVE_HANDLE_TIMEOUT_COIND_NATIVE_RCP2CLI : ACTIVE_HANDLE_TIMEOUT_COIND_NATIVE);
-              startInterval(_iguanaActiveHandle);
-            }
-        }
-        }, ACTIVE_HANDLE_TIMEOUT_COIND_NATIVE_LOADING);
-        Store.dispatch(startInterval('sync', _iguanaActiveHandleLoading));
+        }, Config.rpc2cli ? ACTIVE_HANDLE_TIMEOUT_COIND_NATIVE_RCP2CLI : ACTIVE_HANDLE_TIMEOUT_COIND_NATIVE);
+
+        Store.dispatch(startInterval('sync', _iguanaActiveHandle));
       } else if (mode === 'spv') {
         const _iguanaActiveHandle = setInterval(() => {
           this.dispatchCoinActions(coin, mode);

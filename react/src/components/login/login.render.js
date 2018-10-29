@@ -303,9 +303,21 @@ const LoginRender = function() {
                         value: 'vrsc', 
                         label: 'vrsc', 
                       },
+                      { 
+                        value: 'btc', 
+                        label: 'btc', 
+                      },
                       {
                         value: 'kmd',
                         label: 'kmd',
+                      },
+                      {
+                        value: 'zec',
+                        label: 'zec',
+                      },
+                      {
+                        value: 'dash',
+                        label: 'dash',
                       },
                       {
                         value: 'chips',
@@ -335,6 +347,12 @@ const LoginRender = function() {
                         value: 'kmd+revs+jumblr',
                         label: 'kmd+revs+jumblr',
                       },
+                      /*
+                      { 
+                        value: 'verustest', 
+                        label: 'verustest', 
+                      },
+                      */
                     ]} />
                 </div>
               </div>
