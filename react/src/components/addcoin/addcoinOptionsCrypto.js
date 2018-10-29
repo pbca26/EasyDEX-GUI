@@ -10,16 +10,16 @@ const prepCoinsList = () => {
   const availableKMDModes = mainWindow.arch === 'x64' ? 'spv|native' : 'spv';
   let _coins = [];
 
-  if (!config.experimentalFeatures) {
-    coins = coins.slice(0, 2);
-  }
+  //if (!config.experimentalFeatures) {
+    coins = coins.slice(0, 6);
+  //}
 
   for (let i = 0; i < coins.length; i++) {
     if (mainWindow.electrumServers[coins[i].toLowerCase()]) {
       _coins.push({
         label: `${translate('CRYPTO.' + coins[i])} (${coins[i]})`,
         icon: coins[i],
-        value: `${coins[i]}|${coins[i] === 'KMD' ? availableKMDModes : 'spv'}`,
+        value: `${coins[i]}|${((coins[i] === 'KMD') || (coins[i] === 'VRSC')) ? availableKMDModes : 'spv'}`,
       });
     }
   }

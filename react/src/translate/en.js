@@ -1131,6 +1131,7 @@ export const LANG_EN = {
     'ZILLA': 'ChainZilla',
   },
   'CRYPTO': {
+    'VRSC': 'Verus',
     'STRAT': 'Stratis',
     'TOA': 'TOA',
     'USC': 'UltimateSecureCash',

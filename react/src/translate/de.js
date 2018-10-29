@@ -783,7 +783,7 @@ export const LANG_DE = {
     'USD': 'US-Dollar (USD)'
   },
   'ASSETCHAINS': {
-    'VRSC': 'Verus (VRSC)',
+    'VRSC': 'Verus',
     'VERUSTEST': 'Verus Testnet',
     'BET': 'BET (BET)',
     'BOTS': 'BOTS (BOTS)',
