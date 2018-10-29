@@ -347,10 +347,12 @@ const LoginRender = function() {
                         value: 'kmd+revs+jumblr',
                         label: 'kmd+revs+jumblr',
                       },
+                      /*
                       { 
                         value: 'verustest', 
                         label: 'verustest', 
                       },
+                      */
                     ]} />
                 </div>
               </div>
