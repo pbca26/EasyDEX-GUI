@@ -41,6 +41,7 @@ const CoinTileItemRender = function() {
       { acConfig[item.coin.toUpperCase()] &&
         acConfig[item.coin.toUpperCase()]['ac_reward'] &&
         !acConfig[item.coin.toUpperCase()]['ac_stake'] &&
+        (item.coin !== 'VRSC' && item.coin !== 'VERUSTEST') &&
         <span>
           <i
             data-tip={ translate('INDEX.MINING_IS_ENABLED') }
@@ -64,6 +65,7 @@ const CoinTileItemRender = function() {
       }
       { acConfig[item.coin.toUpperCase()] &&
         acConfig[item.coin.toUpperCase()]['ac_stake'] &&
+        (item.coin !== 'VRSC' && item.coin !== 'VERUSTEST') &&
         (mainWindow.getPubkeys()[item.coin.toLowerCase()] && mainWindow.getPubkeys()[item.coin.toLowerCase()].pub) &&
         <span>
           <span

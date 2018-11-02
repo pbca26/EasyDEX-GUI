@@ -77,10 +77,14 @@ export const getDashboardUpdate = (coin, activeCoinProps) => {
         _privateTxList = _privateTxList.concat(returnList[i]);
       }
 
-      //Cut down private tx list to 1000 to improve performance
-      //on massive wallets
-      if (_privateTxList.length >= 1000){
-        _privateTxList = _privateTxList.slice(0, 1001);
+      let privateTxCount = 1000
+
+      if (Config.transactionCountPrivate >= 0) {
+        privateTxCount = Math.trunc(Config.transactionCountPrivate);
+      }
+      
+      if (_privateTxList.length >= privateTxCount){
+        _privateTxList = _privateTxList.slice(0, (privateTxCount + 1));
       }
 
       let privateTxData = [resultObj];
@@ -137,10 +141,16 @@ export const getDashboardUpdate = (coin, activeCoinProps) => {
             dispatch(getDashboardUpdateState('chips', false, coin, json, _listtransactions, null));
           } else {
 
-            console.log(_listtransactions)
+            //console.log(_listtransactions)
 
-            if (_listtransactions.length > 1000) {
-              _listtransactions = _listtransactions.slice(-1000);
+            let publicTxCount = 1000
+
+            if (Config.transactionCountPublic >= 0) {
+              publicTxCount = Math.trunc(Config.transactionCountPublic);
+            }
+
+            if (_listtransactions.length > publicTxCount) {
+              _listtransactions = _listtransactions.slice(-1*(publicTxCount));
             }
 
             _listtransactions = _listtransactions.filter(
