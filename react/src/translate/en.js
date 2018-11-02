@@ -332,9 +332,8 @@ export const LANG_EN = {
     'TYPE': 'Type',
     'INTEREST': 'Rewards',
     'ACTIVATING_CHAIN': 'Activating best chain',
-    'KMD_STARTED': 'Komodo daemon has been started and is processing.<br>' +
-                   'Please wait while the best chain is being activated.<br>' +
-                   'Tip: in case sync is stuck restart the wallet.',
+    'KMD_STARTED': 'Daemon has been started and is processing.<br>' +
+                   'Please wait while the best chain is being activated.<br>',
     'CONNECTIONS': 'Connections',
     'TRANSPARENT_BALANCE': 'Transparent Balance',
     'Z_BALANCE': 'Private (Z) Balance',
@@ -625,6 +624,8 @@ export const LANG_EN = {
     'OUT': 'OUT',
     'MINED': 'Mined',
     'IMMATURE': 'Immature',
+    'MINT': 'Minted',
+    'STAKE': 'STAKE',
     'ZADDR_NOT_LISTED': 'Unknown Z-Address',
     'ADDR_COPIED': 'Address Copied',
     'QR_ERR_NO_VIDEO_DEVICE': 'Error: No video input devices found!',
