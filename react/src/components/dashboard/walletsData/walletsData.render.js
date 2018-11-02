@@ -151,8 +151,8 @@ export const TxTypeRender = function(tx) {
     );
   } else if (category === 'stake') {
     return (
-      <span className="label label-info self-send">
-        <span>{ translate('DASHBOARD.STAKE') }</span>
+      <span className="label label-info">
+        <span> { translate('DASHBOARD.STAKE') } </span>
       </span>
     );
   } else if (category === 'mint') {

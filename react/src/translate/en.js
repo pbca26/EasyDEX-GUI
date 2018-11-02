@@ -625,7 +625,7 @@ export const LANG_EN = {
     'MINED': 'Mined',
     'IMMATURE': 'Immature',
     'MINT': 'Minted',
-    'STAKE': 'stake',
+    'STAKE': 'STAKE',
     'ZADDR_NOT_LISTED': 'Unknown Z-Address',
     'ADDR_COPIED': 'Address Copied',
     'QR_ERR_NO_VIDEO_DEVICE': 'Error: No video input devices found!',
