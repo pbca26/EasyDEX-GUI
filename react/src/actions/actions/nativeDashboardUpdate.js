@@ -136,6 +136,28 @@ export const getDashboardUpdate = (coin, activeCoinProps) => {
           if (coin === 'CHIPS') {
             dispatch(getDashboardUpdateState('chips', false, coin, json, _listtransactions, null));
           } else {
+
+            console.log(_listtransactions)
+
+            if (_listtransactions.length > 1000) {
+              _listtransactions = _listtransactions.slice(-1000);
+            }
+
+            _listtransactions = _listtransactions.filter(
+              (tx) => {
+                if (tx.category === 'stake') {
+                  if (tx.amount > 0) {
+                    return true;
+                  }
+                  else {
+                    return false;
+                  }
+                }
+                else {
+                  return true
+                }
+              });
+              
             let allTransactions = _listtransactions.concat(returnList);
       
             // calc transparent balance properly

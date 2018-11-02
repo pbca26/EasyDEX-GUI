@@ -74,6 +74,7 @@ class WalletsData extends React.Component {
       filterPublicTx: true,
       filterImmatureTx: true,
       filterMatureTx: true,
+      filterStakeTx: true,
       filterSentTx: true,
       filterReceivedTx: true,
       filterSelfTx: true,
@@ -95,6 +96,7 @@ class WalletsData extends React.Component {
     this.toggleFilterPublicTx = this.toggleFilterPublicTx.bind(this);
     this.toggleFilterImmatureTx = this.toggleFilterImmatureTx.bind(this);
     this.toggleFilterMatureTx = this.toggleFilterMatureTx.bind(this);
+    this.toggleFilterStakeTx = this.toggleFilterStakeTx.bind(this);
     this.toggleFilterSentTx = this.toggleFilterSentTx.bind(this);
     this.toggleFilterReceivedTx = this.toggleFilterReceivedTx.bind(this);
     this.toggleFilterSelfTx = this.toggleFilterSelfTx.bind(this);
@@ -642,6 +644,7 @@ class WalletsData extends React.Component {
         !this.state.filterPublicTx ||
         !this.state.filterImmatureTx ||
         !this.state.filterMatureTx ||
+        !this.state.filterStakeTx ||
         !this.state.filterSentTx ||
         !this.state.filterReceivedTx ||
         !this.state.filterSelfTx) {
@@ -896,6 +899,14 @@ class WalletsData extends React.Component {
     });
   }
 
+  toggleFilterStakeTx(){
+    this.setState({
+      filterStakeTx: !this.state.filterStakeTx,
+    }, () => {
+      this._setTxHistory();
+    });
+  }
+
   toggleFilterSentTx(){
     this.setState({
       filterSentTx: !this.state.filterSentTx,
@@ -1095,6 +1106,11 @@ class WalletsData extends React.Component {
           return false;
         }
       }
+      if (!this.state.filterStakeTx){
+        if (this.isStake(tx)){
+          return false;
+        }
+      }
       if (!this.state.filterSentTx){
         if (this.isSent(tx)){
           return false;
@@ -1123,40 +1139,6 @@ class WalletsData extends React.Component {
       {
         return true;
       }
-
-
-
-
-      
-   /* if (
-      (this.state.filterPrivateTx ? this.isPrivate(tx) : false) || 
-      (this.state.filterPublicTx ? this.isPublic(tx) : false) || 
-      (this.state.filterImmatureTx ? this.isImmature(tx) : false) || 
-      (this.state.filterMatureTx ? this.isMature(tx) : false) || 
-      (this.state.filterSentTx ? this.isSent(tx) : false) || 
-      (this.state.filterReceivedTx ? this.isReceived(tx) : false)) {
-        if (!term)
-        {
-          return true;
-        }
-        else if (
-        (this.contains(tx.address, term) ||
-        this.contains(tx.confirmations, term) ||
-        this.contains(tx.amount, term) ||
-        this.contains(tx.type, term) ||
-        this.contains(secondsToString(tx.blocktime || tx.timestamp || tx.time), term))) 
-        {
-          return true;
-        }
-        else 
-        {
-          return false;
-        }
-    }
-    else {
-      return false;
-    }
-    */
   }
 
   isPrivate(tx){
@@ -1191,7 +1173,11 @@ class WalletsData extends React.Component {
   } 
 
   isMature(tx){
-    return tx.category === 'generate';
+    return tx.category === 'generate' || tx.category === 'mint';
+  }
+
+  isStake(tx){
+    return tx.category === 'stake';
   }
 
   isSelf(tx){
