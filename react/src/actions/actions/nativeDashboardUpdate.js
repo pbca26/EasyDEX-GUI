@@ -83,8 +83,11 @@ export const getDashboardUpdate = (coin, activeCoinProps) => {
         privateTxCount = Math.trunc(Config.transactionCountPrivate);
       }
       
-      if (_privateTxList.length >= privateTxCount){
-        _privateTxList = _privateTxList.slice(0, (privateTxCount + 1));
+      if (_privateTxList.length > privateTxCount && privateTxCount !== 0){
+        _privateTxList = _privateTxList.slice(-1*(privateTxCount));
+      }
+      else if (privateTxCount === 0){
+        _privateTxList = [];
       }
 
       let privateTxData = [resultObj];
@@ -145,28 +148,33 @@ export const getDashboardUpdate = (coin, activeCoinProps) => {
 
             let publicTxCount = 1000
 
-            if (Config.transactionCountPublic >= 0) {
+            if (Config.transactionCountPublic > 0) {
               publicTxCount = Math.trunc(Config.transactionCountPublic);
             }
 
-            if (_listtransactions.length > publicTxCount) {
-              _listtransactions = _listtransactions.slice(-1*(publicTxCount));
-            }
-
-            _listtransactions = _listtransactions.filter(
-              (tx) => {
-                if (tx.category === 'stake') {
-                  if (tx.amount > 0) {
-                    return true;
+            if (_listtransactions !== 'no data'){
+              if (_listtransactions.length > publicTxCount) {
+                _listtransactions = _listtransactions.slice(-1*(publicTxCount));
+              }
+  
+              _listtransactions = _listtransactions.filter(
+                (tx) => {
+                  if (tx.category === 'stake') {
+                    if (tx.amount > 0) {
+                      return true;
+                    }
+                    else {
+                      return false;
+                    }
                   }
                   else {
-                    return false;
+                    return true
                   }
-                }
-                else {
-                  return true
-                }
               });
+            } else {
+              _listtransactions = [];
+            }
+            
               
             let allTransactions = _listtransactions.concat(returnList);
       
