@@ -22,7 +22,7 @@ build:
     expire_in: 1 week
 
 
-.code_quality:
+code_quality:
   image: docker:stable
   allow_failure: true
   services:
