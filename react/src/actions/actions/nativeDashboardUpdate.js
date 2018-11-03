@@ -84,7 +84,7 @@ export const getDashboardUpdate = (coin, activeCoinProps) => {
       }
       
       if (_privateTxList.length > privateTxCount && privateTxCount !== 0){
-        _privateTxList = _privateTxList.slice(-1*(privateTxCount));
+        _privateTxList = _privateTxList.slice(0, (privateTxCount));
       }
       else if (privateTxCount === 0){
         _privateTxList = [];
