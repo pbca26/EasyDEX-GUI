@@ -79,6 +79,9 @@ export const getDashboardUpdate = (coin, activeCoinProps) => {
 
       let privateTxCount = 1000
 
+      //TODO: Loop through each addresslist and pop elements until
+      // you reach transactionCountPrivate
+
       if (Config.transactionCountPrivate >= 0) {
         privateTxCount = Math.trunc(Config.transactionCountPrivate);
       }
