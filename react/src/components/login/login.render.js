@@ -254,6 +254,10 @@ const LoginRender = function() {
                           label: 'kmd',
                         },
                         {
+                          value: 'pirate',
+                          label: 'pirate',
+                        },
+                        {
                           value: 'bntn',
                           label: 'bntn',
                         },

@@ -235,6 +235,10 @@ export const getCoinTitle = (coin) => {
       coinlogo = 'VRSC';
       coinname = 'Verus';
     break;
+    case 'PIRATE':
+      coinlogo = 'PIRATE';
+      coinname = 'Pirate';
+    break;
   }
 
   return {
