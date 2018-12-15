@@ -1096,6 +1096,7 @@ export const LANG_EN = {
   },
   'ASSETCHAINS': {
     'VRSC': 'Verus',
+    'PIRATE': 'Pirate',
     'VERUSTEST': 'Verus Testnet',
     'BET': 'BET',
     'BOTS': 'BOTS',
