@@ -96,6 +96,7 @@ export const SettingsRender = function() {
                 this.props.Main.coins.spv &&
                 Object.keys(this.props.Main.coins.spv).length &&
                 this.props.Main.isLoggedIn &&
+                !mainWindow.isWatchOnly() &&
                 <PanelSection
                   title={ translate('INDEX.EXPORT_KEYS') }
                   icon="icon md-key">
@@ -145,12 +146,12 @@ export const SettingsRender = function() {
                   <CliPanel />
                 </PanelSection>
               }
-              { this.state.isExperimentalOn &&
+              { /*this.state.isExperimentalOn &&
                 <PanelSection
                   title={ translate('INDEX.UPDATE') }
                   icon="icon fa fa-cloud-download">
                   <AppUpdatePanel />
-                </PanelSection>
+                </PanelSection>*/
               }
             </Panel>
           </div>

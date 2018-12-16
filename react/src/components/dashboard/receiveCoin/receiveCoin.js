@@ -158,7 +158,12 @@ class ReceiveCoin extends React.Component {
 
     if (this.props.balance &&
         this.props.balance.total) {
-      _balance = this.props.balance.total;
+      if (this.props.balance.immature) {
+        _balance = this.props.balance.total - this.props.balance.immature;
+      }
+      else {
+        _balance = this.props.balance.total;
+      }
     }
 
     return _balance;
@@ -184,7 +189,7 @@ class ReceiveCoin extends React.Component {
 
           if (!this.state.toggleIsMine &&
               !address.canspend &&
-              address.address.substring(0, 2) !== 'zc') {
+              (address.address.substring(0, 2) !== 'zc') && (address.address.substring(0, 2) !== 'zs')) {
             items.pop();
           }
         } else {
@@ -194,7 +199,7 @@ class ReceiveCoin extends React.Component {
 
           if (!this.state.toggleIsMine &&
             !address.canspend &&
-            address.address.substring(0, 2) !== 'zc') {
+            (address.address.substring(0, 2) !== 'zc' && address.address.substring(0, 2) !== 'zs')) {
             items.pop();
           }
         }

@@ -138,7 +138,7 @@ export const shepherdToolsListunspent = (coin, address) => {
     };
     fetch(
       `http://127.0.0.1:${Config.agamaPort}/shepherd/electrum/listunspent${urlParams(_urlParams)}`,
-      fetchType.get  
+      fetchType.get
     )
     .catch((error) => {
       console.log(error);
@@ -240,6 +240,56 @@ export const shepherdToolsSeedToWif = (seed, network, iguana) => {
     .then(response => response.json())
     .then(json => {
       resolve(!json.result ? 'error' : json);
+    });
+  });
+}
+
+// remote bitcore api
+export const shepherdToolsMultiAddressBalance = (addressList, fallback) => {
+  return new Promise((resolve, reject) => {
+    fetch(
+      fallback ? 'https://kmd.explorer.supernet.org/api/addrs/utxo' : 'https://www.kmdexplorer.ru/insight-api-komodo/addrs/utxo',
+      fetchType(
+        JSON.stringify({
+          addrs: addressList,
+        })
+      ).post
+    )
+    .catch((error) => {
+      console.log(error);
+      console.warn(`shepherdToolsMultiAddressBalance has failed, ${fallback ? ' use fallback' : ' all routes have failed'}`);
+
+      resolve({
+        msg: 'error',
+        code: fallback ? -1554 : -777,
+      });
+    })
+    .then((response) => {
+      const _response = response.text().then((text) => { return text; });
+      return _response;
+    })
+    .then(json => {
+      try {
+        json = JSON.parse(json);
+
+        if (json.length ||
+            (typeof json === 'object' && !Object.keys(json).length)) {
+          resolve({
+            msg: 'success',
+            result: json,
+          });
+        } else {
+          resolve({
+            msg: 'error',
+            result: 'error parsing response',
+          });
+        }
+      } catch (e) {
+        resolve({
+          msg: 'error',
+          result: json.indexOf('<html>') === -1 ? json : 'error parsing response',
+        });
+      }
     });
   });
 }

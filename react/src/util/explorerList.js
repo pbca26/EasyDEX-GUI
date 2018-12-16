@@ -1,7 +1,9 @@
 // TODO: add at least 2 explorers per coin
 
 const explorerList = {
+  VRSC: 'http://explorer.veruscoin.io',
   KMD: 'http://www.kmdexplorer.ru',
+  KV: 'http://kv.explorer.supernet.org',
   OOT: 'http://explorer.utrum.io',
   MSHARK: 'http://MSHARK.explorer.supernet.org',
   REVS: 'http://revs.explorer.supernet.org',
@@ -18,7 +20,9 @@ const explorerList = {
   WLC: 'http://WIRELESS.explorer.supernet.org',
   CHIPS: 'http://CHIPS1.explorer.supernet.org',
   COQUI: 'https://explorer.coqui.cash',
+  CHAIN: 'https://explorer.chainmakers.co',
   GLXT: 'http://glx.info',
+  BNTN: 'http://chain.blocnation.io',
   EQL: 'http://178.62.240.191',
   MNZ: 'https://www.mnzexplorer.com',
   BTCH: 'http://www.btch.host',
@@ -40,7 +44,7 @@ const explorerList = {
   DGB: 'https://digiexplorer.info',
   CRW: 'http://ex.crownlab.eu',
   ABY: 'http://explorer.artbyte.me',
-  GAME: 'https://blockexplorer.gamecredits.com',
+  GAME: 'https://blockexplorer.gamecredits.com/transactions/',
   MAC: 'http://explorer.machinecoin.org',
   IOP: 'http://mainnet.iop.cash',
   BTG: 'https://btgexplorer.com',

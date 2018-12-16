@@ -3,6 +3,7 @@ import translate from '../../translate/translate';
 import Config from '../../config';
 import urlParams from '../../util/url';
 import fetchType from '../../util/fetchType';
+import mainWindow from '../../util/mainWindow';
 
 import {
   triggerToaster,
@@ -15,6 +16,7 @@ import {
   startAssetChain,
   startCrypto,
   checkAC,
+  acConfig,
 } from '../../components/addcoin/payload';
 
 export const iguanaActiveHandleState = (json) => {
@@ -122,7 +124,7 @@ export const shepherdElectrumAddCoin = (coin) => {
   }
 }
 
-export const addCoin = (coin, mode, startupParams) => {
+export const addCoin = (coin, mode, startupParams, genproclimit) => {
   if (mode === 0 ||
       mode === '0') {
     return dispatch => {
@@ -130,7 +132,7 @@ export const addCoin = (coin, mode, startupParams) => {
     }
   } else {
     return dispatch => {
-      dispatch(shepherdGetConfig(coin, '-1', startupParams));
+      dispatch(shepherdGetConfig(coin, mode, startupParams, genproclimit));
     }
   }
 }
@@ -146,40 +148,42 @@ const handleErrors = (response) => {
   }
 }
 
-export const shepherdHerd = (coin, mode, path, startupParams) => {
+export const shepherdHerd = (coin, mode, path, startupParams, genproclimit) => {
   let acData;
   let herdData = {
     'ac_name': coin,
     'ac_options': [
       '-daemon=0',
       '-server',
-      `-ac_name=${coin}`,
-      '-addnode=78.47.196.146',
+      `-ac_name=${coin}`
     ],
   };
 
-  if (coin === 'BEER' ||
-      coin === 'PIZZA') {
-    herdData['ac_options'].pop();
-    herdData['ac_options'].push('-addnode=24.54.206.138');
-  } else if (coin === 'NINJA') {
-    herdData['ac_options'].pop();
-    herdData['ac_options'].push('-addnode=192.241.134.19');
-  } else if (coin === 'OOT') {
-    herdData['ac_options'].pop();
-    herdData['ac_options'].push('-addnode=174.138.107.226');
-  } else if (coin === 'BNTN') {
-    herdData['ac_options'].pop();
-    herdData['ac_options'].push('-addnode=94.130.169.205');
-  } else if (coin === 'EQL') {
-    herdData['ac_options'].pop();
-    herdData['ac_options'].push('-addnode=46.101.124.153');  
-  } else if (coin === 'GLXT') {
-    herdData['ac_options'].pop();
-    herdData['ac_options'].push('-addnode=34.201.62.8');  
+  if (acConfig[coin]) {
+    for (let key in acConfig[coin]) {
+      if (key === 'pubkey') {
+        const pubKeys = mainWindow.getPubkeys();
 
-}
+        if (pubKeys &&
+            pubKeys[coin.toLowerCase()]) {
+          herdData['ac_options'].push(`-pubkey=${pubKeys[coin.toLowerCase()].pubHex}`);
+        }
+      } else if (key === 'genproclimit') {
+        if (genproclimit) {
+          herdData['ac_options'].push(`-genproclimit=${genproclimit + 1}`);
+        } else {
+          herdData['ac_options'].push(`-genproclimit=1`);
+        }
+      } else {
+        herdData['ac_options'].push(`-${key}=${acConfig[coin][key]}`);
+      }
+    }
+  }
 
+  if (!acConfig[coin] ||
+      (acConfig[coin] && !acConfig[coin].addnode)) {
+    herdData['ac_options'].push('-addnode=78.47.196.146');
+  }
 
   if (coin === 'ZEC') {
     herdData = {
@@ -199,6 +203,41 @@ export const shepherdHerd = (coin, mode, path, startupParams) => {
         '-addnode=78.47.196.146',
       ],
     };
+  }
+
+  if (coin === 'VRSC') { 
+      herdData = {
+        'ac_name': 'VRSC',
+        'ac_options': [
+          '-daemon=0',
+          '-server',
+          '-ac_algo=verushash',
+          '-ac_cc=1',
+          '-ac_supply=0',
+          '-ac_eras=3',
+          '-ac_reward=0,38400000000,2400000000',
+          '-ac_halving=1,43200,1051920',
+          '-ac_decay=100000000,0,0',
+          '-ac_end=10080,226080,0',
+          '-addnode=185.25.48.236',
+          '-addnode=185.64.105.111',
+          '-ac_timelockgte=19200000000',
+          '-ac_timeunlockfrom=129600',
+          '-ac_timeunlockto=1180800',
+          '-ac_veruspos=50',
+        ]
+      };
+
+    //Checking for VRSC specific config commands  
+    if(Config.autoStakeVRSC) {
+      herdData['ac_options'].push('-mint');
+      console.log('VRSC Staking set to default');
+    }
+    if(Config.stakeGuard.length === 78) {
+      herdData['ac_options'].push('-cheatcatcher=' + Config.stakeGuard);
+      console.log('Cheatcatching enabled at address ' + Config.stakeGuard);
+    }
+    
   }
 
   if (startupParams) {
@@ -228,7 +267,7 @@ export const shepherdHerd = (coin, mode, path, startupParams) => {
       coin,
       mode
     );
-    herdData.ac_options.push(`-ac_supply=${supply}`);
+    // herdData.ac_options.push(`-ac_supply=${supply}`);
   }
 
   return dispatch => {
@@ -285,6 +324,8 @@ export const addCoinResult = (coin, mode) => {
   const modeToValue = {
     '0': 'spv',
     '-1': 'native',
+    '1': 'staking',
+    '2': 'mining',
   };
 
   return dispatch => {
@@ -372,7 +413,7 @@ export const _shepherdGetConfig = (coin, mode, startupParams) => {
   }
 }
 
-export const shepherdGetConfig = (coin, mode, startupParams) => {
+export const shepherdGetConfig = (coin, mode, startupParams, genproclimit) => {
   if (coin === 'KMD' &&
       mode === '-1') {
     return dispatch => {
@@ -435,7 +476,8 @@ export const shepherdGetConfig = (coin, mode, startupParams) => {
             coin,
             mode,
             json,
-            startupParams
+            startupParams,
+            genproclimit
           )
         )
       );
