@@ -1140,6 +1140,7 @@ export const LANG_EN = {
   },
   'CRYPTO': {
     'VRSC': 'Verus',
+    //'PIRATE': 'Pirate',
     'STRAT': 'Stratis',
     'TOA': 'TOA',
     'USC': 'UltimateSecureCash',
