@@ -208,6 +208,7 @@ export const shepherdHerd = (coin, mode, path, startupParams, genproclimit) => {
   if (coin === 'VRSC') { 
       herdData = {
         'ac_name': 'VRSC',
+        'ac_daemon': 'verusd',
         'ac_options': [
           '-daemon=0',
           '-server',

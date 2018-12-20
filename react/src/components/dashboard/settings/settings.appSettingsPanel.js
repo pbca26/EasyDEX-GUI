@@ -197,58 +197,60 @@ class AppSettingsPanel extends React.Component {
           );
 
           for (let _key in _appConfig[key]) {
-            items.push(
-              <tr key={ `app-settings-${key}-${_key}` }>
-                <td className="padding-15 padding-left-30">
-                  { this.state.appConfigSchema[key][_key].displayName ? this.state.appConfigSchema[key][_key].displayName : _key }
-                  { this.state.appConfigSchema[key][_key].info &&
-                    <span>
-                      <i
-                        className="icon fa-question-circle settings-help"
-                        data-tip={ this.state.appConfigSchema[key][_key].info }
-                        data-html={ true }></i>
-                      <ReactTooltip
-                        effect="solid"
-                        className="text-left" />
-                    </span>
-                  }
-                </td>
-                <td className="padding-15">
-                  { this.state.appConfigSchema[key][_key].type === 'number' &&
-                    <input
-                      type="number"
-                      pattern="[0-9]*"
-                      name={ `${key}__${_key}` }
-                      value={ _appConfig[key][_key] }
-                      onChange={ (event) => this.updateInputSettings(event, key, _key) } />
-                  }
-                  { (this.state.appConfigSchema[key][_key].type === 'string' ||
-                    this.state.appConfigSchema[key][_key].type === 'folder') &&
-                    <input
-                      type="text"
-                      name={ `${key}__${_key}` }
-                      value={ _appConfig[key][_key] }
-                      className={ this.state.appConfigSchema[key][_key].type === 'folder' ? 'full-width': '' }
-                      onChange={ (event) => this.updateInputSettings(event, key, _key) } />
-                  }
-                  { this.state.appConfigSchema[key][_key].type === 'boolean' &&
-                    <span className="pointer toggle">
-                      <label className="switch">
-                        <input
-                          type="checkbox"
-                          name={ `${key}__${_key}` }
-                          value={ _appConfig[key] }
-                          checked={ _appConfig[key][_key] } />
-                        <div
-                          className="slider"
-                          onClick={ (event) => this.updateInputSettings(event, key, _key) }></div>
-                      </label>
-                    </span>
-                  }
-                </td>
-              </tr>
-            );
-
+            if (this.state.appConfigSchema[key][_key]) {
+              items.push(
+                <tr key={ `app-settings-${key}-${_key}` }>
+                  <td className="padding-15 padding-left-30">
+                    { this.state.appConfigSchema[key][_key].displayName ? this.state.appConfigSchema[key][_key].displayName : _key }
+                    { this.state.appConfigSchema[key][_key].info &&
+                      <span>
+                        <i
+                          className="icon fa-question-circle settings-help"
+                          data-tip={ this.state.appConfigSchema[key][_key].info }
+                          data-html={ true }></i>
+                        <ReactTooltip
+                          effect="solid"
+                          className="text-left" />
+                      </span>
+                    }
+                  </td>
+                  <td className="padding-15">
+                    { this.state.appConfigSchema[key][_key].type === 'number' &&
+                      <input
+                        type="number"
+                        pattern="[0-9]*"
+                        name={ `${key}__${_key}` }
+                        value={ _appConfig[key][_key] }
+                        onChange={ (event) => this.updateInputSettings(event, key, _key) } />
+                    }
+                    { (this.state.appConfigSchema[key][_key].type === 'string' ||
+                      this.state.appConfigSchema[key][_key].type === 'folder') &&
+                      <input
+                        type="text"
+                        name={ `${key}__${_key}` }
+                        value={ _appConfig[key][_key] }
+                        className={ this.state.appConfigSchema[key][_key].type === 'folder' ? 'full-width': '' }
+                        onChange={ (event) => this.updateInputSettings(event, key, _key) } />
+                    }
+                    { this.state.appConfigSchema[key][_key].type === 'boolean' &&
+                      <span className="pointer toggle">
+                        <label className="switch">
+                          <input
+                            type="checkbox"
+                            name={ `${key}__${_key}` }
+                            value={ _appConfig[key] }
+                            checked={ _appConfig[key][_key] } />
+                          <div
+                            className="slider"
+                            onClick={ (event) => this.updateInputSettings(event, key, _key) }></div>
+                        </label>
+                      </span>
+                    }
+                  </td>
+                </tr>
+              );
+            }
+            
             if (key === 'spv' &&
                 _key === 'cache' &&
                 this.props.Settings.appInfo &&

@@ -1096,6 +1096,13 @@ export const LANG_EN = {
   },
   'ASSETCHAINS': {
     'VRSC': 'Verus',
+    'PIRATE': 'Pirate',
+    'CCL': 'CoinCollect',
+    'KMDICE': "KMDICE",
+    'MGNX': 'MagnaX',
+    'DION': 'DionPay',
+    'PTX': 'PatentTX',
+    'ZEX': 'Zaddex',
     'VERUSTEST': 'Verus Testnet',
     'BET': 'BET',
     'BOTS': 'BOTS',
@@ -1133,6 +1140,7 @@ export const LANG_EN = {
   },
   'CRYPTO': {
     'VRSC': 'Verus',
+    //'PIRATE': 'Pirate',
     'STRAT': 'Stratis',
     'TOA': 'TOA',
     'USC': 'UltimateSecureCash',
