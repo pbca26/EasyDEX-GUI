@@ -2,6 +2,8 @@ stages:
 - build
 - test
 - deploy
+
+
 variables:
   AGAMA_ARTIFACT: build.tar.gz
   DOCKER_DRIVER: overlay2
