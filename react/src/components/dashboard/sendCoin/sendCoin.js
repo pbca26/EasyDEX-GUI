@@ -676,7 +676,7 @@ class SendCoin extends React.Component {
         if (this.props.ActiveCoin.mode === 'spv') {
           shepherdElectrumSendPreflight(
             this.props.ActiveCoin.coin,
-            this.state.amount * 100000000,
+            (Math.round(this.state.amount*10000000000))/100,
             this.state.sendTo,
             this.props.Dashboard.electrumCoins[this.props.ActiveCoin.coin].pub,
             this.props.ActiveCoin.coin === 'BTC' ? this.state.btcFeesSize : null,
@@ -744,7 +744,7 @@ class SendCoin extends React.Component {
         Store.dispatch(
           shepherdElectrumSend(
             this.props.ActiveCoin.coin,
-            this.state.amount * 100000000,
+            (Math.round(this.state.amount*10000000000))/100,
             this.state.sendTo,
             this.props.Dashboard.electrumCoins[this.props.ActiveCoin.coin].pub,
             this.props.ActiveCoin.coin === 'BTC' ? this.state.btcFeesSize : null,
