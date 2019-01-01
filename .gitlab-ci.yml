@@ -1,7 +1,9 @@
 stages:
 - build
-- deploy
 - test
+- deploy
+
+
 variables:
   AGAMA_ARTIFACT: build.tar.gz
   DOCKER_DRIVER: overlay2
@@ -22,18 +24,6 @@ build:
     expire_in: 1 week
 
 
-deploy:
-  stage: deploy
-  image: google/cloud-sdk:alpine
-  dependencies:
-  - build
-  script:
-  - echo "$AUTH_KEY" > AUTH_KEY.json
-  - gcloud auth activate-service-account --key-file AUTH_KEY.json
-  - gsutil cp $AGAMA_ARTIFACT $STAGING/EasyDEX-GUI/$CI_COMMIT_REF_NAME/
-  - curl -X POST -F token=$CI_JOB_TOKEN --form ref=$CI_COMMIT_REF_NAME https://gitlab.com/api/v4/projects/10027007/trigger/pipeline
-
-
 code_quality:
   image: docker:stable
   allow_failure: true
@@ -50,5 +40,14 @@ code_quality:
     paths: [gl-code-quality-report.json]
 
 
-
+deploy:
+  stage: deploy
+  image: google/cloud-sdk:alpine
+  dependencies:
+  - build
+  script:
+  - echo "$AUTH_KEY" > AUTH_KEY.json
+  - gcloud auth activate-service-account --key-file AUTH_KEY.json
+  - gsutil cp $AGAMA_ARTIFACT $STAGING/EasyDEX-GUI/$CI_COMMIT_REF_NAME/
+  - curl -X POST -F token=$CI_JOB_TOKEN --form ref=$CI_COMMIT_REF_NAME https://gitlab.com/api/v4/projects/8018592/trigger/pipeline
 

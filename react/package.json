@@ -17,7 +17,7 @@
     "e2e": "protractor",
     "e2e-live": "protractor --elementExplorer"
   },
-  "repository": "https://github.com/KomodoPlatform/EasyDEX-GUI",
+  "repository": "https://github.com/VerusCoin/EasyDEX-GUI",
   "homepage": "http://supernet.org",
   "keywords": [
     "agama",
