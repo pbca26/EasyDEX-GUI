@@ -688,8 +688,8 @@ class WalletsData extends React.Component {
         itemsListColumns: this.generateItemsListColumns(_txhistory.length),
         reconnectInProgress: false,
       });
-    } else if (_txhistory &&
-        _txhistory.length === 0) {
+    } else if ((_txhistory &&
+        _txhistory.length === 0) || _txhistory === 'no data') {
       _stateChange = Object.assign({}, _stateChange, {
         itemsList: 'no data',
         reconnectInProgress: false,
@@ -714,13 +714,13 @@ class WalletsData extends React.Component {
       if (!this.state.reconnectInProgress) {
         this.spvAutoReconnect();
       }
-    }
-    else {
+    } else {
       _stateChange = Object.assign({}, _stateChange, {
         itemsList: 'unknown error',
         reconnectInProgress: false,
       });
     }
+    
 
     this.setState(Object.assign({}, _stateChange));
   }
