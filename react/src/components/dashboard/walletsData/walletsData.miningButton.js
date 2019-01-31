@@ -42,7 +42,7 @@ class MiningButton extends React.Component {
 
   updateMining(_cliResponse){
     this.setState({
-      isMining: _cliResponse.generate,
+      isMining: Number(_cliResponse.genproclimit) === 0 ? false : _cliResponse.generate,
       numThreadsCli: _cliResponse.genproclimit,
       localHps: _cliResponse.localhashps,
       isStaking: _cliResponse.staking

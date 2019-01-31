@@ -203,7 +203,7 @@ export const shepherdElectrumBalance = (coin, address) => {
     })
     .then(response => response.json())
     .then(json => {
-      console.log(json.electrumres);
+      console.log(json);
       if (json &&
           json.electrumres &&
           json.electrumres.code) {
@@ -252,6 +252,7 @@ export const shepherdElectrumTransactions = (coin, address) => {
     })
     .then(response => response.json())
     .then(json => {
+      console.log(json)
       dispatch(shepherdElectrumTransactionsState(json));
     });
   }
