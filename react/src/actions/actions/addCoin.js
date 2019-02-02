@@ -4,6 +4,7 @@ import Config from '../../config';
 import urlParams from '../../util/url';
 import fetchType from '../../util/fetchType';
 import mainWindow from '../../util/mainWindow';
+import { acHerdData } from '../../util/acHerdData'
 
 import {
   triggerToaster,
@@ -158,28 +159,7 @@ export const shepherdHerd = (coin, mode, path, startupParams, genproclimit) => {
       `-ac_name=${coin}`
     ],
   };
-/*
-  if (acConfig[coin]) {
-    for (let key in acConfig[coin]) {
-      if (key === 'pubkey') {
-        const pubKeys = mainWindow.getPubkeys();
 
-        if (pubKeys &&
-            pubKeys[coin.toLowerCase()]) {
-          herdData['ac_options'].push(`-pubkey=${pubKeys[coin.toLowerCase()].pubHex}`);
-        }
-      } else if (key === 'genproclimit') {
-        if (genproclimit) {
-          herdData['ac_options'].push(`-genproclimit=${genproclimit + 1}`);
-        } else {
-          herdData['ac_options'].push(`-genproclimit=1`);
-        }
-      } else {
-        herdData['ac_options'].push(`-${key}=${acConfig[coin][key]}`);
-      }
-    }
-  }
-*/
   if (!acConfig[coin] ||
       (acConfig[coin] && !acConfig[coin].addnode)) {
     herdData['ac_options'].push('-addnode=78.47.196.146');
@@ -201,6 +181,35 @@ export const shepherdHerd = (coin, mode, path, startupParams, genproclimit) => {
       'ac_options': [
         '-daemon=0',
         '-addnode=78.47.196.146',
+      ],
+    };
+  }
+
+  if (coin === 'PIRATE') {
+    herdData = {
+      'ac_name': 'PIRATE',
+      'ac_options': [
+          '-ac_supply=0',
+          '-ac_reward=25600000000',
+          '-ac_halving=77777',
+          '-ac_private=1',
+      ],
+    };
+  }
+
+  if (coin === 'REVS' ||
+  coin === 'JUMRLR' ||
+  coin === 'MNZ' ||
+  coin === 'BTCH' ||
+  coin === 'BNTN') {
+    herdData = {
+      'ac_name': acHerdData[coin].name,
+      'ac_options': [
+        '-daemon=0',
+        '-server',
+        `-ac_name=${acHerdData[coin].name}`,
+        `-addnode=${acHerdData[coin].seedNode}`,
+        `-ac_supply=${acHerdData[coin].supply}`,
       ],
     };
   }
