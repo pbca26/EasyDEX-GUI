@@ -214,7 +214,7 @@ export const shepherdHerd = (coin, mode, path, startupParams, genproclimit) => {
     };
   }
 
-  if (coin === 'VRSC') { 
+  if (coin === 'VRSC') {
       herdData = {
         'ac_name': 'VRSC',
         'ac_daemon': 'verusd',
@@ -247,12 +247,12 @@ export const shepherdHerd = (coin, mode, path, startupParams, genproclimit) => {
       herdData['ac_options'].push('-cheatcatcher=' + Config.stakeGuard);
       console.log('Cheatcatching enabled at address ' + Config.stakeGuard);
     }
+    if(Config.pubKey && 
+      (Config.pubKey.length > 0)) {
+      herdData['ac_options'].push('-pubkey=' + Config.pubKey);
+      console.log('Pubkey mining enabled at address ' + Config.pubKey);
+    }
     
-  }
-
-  if(herdData && herdData['ac_options'] && Config.pubKey && (Config.pubKey.length > 0)) {
-    herdData['ac_options'].push('-pubkey=' + Config.pubKey);
-    console.log('Pubkey mining enabled at address ' + Config.pubKey);
   }
 
   if (startupParams) {

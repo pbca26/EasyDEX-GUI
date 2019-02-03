@@ -2,7 +2,7 @@
 let Config;
 let _config = {
   iguanaCorePort: 7778,
-  agamaPort: 17777,
+  agamaPort: 17776,
   enableCacheApi: true,
   useBasiliskInstance: true,
   openAlias: false,
