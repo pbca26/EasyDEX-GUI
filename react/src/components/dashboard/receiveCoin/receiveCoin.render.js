@@ -25,7 +25,7 @@ export const AddressActionsNonBasiliskModeRender = function(address, type) {
         <div className="receive-address-context-menu">
           <ul>
             <li onClick={ () => this._copyCoinAddress(address) }>
-              <i className="icon wb-copy margin-right-5"></i> { translate('INDEX.COPY') + ' ' + translate('RECEIVE.PUB_KEY') }
+              <i className="icon wb-copy margin-right-5"></i> { translate('INDEX.COPY') + ' ' + translate('RECEIVE.ADDRESS') }
             </li>
             { !address.canspend &&
               this.props.mode !== 'spv' &&

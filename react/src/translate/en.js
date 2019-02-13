@@ -591,6 +591,7 @@ export const LANG_EN = {
   'RECEIVE': {
     'TOGGLE_ADDRESS': 'Toggle address context menu',
     'PUB_KEY': 'pub key',
+    'ADDRESS': 'address',
     'PRIV_KEY': 'priv key (WIF)',
     'VALIDATE_ADDRESS': 'validate address',
     'YOU_DONT_OWN_PRIV_KEYS': 'You don\'t own priv keys for this address',
