@@ -185,33 +185,25 @@ export const shepherdHerd = (coin, mode, path, startupParams, genproclimit) => {
     };
   }
 
-  if (coin === 'PIRATE') {
+  if (acHerdData.hasOwnProperty(coin)) {
     herdData = {
-      'ac_name': 'PIRATE',
-      'ac_options': [
-          '-ac_supply=0',
-          '-ac_reward=25600000000',
-          '-ac_halving=77777',
-          '-ac_private=1',
-      ],
+      'ac_name': coin,
+      'ac_options': [],
     };
-  }
 
-  if (coin === 'REVS' ||
-  coin === 'JUMRLR' ||
-  coin === 'MNZ' ||
-  coin === 'BTCH' ||
-  coin === 'BNTN') {
-    herdData = {
-      'ac_name': acHerdData[coin].name,
-      'ac_options': [
-        '-daemon=0',
-        '-server',
-        `-ac_name=${acHerdData[coin].name}`,
-        `-addnode=${acHerdData[coin].seedNode}`,
-        `-ac_supply=${acHerdData[coin].supply}`,
-      ],
-    };
+    let params = acHerdData[coin] 
+
+    for (let key in params) {
+      if (Array.isArray(params[key])) {
+        for (let i = 0; i < params[key].length; i++) {
+          let paramArr = params[key]
+          herdData.ac_options.push("-" + key + "=" + paramArr[i])
+        }
+      } else {
+        herdData.ac_options.push("-" + key + "=" + params[key])
+      }
+      
+    }
   }
 
   if (coin === 'VRSC') {
