@@ -102,9 +102,6 @@ export const acHerdData = {
 		ac_sapling: 5000000,
 		addnode: '174.138.107.226',
 	},
-	VOTE2018: {
-		ac_supply: 600000000,
-	},
 	NINJA: {
 		ac_supply: 100000000,
 		addnode: '192.241.134.19',
@@ -158,10 +155,7 @@ export const acHerdData = {
 		],
 		genproclimit: true,
 	},
-	KOIN: {
-		ac_supply: 125000000,
-		addnode: '3.0.32.10',
-	},
+
 	DION: {
 		ac_supply: 3900000000,
 		ac_reward: 22260000000,
@@ -186,26 +180,6 @@ export const acHerdData = {
 		ac_cc: 2,
 		ac_founders: 1,
 		addnode: '5.9.102.210',
-	},
-	SPLTEST: {
-		ac_supply: 5555555,
-		ac_reward: 10000000000000,
-		ac_cc: 2,
-		addressindex: 1,
-		spentindex: 1,
-		addnode: [
-			'54.36.126.42',
-			'94.130.224.11',
-		],
-	},
-	LUMBER: {
-		ac_algo: 'verushash',
-		ac_veruspos: 80,
-		ac_cc: 2,
-		ac_supply: 1260000,
-		ac_reward: 470000000,
-		ac_halving: 2100000,
-		addnode: '149.202.84.141',
-		genproclimit: true,
-	},
+	}
+
 };
