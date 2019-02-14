@@ -119,10 +119,6 @@ export const acHerdData = {
 		ac_sapling: 5000000,
 		addnode: '51.68.215.104',
 	},
-	DSEC: {
-		ac_supply: 7000000,
-		addnode: '185.148.147.30',
-	},
 	MGNX: {
 		ac_supply: 12465003,
 		ac_staked: 90,
