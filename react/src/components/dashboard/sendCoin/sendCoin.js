@@ -55,6 +55,7 @@ import erc20ContractId from 'agama-wallet-lib/src/eth-erc20-contract-id';
 import { addressVersionCheck } from 'agama-wallet-lib/src/keys';
 import networks from 'agama-wallet-lib/src/bitcoinjs-networks';
 import kv from 'agama-wallet-lib/src/kv';
+import { encodeMemo } from '../../../util/zTxUtils';
 
 const { shell } = window.require('electron');
 const SPV_MAX_LOCAL_TIMESTAMP_DEVIATION = 300; // 5 min
@@ -87,6 +88,7 @@ class SendCoin extends React.Component {
       sendFromAmount: 0,
       sendTo: '',
       amount: 0,
+      memo: '',
       fee: 0,
       addressSelectorOpen: false,
       renderAddressDropdown: true,

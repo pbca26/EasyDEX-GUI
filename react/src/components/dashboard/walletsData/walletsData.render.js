@@ -9,6 +9,8 @@ import Spinner from '../spinner/spinner';
 import mainWindow, { staticVar } from '../../../util/mainWindow';
 import { tableSorting } from '../pagination/utils';
 import dpowCoins from 'agama-wallet-lib/src/electrum-servers-dpow';
+import { isPrivate } from '../../../util/zTxUtils';
+import MiningButton from './walletsData.miningButton';
 
 const kvCoins = {
   'KV': true,
@@ -78,12 +80,19 @@ export const TxConfsRender = function(tx) {
   }
 }
 
-export const AddressTypeRender = function() {
+export const AddressTypeRender = (tx) => {
   return (
     <span>
-      <span className="label label-default">
-        <i className="icon fa-eye"></i>&nbsp;
-        { translate('IAPI.PUBLIC_SM') }
+      <span className={isPrivate(tx) ? "label label-dark" : "label label-default"}>
+        <i 
+        className={ 'icon fa-eye' + (isPrivate(tx) ? '-slash' : '')}
+        data-tip={ isPrivate(tx) ? translate('DASHBOARD.PRIVATE_TX') : translate('DASHBOARD.PUBLIC_TX') }
+        data-for={isPrivate(tx) ? "privateTxIcon" : "publicTxIcon"}
+        ></i>
+        <ReactTooltip
+          id={isPrivate(tx) ? "privateTxIcon" : "publicTxIcon"}
+          effect="solid"
+          className="text-left" />
       </span>
     </span>
   );
@@ -433,11 +442,171 @@ export const WalletsDataRender = function() {
                         _txhistory !== 'connection error or incomplete data' &&
                         _txhistory !== 'cant get current height' &&
                         !this.state.kvView &&
-                        <div className="col-sm-4 search-box">
+                        <div className="search-box">
+                          <button
+                              type="button"
+                              className="btn btn-primary waves-effect waves-light col-sm-4"
+                              data-tip={ this.state.filterMenuOpen ? translate('FILTER.FILTER_DESC_CONTRACT') : translate('FILTER.FILTER_DESC_EXPAND') }
+                              onClick={ this.toggleFilterMenuOpen }>{ translate('FILTER.FILTER_OPTIONS') }</button>
                           <input
                             className="form-control"
                             onChange={ e => this.onSearchTermChange(e.target.value) }
                             placeholder={ translate('DASHBOARD.SEARCH') } />
+                        </div>
+                      }
+                      { this.props.ActiveCoin.txhistory !== 'loading' &&
+                        this.props.ActiveCoin.txhistory !== 'connection error' &&
+                        this.props.ActiveCoin.txhistory !== 'connection error or incomplete data' &&
+                        this.props.ActiveCoin.txhistory !== 'cant get current height' &&
+                        (this.props.ActiveCoin.coin === 'VRSC' || this.props.ActiveCoin.coin === 'VERUSTEST') &&
+                        <div className="row">
+                          <div className="col-sm-4">
+                            <button
+                              type="button"
+                              className={this.props.ActiveCoin.mode === 'spv' ? 'hide' : "btn btn-dark waves-effect waves-light margin-top-5"}
+                              data-tip={ this.state.showMiningButton ? translate('DASHBOARD.MINING_DESC_CONTRACT') : translate('DASHBOARD.MINING_DESC_EXPAND') }
+                              onClick={ () => this.toggleMiningButton() }><i className="icon fa-cogs"></i>{ this.state.showMiningButton ? translate('DASHBOARD.CONTRACT_MINING') : translate('DASHBOARD.EXPAND_MINING') }</button>
+                                <ReactTooltip
+                                effect="solid"
+                                className="text-left" />
+                          </div>
+                        </div>
+                      }  
+                      { this.props.ActiveCoin.txhistory !== 'loading' &&
+                        this.props.ActiveCoin.txhistory !== 'connection error' &&
+                        this.props.ActiveCoin.txhistory !== 'connection error or incomplete data' &&
+                        this.props.ActiveCoin.txhistory !== 'cant get current height' &&
+                        this.state.showMiningButton && 
+                        this.props.ActiveCoin.mode !== 'spv' &&
+                        <MiningButton />
+                      }
+                      { this.props.ActiveCoin.txhistory !== 'loading' &&
+                        this.props.ActiveCoin.txhistory !== 'connection error' &&
+                        this.props.ActiveCoin.txhistory !== 'connection error or incomplete data' &&
+                        this.props.ActiveCoin.txhistory !== 'cant get current height' &&
+                        this.state.filterMenuOpen && 
+                        <div className="filter-options-wrapper">
+                          <div className="filter-option">
+                            <span className = {
+                              this.props.ActiveCoin.mode === 'spv' || 
+                              (
+                                staticVar.chainParams && 
+                                staticVar.chainParams[this.props.ActiveCoin.coin] && 
+                                staticVar.chainParams[this.props.ActiveCoin.coin].ac_private
+                              )
+                              ? 'hide' : "filter-option-child"}>
+                              <div>
+                              { translate('FILTER.PRIVATE') }
+                              </div>
+                              <div>
+                                <label className="switch">
+                                <input
+                                    type="checkbox"
+                                    checked={ this.state.filterPrivateTx } />
+                                    <div
+                                    className="slider"
+                                    onClick={ this.toggleFilterPrivateTx }></div>
+                                </label>
+                              </div>
+                            </span>
+                            <span className = {
+                              this.props.ActiveCoin.mode === 'spv' || 
+                              (
+                                staticVar.chainParams && 
+                                staticVar.chainParams[this.props.ActiveCoin.coin] && 
+                                staticVar.chainParams[this.props.ActiveCoin.coin].ac_private
+                              )
+                            ? 'hide' : "filter-option-child"}>
+                              <div>
+                              { translate('FILTER.PUBLIC') }
+                              </div>
+                              <div>
+                                <label className="switch">
+                                <input
+                                    type="checkbox"
+                                    checked={ this.state.filterPublicTx } />
+                                    <div
+                                    className="slider"
+                                    onClick={ this.toggleFilterPublicTx }></div>
+                                </label>
+                              </div>
+                            </span>
+                            <span className = {this.props.ActiveCoin.mode === 'spv' ? 'hide' : "filter-option-child"}>
+                              <div>
+                              { translate('FILTER.IMMATURE') }
+                              </div>
+                              <div>
+                                <label className="switch">
+                                <input
+                                    type="checkbox"
+                                    checked={ this.state.filterImmatureTx } />
+                                    <div
+                                    className="slider"
+                                    onClick={ this.toggleFilterImmatureTx }></div>
+                                </label>
+                              </div>
+                            </span>
+                            <span className = {this.props.ActiveCoin.mode === 'spv' ? 'hide' : "filter-option-child"}>
+                              <div>
+                              { translate('FILTER.MATURE') }
+                              </div>
+                              <div>
+                                <label className="switch">
+                                <input
+                                    type="checkbox"
+                                    checked={ this.state.filterMatureTx } />
+                                    <div
+                                    className="slider"
+                                    onClick={ this.toggleFilterMatureTx }></div>
+                                </label>
+                              </div>
+                            </span>
+                            <span className = "filter-option-child">
+                              <div>
+                              { translate('FILTER.SENT') }
+                              </div>
+                              <div>
+                                <label className="switch">
+                                <input
+                                    type="checkbox"
+                                    checked={ this.state.filterSentTx } />
+                                    <div
+                                    className="slider"
+                                    onClick={ this.toggleFilterSentTx }></div>
+                                </label>
+                              </div>
+                            </span>
+                            <span className = "filter-option-child">
+                              <div>
+                              { translate('FILTER.RECEIVED') }
+                              </div>
+                              <div>
+                                <label className="switch">
+                                <input
+                                    type="checkbox"
+                                    checked={ this.state.filterReceivedTx } />
+                                    <div
+                                    className="slider"
+                                    onClick={ this.toggleFilterReceivedTx }></div>
+                                </label>
+                              </div>
+                            </span>
+                            <span className = {this.props.ActiveCoin.mode === 'native' ? 'hide' : "filter-option-child"}>
+                              <div>
+                              { translate('FILTER.SELF') }
+                              </div>
+                              <div>
+                                <label className="switch">
+                                <input
+                                    type="checkbox"
+                                    checked={ this.state.filterSelfTx } />
+                                    <div
+                                    className="slider"
+                                    onClick={ this.toggleFilterSelfTx }></div>
+                                </label>
+                              </div>
+                            </span>
+                          </div>
                         </div>
                       }
                     </div>

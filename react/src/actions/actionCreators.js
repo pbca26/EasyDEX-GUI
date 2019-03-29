@@ -65,6 +65,7 @@ export * from './actions/addressBook';
 export * from './actions/dice';
 export * from './actions/eth';
 export * from './actions/exchanges';
+export * from './actions/nativeMining';
 
 export const changeActiveAddress = (address) => {
   return {

@@ -67,7 +67,7 @@
   },
   "devDependencies": {
     "autoprefixer": "^6.5.3",
-    "babel-core": "^7.1.5",
+    "babel-core": "^6.26.3",
     "babel-eslint": "^7.1.0",
     "babel-jest": "^19.0.0",
     "babel-loader": "^7.1.5",
@@ -109,7 +109,7 @@
     "style-loader": "^0.13.0",
     "uglifyjs-webpack-plugin": "^2.0.1",
     "url-loader": "^1.1.2",
-    "webpack": "^4.25.1",
+    "webpack": "^4.29.6",
     "webpack-cli": "^3.1.2",
     "webpack-dashboard": "^2.0.0",
     "webpack-dev-server": "^3.1.10"

@@ -119,15 +119,7 @@ export const getDashboardUpdateState = (json, coin, fakeResponse) => {
         for (let i = 0; i < _addresses.private.length; i++) {
           if (_addresses.private[i].txs &&
               _addresses.private[i].txs.length) {
-            for (let a = 0; a < _addresses.private[i].txs.length; a++) {
-              zlistreceivedbyaddressHistory.push({
-                txid: _addresses.private[i].txs[a].txid,
-                amount: _addresses.private[i].txs[a].amount,
-                address: _addresses.private[i].address,
-                type: 'received',
-                ztx: true,
-              });
-            }
+            zlistreceivedbyaddressHistory = zlistreceivedbyaddressHistory.concat(_addresses.private[i].txs)
           }
         }
       }

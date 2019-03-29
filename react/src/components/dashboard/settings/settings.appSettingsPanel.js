@@ -254,100 +254,102 @@ class AppSettingsPanel extends React.Component {
           );
 
           for (let _key in _appConfig[key]) {
-            items.push(
-              <tr key={ `app-settings-${key}-${_key}` }>
-                <td className="padding-15 padding-left-30">
-                  { _configSchema[key][_key].displayName ? _configSchema[key][_key].displayName : _key }
-                  { _configSchema[key][_key].info &&
-                    <i
-                      className="icon fa-question-circle settings-help"
-                      data-tip={ _configSchema[key][_key].info }
-                      data-html={ true }
-                      data-for="appSettings2"></i>
-                  }
-                  <ReactTooltip
-                    id="appSettings2"
-                    effect="solid"
-                    className="text-left" />
-                </td>
-                <td className="padding-15">
-                  { _configSchema[key][_key].type === 'number' &&
-                    <input
-                      type="number"
-                      pattern="[0-9]*"
-                      name={ `${key}__${_key}` }
-                      value={ _appConfig[key][_key] }
-                      onChange={ (event) => this.updateInputSettings(event, key, _key) } />
-                  }
-                  { (_configSchema[key][_key].type === 'string' ||
-                    _configSchema[key][_key].type === 'folder') &&
-                    <input
-                      type="text"
-                      name={ `${key}__${_key}` }
-                      value={ _appConfig[key][_key] }
-                      className="full-width"
-                      onChange={ (event) => this.updateInputSettings(event, key, _key) } />
-                  }
-                  { _configSchema[key][_key].type === 'boolean' &&
-                    <span className="pointer toggle">
-                      <label className="switch">
-                        <input
-                          type="checkbox"
-                          name={ `${key}__${_key}` }
-                          value={ _appConfig[key] }
-                          checked={ _appConfig[key][_key] }
-                          readOnly />
-                        <div
-                          className="slider"
-                          onClick={ (event) => this.updateInputSettings(event, key, _key) }></div>
-                      </label>
-                    </span>
-                  }
-                </td>
-              </tr>
-            );
-
-            const _appInfo = this.props.Settings.appInfo;
-
-            if (key === 'spv' &&
-                _key === 'cache' &&
-                _appInfo &&
-                _appInfo.cacheSize &&
-                _appInfo.cacheSize !== '2 Bytes') {
+            if (_configSchema[key][_key]) {
               items.push(
-                <tr key={ `app-settings-${key}-${_key}-size` }>
-                  <td
-                    className="padding-15 padding-left-30">
-                    { translate('SETTINGS.CURRENT_CACHE_SIZE') }: <strong>{ _appInfo.cacheSize }</strong>
+                <tr key={ `app-settings-${key}-${_key}` }>
+                  <td className="padding-15 padding-left-30">
+                    { _configSchema[key][_key].displayName ? _configSchema[key][_key].displayName : _key }
+                    { _configSchema[key][_key].info &&
+                      <i
+                        className="icon fa-question-circle settings-help"
+                        data-tip={ _configSchema[key][_key].info }
+                        data-html={ true }
+                        data-for="appSettings2"></i>
+                    }
+                    <ReactTooltip
+                      id="appSettings2"
+                      effect="solid"
+                      className="text-left" />
                   </td>
                   <td className="padding-15">
-                    <button
-                      type="button"
-                      className="btn btn-info waves-effect waves-light"
-                      onClick={ this._resetSPVCache }>
-                      { translate('SETTINGS.CLEAR_CACHE') }
-                    </button>
+                    { _configSchema[key][_key].type === 'number' &&
+                      <input
+                        type="number"
+                        pattern="[0-9]*"
+                        name={ `${key}__${_key}` }
+                        value={ _appConfig[key][_key] }
+                        onChange={ (event) => this.updateInputSettings(event, key, _key) } />
+                    }
+                    { (_configSchema[key][_key].type === 'string' ||
+                      _configSchema[key][_key].type === 'folder') &&
+                      <input
+                        type="text"
+                        name={ `${key}__${_key}` }
+                        value={ _appConfig[key][_key] }
+                        className="full-width"
+                        onChange={ (event) => this.updateInputSettings(event, key, _key) } />
+                    }
+                    { _configSchema[key][_key].type === 'boolean' &&
+                      <span className="pointer toggle">
+                        <label className="switch">
+                          <input
+                            type="checkbox"
+                            name={ `${key}__${_key}` }
+                            value={ _appConfig[key] }
+                            checked={ _appConfig[key][_key] }
+                            readOnly />
+                          <div
+                            className="slider"
+                            onClick={ (event) => this.updateInputSettings(event, key, _key) }></div>
+                        </label>
+                      </span>
+                    }
                   </td>
                 </tr>
               );
-            }
-
-            if (key === 'spv' &&
-                _key === 'syncServerListFromKv') {
-              items.push(
-                <tr key={ `app-settings-${key}-${_key}-size` }>
-                  <td
-                    colSpan="2"
-                    className="padding-15">
-                    <button
-                      type="button"
-                      className="btn btn-info waves-effect waves-light margin-left-15"
-                      onClick={ this._apiElectrumKvServersList }>
-                      { translate('SETTINGS.DOWNLOAD_KV_ELECTRUMS') }
-                    </button>
-                  </td>
-                </tr>
-              );
+  
+              const _appInfo = this.props.Settings.appInfo;
+  
+              if (key === 'spv' &&
+                  _key === 'cache' &&
+                  _appInfo &&
+                  _appInfo.cacheSize &&
+                  _appInfo.cacheSize !== '2 Bytes') {
+                items.push(
+                  <tr key={ `app-settings-${key}-${_key}-size` }>
+                    <td
+                      className="padding-15 padding-left-30">
+                      { translate('SETTINGS.CURRENT_CACHE_SIZE') }: <strong>{ _appInfo.cacheSize }</strong>
+                    </td>
+                    <td className="padding-15">
+                      <button
+                        type="button"
+                        className="btn btn-info waves-effect waves-light"
+                        onClick={ this._resetSPVCache }>
+                        { translate('SETTINGS.CLEAR_CACHE') }
+                      </button>
+                    </td>
+                  </tr>
+                );
+              }
+  
+              if (key === 'spv' &&
+                  _key === 'syncServerListFromKv') {
+                items.push(
+                  <tr key={ `app-settings-${key}-${_key}-size` }>
+                    <td
+                      colSpan="2"
+                      className="padding-15">
+                      <button
+                        type="button"
+                        className="btn btn-info waves-effect waves-light margin-left-15"
+                        onClick={ this._apiElectrumKvServersList }>
+                        { translate('SETTINGS.DOWNLOAD_KV_ELECTRUMS') }
+                      </button>
+                    </td>
+                  </tr>
+                );
+              }
             }
           }
         }

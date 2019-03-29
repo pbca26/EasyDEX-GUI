@@ -210,6 +210,24 @@ export const _SendFormRender = function() {
               placeholder="0.000"
               autoComplete="off" />
           </div>
+          { (this.props.ActiveCoin.coin === 'VRSC' || this.props.ActiveCoin.coin === 'VERUSTEST') && (this.state.sendTo.length === 95 || this.state.sendTo.length === 78) && 
+            <div className="col-lg-12 form-group form-material">
+              <label
+                className="control-label"
+                htmlFor="kmdWalletMemo">
+                { translate('SEND.PRIVATE_MESSAGE') }
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                name="memo"
+                value={ this.state.memo !== '' ? this.state.memo : '' }
+                onChange={ this.updateInput }
+                id="kmdWalletMemo"
+                placeholder={ translate('SEND.PRIVATE_MESSAGE_DESC') }
+                autoComplete="off" />
+            </div>
+          }
           { this.isTransparentTx() &&
             _mode === 'native' &&
             <div className="col-lg-6 form-group form-material">
@@ -260,10 +278,7 @@ export const _SendFormRender = function() {
               </button>
             </div>
           }
-          { _mode === 'native' &&
-            (this.state.addressType === 'private' ||
-             (this.state.sendTo && this.state.sendTo.substring(0, 2) === 'zc' && this.state.sendTo.substring(0, 2) === 'zs') ||
-             (this.state.sendFrom && this.state.sendFrom.substring(0, 2) === 'zc' && this.state.sendFrom.substring(0, 2) === 'zs')) &&
+          { _mode === 'native' && this.state.sendFrom &&
             <div className="row">
               <div className="col-lg-12 form-group form-material">
                 <button

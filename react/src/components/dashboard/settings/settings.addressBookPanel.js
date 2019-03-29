@@ -261,7 +261,7 @@ class AddressBookPanel extends React.Component {
             <td className="seletable word-break--all">{ key }</td>
             <td>
             { translate('CRYPTO.' + _addressBookItems[key].coin) }
-            { _addressBookItems[key].coin.toLowerCase() === 'kmd' && ' (Chips/Asset chains)' }
+            { _addressBookItems[key].coin.toLowerCase() === 'kmd' && ', and related chains' }
             { _addressBookItems[key].coin.toLowerCase() === 'eth' && ' (ERC20)' }
             </td>
             <td className="seletable">{ _addressBookItems[key].title }</td>

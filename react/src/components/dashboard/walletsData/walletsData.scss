@@ -1,6 +1,7 @@
 .search-box {
   float: right;
   padding-right: 0;
+  display: flex;
 }
 .breadcrumb--native {
   top: 0;
@@ -202,4 +203,27 @@
     background: #fff;
     border-radius: 50%;  
   }
+}
+
+.filter-options-wrapper {
+  padding-top:5px;
+}
+
+.filter-options-label {
+  text-align: center;
+}
+
+.filter-option {
+  text-align: center;
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.filter-option-child {
+  margin: auto;
+  float: left;
+}
+
+.stakemineinput {
+  width: 115px
 }

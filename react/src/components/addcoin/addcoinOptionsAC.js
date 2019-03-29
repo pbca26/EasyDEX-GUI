@@ -18,7 +18,6 @@ const _disabledAC = {
     'zex',
   ],
   native: [
-    'vrsc',
     'spltest',
   ],
   all: [

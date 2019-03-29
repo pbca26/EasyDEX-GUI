@@ -87,7 +87,6 @@ class WalletsTxInfo extends React.Component {
     } else {
       if (_activeCoin &&
           _activeCoin.txhistory &&
-          _activeCoin.showTransactionInfoTxIndex &&
           _activeCoin.showTransactionInfoTxIndex > -1 &&
           _activeCoin.showTransactionInfoTxIndex !== false) {
         const txInfo = _activeCoin.txhistory[_activeCoin.showTransactionInfoTxIndex];

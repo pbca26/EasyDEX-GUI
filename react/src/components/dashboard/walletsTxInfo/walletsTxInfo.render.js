@@ -4,6 +4,9 @@ import Config from '../../../config';
 import { secondsToString } from 'agama-wallet-lib/src/time';
 import { explorerList } from 'agama-wallet-lib/src/coin-helpers';
 import erc20ContractId from 'agama-wallet-lib/src/eth-erc20-contract-id';
+import { decodeMemo } from '../../../util/zTxUtils'
+
+const EMPTY_MEMO = "f600000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
 
 const renderKvContent = (content) => {
   return content
@@ -79,6 +82,13 @@ const WalletsTxInfoRender = function(txInfo) {
                       <i className="icon wb-file"></i>Raw info
                     </a>
                   </li>
+                  { txInfo.memo && txInfo.memo !== EMPTY_MEMO &&
+                    <li className={ this.state.activeTab === 5 ? 'active' : '' }>
+                      <a onClick={ () => this.openTab(5) }>
+                        <i className="icon wb-envelope"></i>Secret Message
+                      </a>
+                    </li>
+                  }
                 </ul>
                 <div className="panel-body">
                   { this.state.txDetails &&
@@ -283,6 +293,16 @@ const WalletsTxInfoRender = function(txInfo) {
                             className="kv-content padding-top-20 selectable"
                             dangerouslySetInnerHTML={{ __html: renderKvContent(this.state.txDetails.opreturn.kvDecoded.content.body) }}>
                           </div>
+                        </div>
+                      }
+                      { this.state.activeTab === 5 &&
+                        <div className="tab-pane active">
+                          <textarea
+                            className="full-width"
+                            rows="15"
+                            cols="80"
+                            defaultValue={ decodeMemo(txInfo.memo) }
+                            disabled></textarea>
                         </div>
                       }
                     </div>

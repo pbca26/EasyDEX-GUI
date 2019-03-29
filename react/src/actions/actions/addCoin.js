@@ -213,6 +213,8 @@ export const apiHerd = (coin, mode, path, startupParams, genproclimit, pubkey) =
         for (let i = 0; i < staticVar.chainParams[coin][key].length; i++) {
           herdData.ac_options.push(`-addnode=${staticVar.chainParams[coin][key][i]}`);
         }
+      } else if (key === 'ac_daemon'){
+        herdData.ac_daemon = staticVar.chainParams[coin].ac_daemon;
       } else {
         herdData.ac_options.push(`-${key}=${staticVar.chainParams[coin][key]}`);
       }
@@ -222,6 +224,15 @@ export const apiHerd = (coin, mode, path, startupParams, genproclimit, pubkey) =
   if (!staticVar.chainParams[coin] ||
       (staticVar.chainParams[coin] && !staticVar.chainParams[coin].addnode)) {
     herdData.ac_options.push('-addnode=78.47.196.146');
+  }
+
+  if (coin === 'VRSC') {
+    if(Config.verus.autoStakeVRSC) {
+      herdData.ac_options.push('-mint');
+    }
+    if(Config.verus.stakeGuard.length === 78) {
+      herdData.ac_options.push('-cheatcatcher=' + Config.verus.stakeGuard);
+    }
   }
 
   if (coin === 'ZEC') {

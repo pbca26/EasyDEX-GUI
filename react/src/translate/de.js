@@ -572,6 +572,7 @@ const LANG_DE = {
   },
   'IAPI': {
     'PUBLIC_SM': 'öffentlich',
+    'PRIVATE_SM': 'privat',
     'CON_STATUS': 'Verbindungsstatus'
   },
   'KMD_NATIVE': {

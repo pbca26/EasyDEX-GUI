@@ -67,6 +67,16 @@ class WalletsData extends React.Component {
       kvHistory: null,
       txhistoryCopy: null,
       generatingCSV: false,
+      showMiningButton: false,
+      filterMenuOpen: false,
+      filterPrivateTx: true,
+      filterPublicTx: true,
+      filterImmatureTx: true,
+      filterMatureTx: true,
+      filterStakeTx: true,
+      filterSentTx: true,
+      filterReceivedTx: true,
+      filterSelfTx: true,
     };
     this.kvHistoryInterval = null;
     this.openDropMenu = this.openDropMenu.bind(this);
@@ -75,9 +85,19 @@ class WalletsData extends React.Component {
     this.openClaimInterestModal = this.openClaimInterestModal.bind(this);
     this.displayClaimInterestUI = this.displayClaimInterestUI.bind(this);
     this.spvAutoReconnect = this.spvAutoReconnect.bind(this);
+    this.toggleMiningButton = this.toggleMiningButton.bind(this);
     this.toggleKvView = this.toggleKvView.bind(this);
     this._setTxHistory = this._setTxHistory.bind(this);
     this.exportToCSV = this.exportToCSV.bind(this);
+    this.toggleFilterPrivateTx = this.toggleFilterPrivateTx.bind(this);
+    this.toggleFilterPublicTx = this.toggleFilterPublicTx.bind(this);
+    this.toggleFilterImmatureTx = this.toggleFilterImmatureTx.bind(this);
+    this.toggleFilterMatureTx = this.toggleFilterMatureTx.bind(this);
+    this.toggleFilterStakeTx = this.toggleFilterStakeTx.bind(this);
+    this.toggleFilterSentTx = this.toggleFilterSentTx.bind(this);
+    this.toggleFilterReceivedTx = this.toggleFilterReceivedTx.bind(this);
+    this.toggleFilterSelfTx = this.toggleFilterSelfTx.bind(this);
+    this.toggleFilterMenuOpen = this.toggleFilterMenuOpen.bind(this);
   }
 
   componentWillMount() {
@@ -209,6 +229,18 @@ class WalletsData extends React.Component {
     }
   }
 
+  toggleMiningButton() {
+    this.setState({
+      showMiningButton: !this.state.showMiningButton,
+    });
+  }
+
+  toggleFilterMenuOpen() {
+    this.setState({
+      filterMenuOpen: !this.state.filterMenuOpen,
+    });
+  }
+
   displayClaimInterestUI() {
     const _balance = this.props.ActiveCoin.balance;
 
@@ -236,14 +268,17 @@ class WalletsData extends React.Component {
     let columns = [];
     let _col;
 
+    //TODO: Make private display in type for private transactions
     if (this.props.ActiveCoin.mode === 'native') {
       _col = {
+        id: 'type',
         Header: translate('INDEX.TYPE'),
         Footer: translate('INDEX.TYPE'),
         className: 'colum--type',
         headerClassName: 'colum--type',
         footerClassName: 'colum--type',
-        Cell: AddressTypeRender(),
+        //Cell: tx => AddressTypeRender(tx),
+        accessor: (tx) => AddressTypeRender.call(this, tx),
       };
 
       if (itemsCount <= BOTTOM_BAR_DISPLAY_THRESHOLD) {
@@ -508,7 +543,22 @@ class WalletsData extends React.Component {
   }
 
   toggleTxInfoModal(display, txIndex) {
-    Store.dispatch(toggleDashboardTxInfoModal(display, txIndex));
+    if (this.state.searchTerm || 
+        !this.state.filterPrivateTx ||
+        !this.state.filterPublicTx ||
+        !this.state.filterImmatureTx ||
+        !this.state.filterMatureTx ||
+        !this.state.filterStakeTx ||
+        !this.state.filterSentTx ||
+        !this.state.filterReceivedTx ||
+        !this.state.filterSelfTx) {
+      let transaction = this.state.filteredItemsList[txIndex];
+      txIndex = this.state.itemsList.findIndex(k => k === transaction);
+      Store.dispatch(toggleDashboardTxInfoModal(display, txIndex));
+    }
+    else {
+      Store.dispatch(toggleDashboardTxInfoModal(display, txIndex));
+    }
   }
 
   _setTxHistory(oldTxHistory) {
@@ -729,6 +779,80 @@ class WalletsData extends React.Component {
     }));
   }
 
+  updateAddressTypeSelection(filter) {
+    this.setState({
+      addressFilterType: filter,
+      filteredItemsList: this.filterTransactions(this.state.itemsList, this.state.searchTerm),
+      filterSelectorOpen: false,
+    }, () => {
+      this._setTxHistory();
+    });
+  }
+
+  toggleFilterPrivateTx(){
+    this.setState({
+      filterPrivateTx: !this.state.filterPrivateTx,
+    }, () => {
+      this._setTxHistory();
+    });
+  }
+
+  toggleFilterPublicTx(){
+    this.setState({
+      filterPublicTx: !this.state.filterPublicTx,
+    }, () => {
+      this._setTxHistory();
+    });
+  }
+
+  toggleFilterImmatureTx(){
+    this.setState({
+      filterImmatureTx: !this.state.filterImmatureTx,
+    }, () => {
+      this._setTxHistory();
+    });
+  }
+
+  toggleFilterMatureTx(){
+    this.setState({
+      filterMatureTx: !this.state.filterMatureTx,
+    }, () => {
+      this._setTxHistory();
+    });
+  }
+
+  toggleFilterStakeTx(){
+    this.setState({
+      filterStakeTx: !this.state.filterStakeTx,
+    }, () => {
+      this._setTxHistory();
+    });
+  }
+
+  toggleFilterSentTx(){
+    this.setState({
+      filterSentTx: !this.state.filterSentTx,
+    }, () => {
+      this._setTxHistory();
+    });
+  }
+
+  toggleFilterReceivedTx(){
+    this.setState({
+      filterReceivedTx: !this.state.filterReceivedTx,
+    }, () => {
+      this._setTxHistory();
+    });
+  }
+
+  toggleFilterSelfTx(){
+    this.setState({
+      filterSelfTx: !this.state.filterSelfTx,
+    }, () => {
+      this._setTxHistory();
+    });
+  }
+
   openDropMenu() {
     this.setState(Object.assign({}, this.state, {
       addressSelectorOpen: !this.state.addressSelectorOpen,
@@ -842,15 +966,101 @@ class WalletsData extends React.Component {
   }
 
   filterTransaction(tx, term) {
-    if (!term) {
+    if (!this.state.filterPrivateTx){
+      if (this.isPrivate(tx)){
+        return false;
+      }
+    }
+    if (!this.state.filterPublicTx){
+      if (this.isPublic(tx)){
+        return false;
+      }
+    }
+    if (!this.state.filterImmatureTx){
+      if (this.isImmature(tx)){
+        return false;
+      }
+    }
+    if (!this.state.filterMatureTx){
+      if (this.isMature(tx)){
+        return false;
+      }
+    }
+    if (!this.state.filterStakeTx){
+      if (this.isStake(tx)){
+        return false;
+      }
+    }
+    if (!this.state.filterSentTx){
+      if (this.isSent(tx)){
+        return false;
+      }
+    }
+    if (!this.state.filterReceivedTx){
+      if (this.isReceived(tx)){
+        return false;
+      }
+    }
+    if (!this.state.filterSelfTx){
+      if (this.isSelf(tx)){
+        return false;
+      }
+    }
+    if (!term)
+    {
       return true;
     }
-
-    return this.contains(tx.address, term) ||
+    else if (
+      (this.contains(tx.address, term) ||
       this.contains(tx.confirmations, term) ||
       this.contains(tx.amount, term) ||
       this.contains(tx.type, term) ||
-      this.contains(secondsToString(tx.blocktime || tx.timestamp || tx.time), term);
+      this.contains(secondsToString(tx.blocktime || tx.timestamp || tx.time), term))) 
+    {
+      return true;
+    }
+  }
+
+  isPrivate(tx){
+    if(tx.address) {
+      if(tx.memo || (tx.address.length === 95 || tx.address.length === 78)){
+        return true;
+      }
+    }
+    else if (!tx.address) {
+      return true
+    }
+    else {
+      return false;
+    }
+  }
+
+  isPublic(tx){
+    return !this.isPrivate(tx);
+  }
+
+  isImmature(tx){
+    return tx.category === 'immature';
+  }
+
+  isSent(tx){
+    return tx.category === 'send' || tx.type === 'sent';
+  }
+
+  isReceived(tx){
+    return tx.category === 'receive' || tx.type === 'received';
+  } 
+
+  isMature(tx){
+    return tx.category === 'generate' || tx.category === 'mint';
+  }
+
+  isStake(tx){
+    return tx.category === 'stake';
+  }
+
+  isSelf(tx){
+    return tx.type === 'self';
   }
 
   contains(value, property) {

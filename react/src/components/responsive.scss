@@ -2,14 +2,18 @@
   .wallet-widgets {
     .flex {
       display: flex;
-      flex-wrap: wrap;
+      justify-content: space-evenly;
     }
     > div {
       display: flex;
+      flex: 1;
 
-      .widget,
+      .widget {
+        flex: 1;
+      }
       .widget-content {
         height: 100%;
+        width: 100%;
 
         > div,
         .clearfix {
