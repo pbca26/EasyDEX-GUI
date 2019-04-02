@@ -180,6 +180,10 @@ class WalletsBalance extends React.Component {
               data-html={ true }
               data-for="balance1"
               className="text-right">
+              <ReactTooltip
+              id="balance1"
+              effect="solid"
+              className="text-left" />
               <FiatSymbol symbol={ Config.defaultFiatCurrency } />{ formatValue(_fiatPriceTotal) }
               { _prices[_coin].priceChange &&
                 _prices[_coin].priceChange.data &&
@@ -187,10 +191,6 @@ class WalletsBalance extends React.Component {
               }
             </div>
           }
-          <ReactTooltip
-            id="balance1"
-            effect="solid"
-            className="text-left" />
           <ReactTooltip
             id="priceChange"
             effect="solid"
