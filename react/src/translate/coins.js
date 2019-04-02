@@ -1,5 +1,11 @@
 const coins = {
   ASSETCHAINS: {
+    VOTE2019: 'VOTE2019',
+    KSB: 'KSB',
+    MORTY: 'Morty',
+    RICK: 'Rick',
+    OUR: 'Ourcoin',
+    ILN: 'ILN',
     BET: 'BET',
     BOTS: 'BOTS',
     CEAL: 'CEAL NET',
@@ -49,6 +55,14 @@ const coins = {
     LUMBER: 'Lumberscout',
   },
   CRYPTO: {
+    VRSC: 'Verus',
+    CLF: 'CryptoLeaf',
+    KEA: 'KEA',
+    OVAL: 'OVAL',
+    TILE: 'TILE',
+    TRET: 'TRET',
+    JST: 'JST',
+    DEC8: 'DEC8',
     STRAT: 'Stratis',
     TOA: 'TOA',
     USC: 'UltimateSecureCash',

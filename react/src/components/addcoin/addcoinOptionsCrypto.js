@@ -10,11 +10,6 @@ let coins = cryptoCoins;
 let _activeCoins;
 let _disableETH;
 
-// disable non kmd coins
-if (!config.experimentalFeatures) {
-  coins = coins.slice(0, 2);
-}
-
 // sort coins by their title
 let _coins = [];
 let coinsList = [];
@@ -26,10 +21,7 @@ for (let i = 0; i < cryptoCoins.length; i++) {
 _coins = sortObject(_coins);
 
 for (let key in _coins) {
-  if (config.experimentalFeatures ||
-      (!config.experimentalFeatures && (_coins[key] === 'KMD' || _coins[key] === 'CHIPS'))) {
-    coinsList.push(_coins[key]);
-  }
+  coinsList.push(_coins[key]);
 }
 
 coins = coinsList;
@@ -50,27 +42,25 @@ const prepCoinsList = (options) => {
       }
     }
 
-    if (config.experimentalFeatures) {
-      if (_activeCoins.eth.indexOf('eth') > -1) {
-        _items.push({
-          label: `${translate('CRYPTO.ETH')} (ETH)`,
-          icon: 'eth/ETH',
-          value: 'ETH',
-        });
-      }
+    if (_activeCoins.eth.indexOf('eth') > -1) {
+      _items.push({
+        label: `${translate('CRYPTO.ETH')} (ETH)`,
+        icon: 'eth/ETH',
+        value: 'ETH',
+      });
+    }
 
-      if (!_disableETH &&
-          _activeCoins.eth &&
-          _activeCoins.eth.length) {
-        for (let i = 0; i < _activeCoins.eth.length; i++) {
-          if (_activeCoins.eth[i] !== 'eth' ||
-              _activeCoins.eth[i] !== 'eth_ropsten') {
-            _items.push({
-              label: `${translate('CRYPTO.' + _activeCoins.eth[i])} (${_activeCoins.eth[i]})`,
-              icon: `eth/${_activeCoins.eth[i]}`,
-              value: `ETH|${_activeCoins.eth[i]}`,
-            });
-          }
+    if (!_disableETH &&
+        _activeCoins.eth &&
+        _activeCoins.eth.length) {
+      for (let i = 0; i < _activeCoins.eth.length; i++) {
+        if (_activeCoins.eth[i] !== 'eth' ||
+            _activeCoins.eth[i] !== 'eth_ropsten') {
+          _items.push({
+            label: `${translate('CRYPTO.' + _activeCoins.eth[i])} (${_activeCoins.eth[i]})`,
+            icon: `eth/${_activeCoins.eth[i]}`,
+            value: `ETH|${_activeCoins.eth[i]}`,
+          });
         }
       }
     }
@@ -99,8 +89,7 @@ const prepCoinsList = (options) => {
       }
     }
 
-    if (config.experimentalFeatures &&
-        !_disableETH) {
+    if (!_disableETH) {
       _items.push({
         label: `${translate('CRYPTO.ETH')} (ETH)`,
         icon: 'eth/ETH',

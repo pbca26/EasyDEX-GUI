@@ -378,7 +378,7 @@ const LANG_EN = {
     MY: 'My',
     COPY: 'copy',
     INTEREST_EARNED: 'Rewards Earned',
-    TOTAL_BALANCE: 'Total Balance',
+    TOTAL_BALANCE: 'Total Wallet Balance',
     GET_BALANCE: 'Get Balance',
     REFRESH: 'Refresh',
     LIST_UNSPENT: 'List Unspent',

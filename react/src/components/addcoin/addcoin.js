@@ -16,11 +16,14 @@ import zcashParamsCheckErrors from '../../util/zcashParams';
 import mainWindow, { staticVar } from '../../util/mainWindow';
 import { pubkeyToAddress } from 'agama-wallet-lib/src/keys';
 import bitcoinjsNetworks from 'agama-wallet-lib/src/bitcoinjs-networks';
+import ReactImageFallback from "react-image-fallback";
 
+import Spinner from '../dashboard/spinner/spinner';
 import CoinSelectorsRender from './coin-selectors.render';
 import AddCoinRender from './addcoin.render';
 
 const SEED_TRIM_TIMEOUT = 5000;
+const IMAGE_NOT_FOUND_PNG = '404.png';
 
 class AddCoin extends React.Component {
   constructor() {
@@ -233,9 +236,10 @@ class AddCoin extends React.Component {
   renderCoinOption(option) {
     return (
       <div>
-        <img
+        <ReactImageFallback
           src={ `assets/images/cryptologo/${option.icon.toLowerCase()}.png` }
           alt={ option.label }
+          fallbackImage={ `assets/images/cryptologo/${IMAGE_NOT_FOUND_PNG}` }
           width="30px"
           height="30px" />
           <span className="margin-left-10">{ option.label }</span>

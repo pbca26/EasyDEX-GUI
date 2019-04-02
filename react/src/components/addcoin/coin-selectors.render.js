@@ -21,6 +21,12 @@ const CoinSelectorsRender = function(item, coin, i) {
   let _availModes = {};
   let _coinName;
 
+  let coinOptions = [{
+    label: 'Verus (VRSC)',
+    icon: 'btc/vrsc',
+    value: 'VRSC|native|spv',
+  }];
+
   if (item &&
       item.selectedCoin) {
     const _itemSplit = item.selectedCoin.split('|');
@@ -59,7 +65,8 @@ const CoinSelectorsRender = function(item, coin, i) {
             optionRenderer={ this.renderCoinOption }
             valueRenderer={ this.renderCoinOption }
             options={
-              addCoinOptionsCrypto(this.props.Main.coins)
+              coinOptions
+              .concat(addCoinOptionsCrypto(this.props.Main.coins))
               .concat(addCoinOptionsAC(this.props.Main.coins))
             } />
         </div>

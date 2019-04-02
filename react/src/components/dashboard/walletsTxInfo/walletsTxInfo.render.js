@@ -82,7 +82,7 @@ const WalletsTxInfoRender = function(txInfo) {
                       <i className="icon wb-file"></i>Raw info
                     </a>
                   </li>
-                  { txInfo.memo && txInfo.memo !== EMPTY_MEMO &&
+                  { !isSpv && txInfo && txInfo.memo && txInfo.memo !== EMPTY_MEMO &&
                     <li className={ this.state.activeTab === 5 ? 'active' : '' }>
                       <a onClick={ () => this.openTab(5) }>
                         <i className="icon wb-envelope"></i>Secret Message

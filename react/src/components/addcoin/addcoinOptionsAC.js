@@ -46,38 +46,41 @@ const addCoinOptionsAC = (activeCoins) => {
   _assetChains = coinsList;
 
   for (let i = 0; i < _assetChains.length; i++) {
-    const _coinlc = _assetChains[i].toLowerCase();
     const _coinuc = _assetChains[i].toUpperCase();
-    let availableModes;
 
-    if (_disabledAC.spv.indexOf(_coinlc) === -1) {
-      availableModes = 'spv|native';
-    } else {
-      availableModes = 'native'
-    }
-
-    if (_disabledAC.native.indexOf(_coinlc) > -1) {
-      availableModes = 'spv';
-    }
-
-    if (staticVar.arch !== 'x64') {
-      availableModes = 'spv';
-    }
-
-    if (_disabledAC.all.indexOf(_coinlc) === -1 &&
-        (activeCoins === 'skip' || (activeCoins !== 'skip' &&
-         activeCoins &&
-         activeCoins.spv &&
-         activeCoins.native &&
-         activeCoins.spv.indexOf(_coinuc) === -1 &&
-         activeCoins.native.indexOf(_coinuc) === -1))) {
-      const _placeholder = translate(`ASSETCHAINS.${_coinuc}`);
-
-      _items.push({
-        label: `${_placeholder}${_placeholder.indexOf('(') === -1 && _placeholder !== _coinuc ? ' (' + _coinuc + ')' : ''}`,
-        icon: `btc/${_coinlc}`,
-        value: `${_coinuc}|${availableModes}`,
-      });
+    if (_coinuc !== 'VRSC') {
+      const _coinlc = _assetChains[i].toLowerCase();
+      let availableModes;
+  
+      if (_disabledAC.spv.indexOf(_coinlc) === -1) {
+        availableModes = 'spv|native';
+      } else {
+        availableModes = 'native'
+      }
+  
+      if (_disabledAC.native.indexOf(_coinlc) > -1) {
+        availableModes = 'spv';
+      }
+  
+      if (staticVar.arch !== 'x64') {
+        availableModes = 'spv';
+      }
+  
+      if (_disabledAC.all.indexOf(_coinlc) === -1 &&
+          (activeCoins === 'skip' || (activeCoins !== 'skip' &&
+           activeCoins &&
+           activeCoins.spv &&
+           activeCoins.native &&
+           activeCoins.spv.indexOf(_coinuc) === -1 &&
+           activeCoins.native.indexOf(_coinuc) === -1))) {
+        const _placeholder = translate(`ASSETCHAINS.${_coinuc}`);
+  
+        _items.push({
+          label: `${_placeholder}${_placeholder.indexOf('(') === -1 && _placeholder !== _coinuc ? ' (' + _coinuc + ')' : ''}`,
+          icon: `btc/${_coinlc}`,
+          value: `${_coinuc}|${availableModes}`,
+        });
+      }
     }
   }
 
