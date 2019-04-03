@@ -341,6 +341,11 @@ class AddCoin extends React.Component {
     const coin = _coin.selectedCoin.split('|')[0];
     const coinuc = coin.toUpperCase();
 
+    if (this.isCoinAlreadyAdded(coin)) {
+      this.dismiss();
+      return;
+    }
+
     if (_coin.selectedCoin.indexOf('ETH') > -1) {
       const _ethNet = _coin.selectedCoin.split('|');
 
@@ -444,51 +449,20 @@ class AddCoin extends React.Component {
     let coin = this.state.coins[0].selectedCoin.split('|')[0];
     let coinuc = coin.toUpperCase();
 
-    if (_coin.selectedCoin.indexOf('ETH') > -1) {
-      const _ethNet = _coin.selectedCoin.split('|');
-
-      Store.dispatch(addCoinEth(
-        _ethNet[0],
-        _ethNet[1],
-      ));
-    } else {
-      if (!_coin.daemonParam) {
-        Store.dispatch(addCoin(
-          coin,
-          _coin.mode,
+    if (!this.isCoinAlreadyAdded(coin)) {
+      if (_coin.selectedCoin.indexOf('ETH') > -1) {
+        const _ethNet = _coin.selectedCoin.split('|');
+  
+        Store.dispatch(addCoinEth(
+          _ethNet[0],
+          _ethNet[1],
         ));
       } else {
-        Store.dispatch(addCoin(
-          coin,
-          _coin.mode,
-          { type: _coin.daemonParam },
-          _coin.daemonParam === 'gen' &&
-          staticVar.chainParams[coinuc] &&
-          staticVar.chainParams[coinuc].genproclimit ? Number(_coin.genProcLimit || 1) : 0,
-        ));
-      }
-    }
-
-    for (let i = 1; i < this.state.coins.length; i++) {
-      let _coin = this.state.coins[i];
-      let coin = _coin.selectedCoin.split('|')[0];
-      let coinuc = coin.toUpperCase();
-
-      setTimeout(() => {
         if (!_coin.daemonParam) {
-          if (_coin.selectedCoin.indexOf('ETH') > -1) {
-            const _ethNet = _coin.selectedCoin.split('|');
-
-            Store.dispatch(addCoinEth(
-              _ethNet[0],
-              _ethNet[1],
-            ));
-          } else {
-            Store.dispatch(addCoin(
-              coin,
-              _coin.mode,
-            ));
-          }
+          Store.dispatch(addCoin(
+            coin,
+            _coin.mode,
+          ));
         } else {
           Store.dispatch(addCoin(
             coin,
@@ -499,7 +473,42 @@ class AddCoin extends React.Component {
             staticVar.chainParams[coinuc].genproclimit ? Number(_coin.genProcLimit || 1) : 0,
           ));
         }
+      }
+    }
 
+    for (let i = 1; i < this.state.coins.length; i++) {
+      let _coin = this.state.coins[i];
+      let coin = _coin.selectedCoin.split('|')[0];
+      let coinuc = coin.toUpperCase();
+
+      setTimeout(() => {
+        if (!this.isCoinAlreadyAdded(coin)) {
+          if (!_coin.daemonParam) {
+            if (_coin.selectedCoin.indexOf('ETH') > -1) {
+              const _ethNet = _coin.selectedCoin.split('|');
+  
+              Store.dispatch(addCoinEth(
+                _ethNet[0],
+                _ethNet[1],
+              ));
+            } else {
+              Store.dispatch(addCoin(
+                coin,
+                _coin.mode,
+              ));
+            }
+          } else {
+            Store.dispatch(addCoin(
+              coin,
+              _coin.mode,
+              { type: _coin.daemonParam },
+              _coin.daemonParam === 'gen' &&
+              staticVar.chainParams[coinuc] &&
+              staticVar.chainParams[coinuc].genproclimit ? Number(_coin.genProcLimit || 1) : 0,
+            ));
+          }
+        }
+        
         if (i === this.state.coins.length - 1) {
           let _coins = [];
           _coins.push(this.state.defaultCoinState);
@@ -559,6 +568,33 @@ class AddCoin extends React.Component {
     }
 
     return _items;
+  }
+
+  isCoinAlreadyAdded(coin) {
+    const modes = [
+      'spv',
+      'native',
+      'eth',
+    ];
+
+    for (let mode of modes) {
+      if (this.existingCoins[mode] &&
+          this.existingCoins[mode].indexOf(coin) !== -1) {
+        const message = `${coin} ${translate('ADD_COIN.ALREADY_ADDED')}`;
+
+        Store.dispatch(
+          triggerToaster(
+            message,
+            translate('ADD_COIN.COIN_ALREADY_ADDED'),
+            'error'
+          )
+        );
+
+        return true;
+      }
+    }
+
+    return false;
   }
 
   render() {

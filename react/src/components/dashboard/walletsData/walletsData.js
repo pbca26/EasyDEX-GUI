@@ -277,8 +277,8 @@ class WalletsData extends React.Component {
         className: 'colum--type',
         headerClassName: 'colum--type',
         footerClassName: 'colum--type',
-        //Cell: tx => AddressTypeRender(tx),
-        accessor: (tx) => AddressTypeRender.call(this, tx),
+        Cell: (row) => AddressTypeRender.call(this, row.value),
+        accessor: (tx) => tx,
       };
 
       if (itemsCount <= BOTTOM_BAR_DISPLAY_THRESHOLD) {
