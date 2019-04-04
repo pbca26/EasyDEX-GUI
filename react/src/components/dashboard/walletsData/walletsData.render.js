@@ -80,7 +80,7 @@ export const TxConfsRender = function(tx) {
   }
 }
 
-export const AddressTypeRender = (tx) => {
+export const AddressTypeRender = function(tx) {
   return (
     <span>
       <span className={isPrivate(tx) ? "label label-dark" : "label label-default"}>
@@ -221,6 +221,18 @@ export const TxTypeRender = function(category) {
     return (
       <span>
         <i className="icon fa-cogs"></i> <span>{ translate('DASHBOARD.MINED') }</span>
+      </span>
+    );
+  } else if (category === 'stake') {
+    return (
+      <span className="label label-info">
+        <span> { translate('DASHBOARD.STAKE') } </span>
+      </span>
+    );
+  } else if (category === 'mint') {
+    return (
+      <span>
+        <i className="icon fa-money"></i> <span>{ translate('DASHBOARD.MINT') }</span>
       </span>
     );
   } else if (category === 'immature') {

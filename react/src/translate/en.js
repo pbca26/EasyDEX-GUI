@@ -520,7 +520,7 @@ const LANG_EN = {
     MESSAGE: 'Message',
     TRUE: 'True',
     FALSE: 'False',
-    STAKING_STATUS: 'Staking Status'
+    STAKING_STATUS: 'Staking Status:'
   },
   FILTER: {
     PRIVATE: 'Private',
@@ -707,6 +707,8 @@ const LANG_EN = {
     OUT: 'OUT',
     MINED: 'Mined',
     IMMATURE: 'Immature',
+    MINT: 'Minted',
+    STAKE: 'stake',
     ZADDR_NOT_LISTED: 'Address not listed by wallet',
     ADDR_COPIED: 'Address Copied',
     QR_ERR_NO_VIDEO_DEVICE: 'Error: no video input devices found!',
