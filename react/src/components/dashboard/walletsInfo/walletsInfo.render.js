@@ -32,6 +32,7 @@ const WalletsInfoRender = function() {
     const _progress = this.props.ActiveCoin.progress;
     const _netTotals = this.props.ActiveCoin.net.totals;
     const _netPeers = this.props.ActiveCoin.net.peers;
+    const _walletinfo = this.props.ActiveCoin.walletinfo;
     let _peerItems = [];
 
     if (_netPeers) {
@@ -187,15 +188,21 @@ const WalletsInfoRender = function() {
                   </tr>
                   <tr>
                     <td>{ translate('INDEX.UNCONFIRMED_BALANCE') }</td>
-                    <td></td>
+                    <td>
+                      { _walletinfo ? _walletinfo.unconfirmed_balance : null }
+                    </td>
                   </tr>
                   <tr>
                     <td>{ translate('INDEX.IMMATURE_BALANCE') }</td>
-                    <td></td>
+                    <td>
+                    { _walletinfo ? _walletinfo.immature_balance : null }
+                    </td>
                   </tr>
                   <tr>
                     <td>{ translate('INDEX.TOTAL_TX_COUNT') }</td>
-                    <td></td>
+                    <td>
+                      { _walletinfo ? _walletinfo.txcount : null }
+                    </td>
                   </tr>
                 </tbody>
               </table>

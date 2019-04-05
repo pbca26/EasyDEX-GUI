@@ -98,6 +98,7 @@ export const getDashboardUpdateState = (json, coin, fakeResponse) => {
         coin,
         getinfoFetchFailures: 0,
         rescanInProgress: false,
+        walletinfo: json.result.getwalletinfo.result
       };
     } else {
       // calc transparent balance properly
@@ -134,6 +135,7 @@ export const getDashboardUpdateState = (json, coin, fakeResponse) => {
         json.result.z_gettotalbalance.result.transparent = _tbalance.toFixed(8);
         json.result.z_gettotalbalance.result.total = Number(json.result.z_gettotalbalance.result.transparent) + Number(json.result.z_gettotalbalance.result.interest) + Number(json.result.z_gettotalbalance.result.private);
         json.result.z_gettotalbalance.result.total = json.result.z_gettotalbalance.result.total.toFixed(8);
+        json.result.z_gettotalbalance.result.immature = json.result.getwalletinfo.result.immature_balance.toFixed(8);
       }
 
       return {
@@ -146,6 +148,7 @@ export const getDashboardUpdateState = (json, coin, fakeResponse) => {
         coin,
         getinfoFetchFailures: 0,
         rescanInProgress: false,
+        walletinfo: json.result.getwalletinfo.result
       };
     }
   }

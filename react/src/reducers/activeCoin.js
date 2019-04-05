@@ -45,6 +45,7 @@ export const ActiveCoin = (state = {
   progress: null,
   rescanInProgress: false,
   getinfoFetchFailures: 0,
+  walletinfo: null,
   net: {
     peers: null,
     totals: null,
@@ -294,6 +295,7 @@ export const ActiveCoin = (state = {
           balance: action.balance,
           addresses: action.addresses,
           rescanInProgress: action.rescanInProgress,
+          walletinfo: action.walletinfo
         };
       }
     case DASHBOARD_ACTIVE_COIN_NET_PEERS:

@@ -190,6 +190,14 @@ const WalletsTxInfoRender = function(txInfo) {
                                   </td>
                                 </tr>
                               }
+                              { this.props.ActiveCoin.mode !== 'spv' && !isEth &&
+                                <tr>
+                                  <td>{ this.capitalizeFirstLetter('blockstomaturity') }</td>
+                                  <td>
+                                    { (txInfo.blockstomaturity === 0 || !txInfo.blockstomaturity) ? translate('TX_INFO.MATURE') : txInfo.blockstomaturity + ' (' + this.renderTimeToUnlock(txInfo.blockstomaturity) + ')'}
+                                  </td>
+                                </tr>
+                              }
                               { ((this.props.ActiveCoin.mode === 'spv' && this.state.txDetails.hasOwnProperty('dpowSecured') && this.state.txDetails.dpowSecured) ||
                                 (this.props.ActiveCoin.mode === 'native' && this.state.txDetails.hasOwnProperty('rawconfirmations') && this.state.txDetails.confirmations >=2)) &&
                                 <tr>

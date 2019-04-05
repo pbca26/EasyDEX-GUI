@@ -238,7 +238,7 @@ export const TxTypeRender = function(category) {
   } else if (category === 'immature') {
     return (
       <span>
-        <i className="icon fa-clock-o"></i> <span>{ translate('DASHBOARD.IMMATURE') }</span>
+        <i className="icon fa-clock-o"></i> <span>{ translate('DASHBOARD.IMMATURE') }</span> <span>{ ' ' + '(' + tx.blockstomaturity + ')'}</span>
       </span>
     );
   } else if (category === 'unknown') {
