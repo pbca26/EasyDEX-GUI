@@ -279,7 +279,7 @@ const WalletsInfoRender = function() {
                   <tr>
                     <td>{ translate('INDEX.VERSION') }</td>
                     <td>
-                      { _progress.KMDversion }
+                      { _progress.VRSCversion ? _progress.VRSCversion : _progress.KMDversion }
                     </td>
                   </tr>
                   <tr>
