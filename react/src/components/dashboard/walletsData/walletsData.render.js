@@ -200,7 +200,9 @@ export const AddressListRender = function() {
   }
 };
 
-export const TxTypeRender = function(category) {
+export const TxTypeRender = function(tx) {
+  const category = tx.category || tx.type;
+
   if (category === 'send' ||
       category === 'sent') {
     return (

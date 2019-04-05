@@ -363,6 +363,26 @@ class WalletsData extends React.Component {
     return 0;
   }
 
+  confSorting(a, b) {
+    a = a.props.children[1].props.children;
+    b = b.props.children[1].props.children;
+    // force null and undefined to the bottom
+    a = (a === null || a === undefined) ? -Infinity : a;
+    b = (b === null || b === undefined) ? -Infinity : b;
+    // force any string values to lowercase
+    a = typeof a === 'string' ? a.toLowerCase() : a;
+    b = typeof b === 'string' ? b.toLowerCase() : b;
+    // Return either 1 or -1 to indicate a sort priority
+    if (a > b) {
+      return 1;
+    }
+    if (a < b) {
+      return -1;
+    }
+    // returning 0 or undefined will use any subsequent column sorting methods or the row index as a tiebreaker
+    return 0;
+  }
+
   // https://react-table.js.org/#/custom-sorting
   tableDateSorting(a, b) { // ugly workaround, override default sort
     if (Date.parse(a)) { // convert date to timestamp
@@ -456,7 +476,7 @@ class WalletsData extends React.Component {
       headerClassName: 'colum--direction',
       footerClassName: 'colum--direction',
       sortMethod: this.directionSorting,
-      accessor: (tx) => TxTypeRender.call(this, tx.category),
+      accessor: (tx) => TxTypeRender.call(this, tx),
     },
     {
       id: 'confirmations',
@@ -558,7 +578,7 @@ class WalletsData extends React.Component {
         className: 'colum--direction',
         headerClassName: 'colum--direction',
         footerClassName: 'colum--direction',
-        accessor: (tx) => TxTypeRender.call(this, tx.category || tx.type),
+        accessor: (tx) => TxTypeRender.call(this, tx),
       },
       {
         id: 'tag',
