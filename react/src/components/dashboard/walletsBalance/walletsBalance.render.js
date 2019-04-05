@@ -158,7 +158,7 @@ const WalletsBalanceRender = function() {
                   <div className="clearfix cursor-default">
                     <div className="pull-left padding-vertical-10 min-width-160l">
                       <i className="icon fa-bullseye font-size-24 vertical-align-bottom margin-right-5"></i>
-                      { translate('INDEX.TOTAL_BALANCE') }
+                      { translate('INDEX.SPENDABLE_BALANCE') }
                     </div>
                     <span
                       className="pull-right padding-top-10 font-size-20 min-width-160r"

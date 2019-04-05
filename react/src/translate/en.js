@@ -379,6 +379,7 @@ const LANG_EN = {
     COPY: 'copy',
     INTEREST_EARNED: 'Rewards Earned',
     TOTAL_BALANCE: 'Total Wallet Balance',
+    SPENDABLE_BALANCE: 'Spendable Balance',
     GET_BALANCE: 'Get Balance',
     REFRESH: 'Refresh',
     LIST_UNSPENT: 'List Unspent',
