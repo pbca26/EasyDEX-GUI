@@ -56,6 +56,7 @@ const coins = {
   },
   CRYPTO: {
     VRSC: 'Verus',
+    VRSCTEST: 'Verus Testnet',
     CLF: 'CryptoLeaf',
     KEA: 'KEA',
     OVAL: 'OVAL',

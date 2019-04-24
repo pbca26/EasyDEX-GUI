@@ -48,7 +48,7 @@ const addCoinOptionsAC = (activeCoins) => {
   for (let i = 0; i < _assetChains.length; i++) {
     const _coinuc = _assetChains[i].toUpperCase();
 
-    if (_coinuc !== 'VRSC') {
+    if (_coinuc !== 'VRSC' && _coinuc !== 'VRSCTEST') {
       const _coinlc = _assetChains[i].toLowerCase();
       let availableModes;
   

@@ -277,7 +277,7 @@ const WalletsInfoRender = function() {
               <table className="table table-striped">
                 <tbody>
                   <tr>
-                    <td>{ translate('INDEX.VERSION') }</td>
+                    <td>{ translate('INDEX.DAEMON_VERSION') }</td>
                     <td>
                       { _progress.VRSCversion ? _progress.VRSCversion : _progress.KMDversion }
                     </td>

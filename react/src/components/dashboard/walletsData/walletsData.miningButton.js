@@ -132,7 +132,7 @@ class MiningButton extends React.Component {
   }
 
   render() {
-    if ((this.props.ActiveCoin.coin === 'VRSC' || this.props.ActiveCoin.coin === 'VERUSTEST')){
+    if ((this.props.ActiveCoin.coin === 'VRSC' || this.props.ActiveCoin.coin === 'VRSCTEST')){
     return (
       <div className="row">
         <div className="col-sm-5">

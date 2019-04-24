@@ -210,7 +210,7 @@ export const _SendFormRender = function() {
               placeholder="0.000"
               autoComplete="off" />
           </div>
-          { (this.props.ActiveCoin.coin === 'VRSC' || this.props.ActiveCoin.coin === 'VERUSTEST') && (this.state.sendTo.length === 95 || this.state.sendTo.length === 78) && 
+          { (this.props.ActiveCoin.coin === 'VRSC' || this.props.ActiveCoin.coin === 'VRSCTEST') && (this.state.sendTo.length === 95 || this.state.sendTo.length === 78) && 
             <div className="col-lg-12 form-group form-material">
               <label
                 className="control-label"

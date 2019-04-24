@@ -65,6 +65,14 @@ const NavbarRender = function() {
                 </a>
               </li>
             }
+            { _activeCoin.mode === 'native' &&
+              (_activeCoin.coin === 'VRSC' || _activeCoin.coin === 'VRSCTEST') &&
+              <li className={ 'nav-top-menu' + (this.isSectionActive('pbaas') ? ' active' : '') }>
+                <a onClick={ () => this.dashboardChangeSection('pbaas') }>
+                <i className="site-menu-icon"></i> PBaaS
+              </a>
+              </li>
+            }
             { /*<li className={ this.isSectionActive('explorer') ? 'active nav-top-menu' : 'nav-top-menu' }>
               <a onClick={ () => this.dashboardChangeSection('exporer') }>
                 <i className="site-menu-icon"></i> Explorer

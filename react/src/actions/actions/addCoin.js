@@ -165,7 +165,7 @@ export const addCoinEth = (coin, network) => {
   }
 }
 
-export const addCoin = (coin, mode, startupParams, genproclimit, pubkey) => {
+export const addCoin = (coin, mode, startupParams, genproclimit, pubkey, customDaemon) => {
   if (mode === 0 ||
       mode === '0') {
     return dispatch => {
@@ -173,7 +173,7 @@ export const addCoin = (coin, mode, startupParams, genproclimit, pubkey) => {
     }
   } else {
     return dispatch => {
-      dispatch(apiGetConfig(coin, mode, startupParams, genproclimit, pubkey));
+      dispatch(apiGetConfig(coin, mode, startupParams, genproclimit, pubkey, customDaemon));
     }
   }
 }
@@ -189,7 +189,7 @@ const handleErrors = (response) => {
   }
 }
 
-export const apiHerd = (coin, mode, path, startupParams, genproclimit, pubkey) => {
+export const apiHerd = (coin, mode, path, startupParams, genproclimit, pubkey, customDaemon) => {
   let acData;
   let herdData = {
     ac_name: coin,
@@ -197,6 +197,7 @@ export const apiHerd = (coin, mode, path, startupParams, genproclimit, pubkey) =
       '-daemon=0',
       '-server',
     ],
+    ac_daemon: customDaemon
   };
 
   if (staticVar.chainParams[coin]) {
@@ -213,7 +214,7 @@ export const apiHerd = (coin, mode, path, startupParams, genproclimit, pubkey) =
         for (let i = 0; i < staticVar.chainParams[coin][key].length; i++) {
           herdData.ac_options.push(`-addnode=${staticVar.chainParams[coin][key][i]}`);
         }
-      } else if (key === 'ac_daemon'){
+      } else if (key === 'ac_daemon' && customDaemon == null){
         herdData.ac_daemon = staticVar.chainParams[coin].ac_daemon;
       } else {
         herdData.ac_options.push(`-${key}=${staticVar.chainParams[coin][key]}`);
@@ -430,7 +431,7 @@ export const addCoinResult = (coin, mode) => {
   }
 }
 
-export const _apiGetConfig = (coin, mode, startupParams) => {
+export const _apiGetConfig = (coin, mode, startupParams, customDaemon) => {
   return dispatch => {
     return fetch(
       `http://127.0.0.1:${agamaPort}/api/getconf`,
@@ -458,14 +459,17 @@ export const _apiGetConfig = (coin, mode, startupParams) => {
           coin,
           mode,
           json,
-          startupParams
+          startupParams,
+          null,
+          null,
+          customDaemon
         )
       )
     );
   }
 }
 
-export const apiGetConfig = (coin, mode, startupParams, genproclimit, pubkey) => {
+export const apiGetConfig = (coin, mode, startupParams, genproclimit, pubkey, customDaemon) => {
   if (coin === 'KMD' &&
       mode === '-1') {
     return dispatch => {
@@ -496,7 +500,9 @@ export const apiGetConfig = (coin, mode, startupParams, genproclimit, pubkey) =>
             mode,
             json,
             startupParams,
-            pubkey
+            null,
+            pubkey,
+            customDaemon
           )
         )
       );
@@ -508,6 +514,7 @@ export const apiGetConfig = (coin, mode, startupParams, genproclimit, pubkey) =>
         fetchType(
           JSON.stringify({
             chain: coin,
+            coind: customDaemon,
             token,
           })
         ).post
@@ -531,7 +538,8 @@ export const apiGetConfig = (coin, mode, startupParams, genproclimit, pubkey) =>
             json,
             startupParams,
             genproclimit,
-            pubkey
+            pubkey,
+            customDaemon
           )
         )
       );

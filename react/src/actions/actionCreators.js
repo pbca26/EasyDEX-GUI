@@ -36,6 +36,8 @@ import {
   DASHBOARD_ACTIVE_EXCHANGES_ORDER_MODAL,
   DASHBOARD_EXCHANGES_TOS_MODAL,
   DASHBOARD_EXCHANGES_SUPPORTED_COINS_MODAL,
+  CHANGE_PBAAS_ACTIVE_SECTION,
+  UPDATE_PBAAS_FORM_STATE
 } from './storeType';
 
 export * from './actions/nativeSyncInfo';
@@ -66,6 +68,7 @@ export * from './actions/dice';
 export * from './actions/eth';
 export * from './actions/exchanges';
 export * from './actions/nativeMining';
+export * from './actions/nativePbaas';
 
 export const changeActiveAddress = (address) => {
   return {
@@ -358,3 +361,17 @@ export const toggleExchangesSupportedCoinsModal = (display) => {
     display,
   }
 };
+
+export const pbaasChangeSectionState = (sectionName) => {
+  return {
+    type: CHANGE_PBAAS_ACTIVE_SECTION,
+    activeSectionPbaas: sectionName,
+  }
+}
+
+export const updatePbaasFormState = (state) => {
+  return {
+    type: UPDATE_PBAAS_FORM_STATE,
+    formState: state
+  }
+}

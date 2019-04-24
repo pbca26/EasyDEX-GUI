@@ -19,6 +19,7 @@ import ImportKeyModal from '../importKeyModal/importKeyModal';
 import ZcparamsFetchModal from '../zcparamsFetchModal/zcparamsFetchModal';
 import ClaimInterestModal from '../claimInterestModal/claimInterestModal';
 import Dice from '../dice/dice';
+import PBaaS from '../pbaas/pbaas';
 import Exchanges from '../exchanges/exchanges';
 import ChangeLog from '../changeLog/changeLog';
 
@@ -66,6 +67,9 @@ const DashboardRender = function() {
         }
         { this.isSectionActive('tools') &&
           <Tools />
+        }
+        { this.isSectionActive('pbaas') &&
+          <PBaaS  />
         }
       </div>
     </div>

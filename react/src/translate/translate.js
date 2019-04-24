@@ -25,7 +25,7 @@ const translate = (langID, interpolateStr) => {
       }
     } else {
       console.warn(`Missing translation ${langID} in js/${defaultLang.toLowerCase()}.js`);
-      return `--> ${langID} <--`;
+      return langIDComponents[1];
     }
   } else {
     if (langID.length) {

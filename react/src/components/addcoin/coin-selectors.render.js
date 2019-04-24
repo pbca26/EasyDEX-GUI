@@ -25,6 +25,10 @@ const CoinSelectorsRender = function(item, coin, i) {
     label: 'Verus (VRSC)',
     icon: 'btc/vrsc',
     value: 'VRSC|native|spv',
+  }, {
+    label: 'Verus Testnet (VRSCTEST)',
+    icon: 'btc/vrsctest',
+    value: 'VRSCTEST|native',
   }];
 
   if (item &&

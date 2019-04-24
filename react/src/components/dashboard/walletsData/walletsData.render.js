@@ -265,7 +265,7 @@ export const TxAmountRender = function(tx) {
         <span
           data-for="txHistory3"
           data-tip={ tx.amount }>
-          { this.props.ActiveCoin.mode === 'eth' ? formatValue(tx.amount) : Math.abs(tx.interest) !== Math.abs(tx.amount) ? formatValue(tx.amount) || translate('DASHBOARD.UNKNOWN') : '' }
+          { this.props.ActiveCoin.mode === 'eth' ? formatValue(tx.amount) : Math.abs(tx.interest) !== Math.abs(tx.amount) ? (typeof tx.amount !== undefined ? formatValue(tx.amount) : translate('DASHBOARD.UNKNOWN')) : '' }
           { tx.interest &&
             <span
               className="tx-interest"
@@ -472,7 +472,7 @@ export const WalletsDataRender = function() {
                         this.props.ActiveCoin.txhistory !== 'connection error' &&
                         this.props.ActiveCoin.txhistory !== 'connection error or incomplete data' &&
                         this.props.ActiveCoin.txhistory !== 'cant get current height' &&
-                        (this.props.ActiveCoin.coin === 'VRSC' || this.props.ActiveCoin.coin === 'VERUSTEST') &&
+                        (this.props.ActiveCoin.coin === 'VRSC' || this.props.ActiveCoin.coin === 'VRSCTEST') &&
                         <div className="row">
                           <div className="col-sm-4">
                             <button

@@ -11,6 +11,7 @@ import Interval from './interval';
 import Login from './login';
 import Dex from './dex';
 import Dice from './dice';
+import PBaaS from './pbaas';
 
 const appReducer = combineReducers({
   AddCoin,
@@ -23,6 +24,7 @@ const appReducer = combineReducers({
   Login,
   Dex,
   Dice,
+  PBaaS,
   routing: routerReducer,
 });
 
