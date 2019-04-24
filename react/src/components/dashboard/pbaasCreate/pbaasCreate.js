@@ -22,7 +22,7 @@ import {
 import translate from '../../../translate/translate';
 import { addressVersionCheck } from 'agama-wallet-lib/src/keys';
 import networks from 'agama-wallet-lib/src/bitcoinjs-networks';
-import { updatePbaasFormState } from '../../../actions/actionCreators';
+import { updatePbaasFormState, defineAndCreateChain, triggerToaster } from '../../../actions/actionCreators';
 import { coinsToSats } from '../../../util/satMath';
 
 const { shell } = window.require('electron');
@@ -37,7 +37,7 @@ class PBaaSCreate extends React.Component {
   constructor(props) {
     super(props);
 
-    if (this.props.PBaaS.formState.chainName) {
+    if (this.props.PBaaS.formState.currentStep > -1) {
       this.state = this.props.PBaaS.formState
     } else {
       this.state = {
@@ -445,28 +445,30 @@ class PBaaSCreate extends React.Component {
   }
 
   parseState() {
-    let name = this.state.chainName
-    let address = ""
-    let premine = 0
-    let convertible = 0
-    let launchfee = 0
-    let startblock = this.state.startBlock
-    let eras = []
-    let notarizationreward = 0
-    let billingperiod = 0
-    let nodes = []
+    let payload = {
+      name: this.state.chainName,
+      address: "",
+      premine: 0,
+      convertible: 0,
+      launchfee: 0,
+      startblock: this.state.startBlock,
+      eras: [],
+      notarizationreward: 0,
+      billingperiod: 0,
+      nodes: [],
+    }
 
     if (this.state.includePremine) {
-      address = this.state.premineAddr
-      premine = coinsToSats(Number(this.state.premineAmount))
+      payload.address = this.state.premineAddr
+      payload.premine = coinsToSats(Number(this.state.premineAmount))
 
       if (this.state.publicPremine) {
-        convertible = coinsToSats(Number(this.state.convertible))
-        launchfee = Number(this.state.launchfee)
+        payload.convertible = coinsToSats(Number(this.state.convertible))
+        payload.launchfee = Number(this.state.launchfee)
       }
     }
 
-    eras = this.state.rewardEras.map((rewardEra, index) => {
+    payload.eras = this.state.rewardEras.map((rewardEra, index) => {
       let returnObj = {
         reward: coinsToSats(Number(rewardEra.initReward)),
         decay: rewardEra.decay.type === LINEAR ? 100000000 : 100000000/Number(rewardEra.decay.magnitude),
@@ -477,28 +479,42 @@ class PBaaSCreate extends React.Component {
       return returnObj
     })
 
-    notarizationreward = coinsToSats(Number(this.state.initCost))
-    billingperiod = coinsToSats(Number(this.state.billingPeriod))
+    payload.notarizationreward = coinsToSats(Number(this.state.initCost))
+    payload.billingperiod = Number(this.state.billingPeriod)
 
-    nodes = this.state.nodes.map((node, index) => {
+    payload.nodes = this.state.nodes.map((node, index) => {
       let returnObj = {
-        nodeaddress: node.nodeAddress,
+        networkaddress: node.nodeAddress,
         paymentaddress: node.paymentAddress
       }
       
       return returnObj
     })
 
-    console.log(name)
-    console.log(address)
-    console.log(premine)
-    console.log(convertible)
-    console.log(launchfee)
-    console.log(startblock)
-    console.log(eras)
-    console.log(notarizationreward)
-    console.log(billingperiod)
-    console.log(nodes)
+    defineAndCreateChain(payload)
+    .then(res => {
+      if (res && !res.error) {
+        console.log(res)
+        Store.dispatch(
+          triggerToaster(
+            translate('PBAAS.PBAAS_CHAIN_SUBMITTED_DESC') + res,
+            translate('PBAAS.PBAAS_CHAIN_SUBMITTED'),
+            'success',
+            false
+          )
+        );
+      } else {
+        console.log(res.error)
+        Store.dispatch(
+          triggerToaster(
+            translate('PBAAS.PBAAS_CHAIN_FAILED_DESC') + (res.error ? res.error.message : translate('INDEX.UNKNOWN_ERROR')),
+            translate('PBAAS.PBAAS_CHAIN_FAILED'),
+            'error',
+            false
+          )
+        );
+      }
+    })
   }
 
   anyErrorsOrIncomplete() {

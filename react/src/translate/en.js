@@ -1406,8 +1406,8 @@ const LANG_EN = {
     BROKE: 'Something broke...',
     NEXT: 'Next',
     BACK: 'Back',
-    CHAIN_NAME: 'Chain Name',
-    CHAIN_NAME_HOLDER: 'Enter your new chain name',
+    CHAIN_NAME: 'Chain Ticker',
+    CHAIN_NAME_HOLDER: 'Enter your new chain ticker',
     CHAIN_ID: 'Chain Identity',
     CHAIN_ID_DESC: 'This is where it all starts. Your chosen chain name will be a unique identifier, and all anyone will need in order to discover your blockchain.',
     PREMINE_DESC: 'You have to the option to allocate your coins before launch with a premine. Here you can decide where those coins would go, and how many there would be.',
@@ -1481,7 +1481,11 @@ const LANG_EN = {
     CHAIN_FOUND: 'chain found!',
     NOTARIZATION_REWARD: 'Notarization Reward',
     CONVERSION_PERCENT: 'Conversion Percent',
-    VERSION: 'Version'
+    VERSION: 'Version',
+    PBAAS_CHAIN_SUBMITTED: 'Chain submitted!',
+    PBAAS_CHAIN_FAILED_DESC: 'Failed to submit PBaaS chain: ',
+    PBAAS_CHAIN_FAILED: 'Chain submission failed!',
+    PBAAS_CHAIN_SUBMITTED_DESC: 'Track this txid to see when your chain will come online, and then connect to it through the connect screen! '
   }
 };
 

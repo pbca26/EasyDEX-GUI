@@ -17,6 +17,7 @@ import {
 } from './receiveCoin.render';
 import translate from '../../../translate/translate';
 import mainWindow, { staticVar } from '../../../util/mainWindow';
+import Config from '../../../config';
 
 // TODO: implement balance/interest sorting
 
@@ -236,6 +237,7 @@ class ReceiveCoin extends React.Component {
           if (type === 'private' ||
               (type === 'public' &&
                (this.props.coin === 'KMD' ||
+                Config.reservedChains.indexOf(this.props.coin) === -1 ||
                 (staticVar.chainParams &&
                  staticVar.chainParams[this.props.coin] &&
                  !staticVar.chainParams[this.props.coin].ac_private)))) {

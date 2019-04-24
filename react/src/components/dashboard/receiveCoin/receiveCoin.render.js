@@ -4,6 +4,7 @@ import QRModal from '../qrModal/qrModal';
 import InvoiceModal from '../invoiceModal/invoiceModal';
 import ReactTooltip from 'react-tooltip';
 import mainWindow, { staticVar } from '../../../util/mainWindow';
+import Config from '../../../config';
 
 export const AddressActionsNonBasiliskModeRender = function(address, type) {
   return (
@@ -222,6 +223,7 @@ export const ReceiveCoinRender = function() {
                           </a>
                           <ul className="dropdown-menu dropdown-menu-right">
                            { (this.props.coin === 'KMD' ||
+                              Config.reservedChains.indexOf(this.props.coin) === -1 ||
                               (staticVar.chainParams &&
                                 staticVar.chainParams[this.props.coin] &&
                                !staticVar.chainParams[this.props.coin].ac_private)) &&

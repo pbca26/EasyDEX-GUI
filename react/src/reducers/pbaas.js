@@ -5,7 +5,9 @@ import {
 
 export const PBaaS = (state = {
   activeSectionPbaas: 'connect',
-  formState: {}
+  formState: {
+    currentStep: -1
+  }
 }, action) => {
   switch (action.type) {
     case CHANGE_PBAAS_ACTIVE_SECTION:

@@ -6,6 +6,7 @@ import {
   setGenerate
 } from '../../../actions/actionCreators';
 import ReactTooltip from 'react-tooltip';
+import Config from '../../../config';
 
 class MiningButton extends React.Component {
   constructor() {
@@ -132,7 +133,10 @@ class MiningButton extends React.Component {
   }
 
   render() {
-    if ((this.props.ActiveCoin.coin === 'VRSC' || this.props.ActiveCoin.coin === 'VRSCTEST')){
+    if (
+      this.props.ActiveCoin.coin === 'VRSC' || 
+      this.props.ActiveCoin.coin === 'VRSCTEST' || 
+      Config.reservedChains.indexOf(this.props.ActiveCoin.coin) === -1){
     return (
       <div className="row">
         <div className="col-sm-5">

@@ -10,6 +10,7 @@ import {
   isKomodoCoin,
 } from '../../../util/coinHelper';
 import translate from '../../../translate/translate';
+import ReactImageFallback from "react-image-fallback";
 
 const _skipCoins = [
   'KMD',
@@ -17,6 +18,8 @@ const _skipCoins = [
   'MESH',
   'MVP',
 ];
+
+const DEFAULT_CHAIN = "defaultChain.png"
 
 const WalletsMainRender = function() {
   const _coin = this.props.ActiveCoin.coin;
@@ -31,9 +34,10 @@ const WalletsMainRender = function() {
           <ol className={ 'coin-logo breadcrumb' + (_skipCoins.indexOf(_coin) > -1 ? ' coin-logo-wide' : '') + ' native-coin-logo' }>
             <li className="header-easydex-section">
               { this.getCoinStyle('title') &&
-                <img
+                <ReactImageFallback
                   className={ 'coin-icon' + (_coin === 'KMD' ? ' kmd' : '') }
-                  src={ this.getCoinStyle('title') } />
+                  src={ this.getCoinStyle('title') } 
+                  fallbackImage={ `assets/images/cryptologo/${DEFAULT_CHAIN}` } />
               }
               { _coin === 'KMD' &&
                 <img

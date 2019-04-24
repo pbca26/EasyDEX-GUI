@@ -1,5 +1,6 @@
 import {
   triggerToaster,
+  apiCliPromise
 } from '../actionCreators';
 import translate from '../../translate/translate';
 import Config, {
@@ -10,7 +11,7 @@ import Config, {
 import fetchType from '../../util/fetchType';
 import Store from '../../store';
 
-const PBAAS_ROOT_CHAIN = 'VRSCTEST'
+const PBAAS_ROOT_CHAIN = Config.verus.pbaasTestmode ? 'VRSCTEST' : 'VRSC'
 
 export const getChainDefinition = (chain) => {
   return new Promise((resolve, reject) => {
@@ -78,6 +79,8 @@ export const defineChain = (
       }],
     };
 
+    console.log(payload)
+
     fetch(
       `http://127.0.0.1:${agamaPort}/api/cli`,
       fetchType(JSON.stringify({ payload })).post
@@ -97,5 +100,41 @@ export const defineChain = (
       console.log(json)
       resolve(json);
     });
+  });
+}
+
+export const defineAndCreateChain = (_params) => {
+  return new Promise((resolve, reject) => {
+    defineChain(
+      _params.name,
+      _params.address,
+      _params.premine,
+      _params.convertible,
+      _params.launchfee,
+      _params.startblock,
+      _params.eras,
+      _params.notarizationreward,
+      _params.billingperiod,
+      _params.nodes
+    )
+    .then((res) => {
+      if (res.error || !res.result) {
+        return res
+      } else {
+        return (apiCliPromise(
+          null,
+          PBAAS_ROOT_CHAIN,
+          'sendrawtransaction',
+          [res.result.hex]
+        ))
+      }
+    })
+    .then(res => {
+      if (res && res.result && !res.error) {
+        resolve(res.result)
+      } else {
+        resolve(res)
+      }
+    })
   });
 }

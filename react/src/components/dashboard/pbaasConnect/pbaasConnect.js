@@ -7,8 +7,15 @@ import {
   PBaaSConnectRender,
   _erasRender,
   _chainInfoRender
- } from './pbaasConnect.render';
-import { getChainDefinition, triggerToaster, addCoin } from '../../../actions/actionCreators'
+} from './pbaasConnect.render';
+import { 
+  getChainDefinition, 
+  triggerToaster, 
+  addCoin,
+  dashboardChangeSectionState,
+  toggleDashboardActiveSection,
+  dashboardChangeActiveCoin
+} from '../../../actions/actionCreators'
 import translate from '../../../translate/translate';
 
 const { shell } = window.require('electron');
@@ -104,6 +111,8 @@ class PBaaSConnect extends React.Component {
       null,
       VERUS_DAEMON
     ));
+    Store.dispatch(dashboardChangeSectionState('wallets'));
+    Store.dispatch(toggleDashboardActiveSection('default')); 
   }
 
   isCoinAlreadyAdded(coin) {

@@ -142,8 +142,8 @@ const NavbarRender = function() {
             <li
               className={
                 'pointer dropdown' +
-                (this.state.openDropMenu ? ' open' : '') +
-                (this.props.Main.newUpdateAvailable.result === 'update' ? ' new-update-icon' : '')
+                (this.state.openDropMenu ? ' open' : '')
+                //(this.props.Main.newUpdateAvailable.result === 'update' ? ' new-update-icon' : '')
               }
               onClick={ this.openDropMenu }>
               <a className="navbar-avatar dropdown-toggle">
@@ -154,13 +154,13 @@ const NavbarRender = function() {
                 </span>
               </a>
               <ul className="dropdown-menu">
-                { this.props.Main.newUpdateAvailable.result === 'update' &&
+                {/* this.props.Main.newUpdateAvailable.result === 'update' &&
                   <li className="new-update-icon-link">
                     <a onClick={ this.openKomodoPlatformLink }>
                       <i className="icon fa-level-up"></i> { translate('INDEX.NEW_VERSION') }
                     </a>
                   </li>
-                }
+                */}
                 { !this.isSectionActive('settings') &&
                   <li>
                     <a onClick={ () => this.dashboardChangeSection('settings') }>

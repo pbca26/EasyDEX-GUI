@@ -222,10 +222,10 @@ export const apiHerd = (coin, mode, path, startupParams, genproclimit, pubkey, c
     }
   }
 
-  if (!staticVar.chainParams[coin] ||
-      (staticVar.chainParams[coin] && !staticVar.chainParams[coin].addnode)) {
-    herdData.ac_options.push('-addnode=78.47.196.146');
-  }
+  //if (!staticVar.chainParams[coin] ||
+  //    (staticVar.chainParams[coin] && !staticVar.chainParams[coin].addnode)) {
+  //  herdData.ac_options.push('-addnode=78.47.196.146');
+  //}
 
   if (coin === 'VRSC') {
     if(Config.verus.autoStakeVRSC) {
