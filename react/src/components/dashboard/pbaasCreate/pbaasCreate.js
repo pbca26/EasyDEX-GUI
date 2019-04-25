@@ -440,10 +440,6 @@ class PBaaSCreate extends React.Component {
     });
   }
 
-  confirmData() {
-    console.log(this.state)
-  }
-
   parseState() {
     let payload = {
       name: this.state.chainName,
@@ -494,7 +490,6 @@ class PBaaSCreate extends React.Component {
     defineAndCreateChain(payload)
     .then(res => {
       if (res && !res.error) {
-        console.log(res)
         Store.dispatch(
           triggerToaster(
             translate('PBAAS.PBAAS_CHAIN_SUBMITTED_DESC') + res,

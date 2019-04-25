@@ -102,6 +102,13 @@ class PBaaSConnect extends React.Component {
     if (this.isCoinAlreadyAdded(this.state.chainInfo.name)) {
       return;
     }
+
+    let rpcPort;
+    //Parse first time rpc port from chain info
+    if (this.state.chainInfo.nodes.length && this.state.chainInfo.nodes[0].networkaddress) {
+      let splitAddress = this.state.chainInfo.nodes[0].networkaddress.split(':')
+      rpcPort = Number(splitAddress[1]) + 1
+    }
     
     Store.dispatch(addCoin(
       this.state.chainInfo.name,
@@ -109,7 +116,8 @@ class PBaaSConnect extends React.Component {
       null,
       null,
       null,
-      VERUS_DAEMON
+      VERUS_DAEMON,
+      rpcPort
     ));
     Store.dispatch(dashboardChangeSectionState('wallets'));
     Store.dispatch(toggleDashboardActiveSection('default')); 

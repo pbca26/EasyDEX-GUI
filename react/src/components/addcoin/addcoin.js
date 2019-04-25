@@ -23,7 +23,8 @@ import CoinSelectorsRender from './coin-selectors.render';
 import AddCoinRender from './addcoin.render';
 
 const SEED_TRIM_TIMEOUT = 5000;
-const IMAGE_NOT_FOUND_PNG = '404.png';
+const DEFAULT_CHAIN = "defaultChain.png"
+const VERUS_DAEMON = 'verusd';
 
 class AddCoin extends React.Component {
   constructor() {
@@ -239,7 +240,7 @@ class AddCoin extends React.Component {
         <ReactImageFallback
           src={ `assets/images/cryptologo/${option.icon.toLowerCase()}.png` }
           alt={ option.label }
-          fallbackImage={ `assets/images/cryptologo/${IMAGE_NOT_FOUND_PNG}` }
+          fallbackImage={ `assets/images/cryptologo/${DEFAULT_CHAIN}` }
           width="30px"
           height="30px" />
           <span className="margin-left-10">{ option.label }</span>
@@ -380,11 +381,16 @@ class AddCoin extends React.Component {
                 null,
                 null,
                 Config.pubkey,
+                Config.reservedChains.indexOf(coin) === -1 && _coin.mode === -1 ? VERUS_DAEMON : null
               ));
             } else {
               Store.dispatch(addCoin(
                 coin,
                 _coin.mode,
+                null,
+                null,
+                null,
+                Config.reservedChains.indexOf(coin) === -1 && _coin.mode === -1 ? VERUS_DAEMON : null
               ));
             }
           } else {
@@ -396,6 +402,7 @@ class AddCoin extends React.Component {
               staticVar.chainParams[coinuc] &&
               staticVar.chainParams[coinuc].genproclimit ? Number(_coin.genProcLimit || 1) : 0,
               this.state.usePubkey && pubkeyToAddress(Config.pubkey, bitcoinjsNetworks.kmd) ? Config.pubkey : null,
+              Config.reservedChains.indexOf(coin) === -1 && _coin.mode === -1 ? VERUS_DAEMON : null
             ));
           }
 

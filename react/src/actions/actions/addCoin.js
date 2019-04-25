@@ -165,7 +165,7 @@ export const addCoinEth = (coin, network) => {
   }
 }
 
-export const addCoin = (coin, mode, startupParams, genproclimit, pubkey, customDaemon) => {
+export const addCoin = (coin, mode, startupParams, genproclimit, pubkey, customDaemon, customRpcPort) => {
   if (mode === 0 ||
       mode === '0') {
     return dispatch => {
@@ -173,7 +173,7 @@ export const addCoin = (coin, mode, startupParams, genproclimit, pubkey, customD
     }
   } else {
     return dispatch => {
-      dispatch(apiGetConfig(coin, mode, startupParams, genproclimit, pubkey, customDaemon));
+      dispatch(apiGetConfig(coin, mode, startupParams, genproclimit, pubkey, customDaemon, customRpcPort));
     }
   }
 }
@@ -189,7 +189,7 @@ const handleErrors = (response) => {
   }
 }
 
-export const apiHerd = (coin, mode, path, startupParams, genproclimit, pubkey, customDaemon) => {
+export const apiHerd = (coin, mode, path, startupParams, genproclimit, pubkey, customDaemon, customRpcPort) => {
   let acData;
   let herdData = {
     ac_name: coin,
@@ -197,7 +197,8 @@ export const apiHerd = (coin, mode, path, startupParams, genproclimit, pubkey, c
       '-daemon=0',
       '-server',
     ],
-    ac_daemon: customDaemon
+    ac_daemon: customDaemon,
+    ac_init_rpc_port: customRpcPort
   };
 
   if (staticVar.chainParams[coin]) {
@@ -431,7 +432,7 @@ export const addCoinResult = (coin, mode) => {
   }
 }
 
-export const _apiGetConfig = (coin, mode, startupParams, customDaemon) => {
+export const _apiGetConfig = (coin, mode, startupParams, customDaemon, customRpcPort) => {
   return dispatch => {
     return fetch(
       `http://127.0.0.1:${agamaPort}/api/getconf`,
@@ -462,14 +463,15 @@ export const _apiGetConfig = (coin, mode, startupParams, customDaemon) => {
           startupParams,
           null,
           null,
-          customDaemon
+          customDaemon,
+          customRpcPort
         )
       )
     );
   }
 }
 
-export const apiGetConfig = (coin, mode, startupParams, genproclimit, pubkey, customDaemon) => {
+export const apiGetConfig = (coin, mode, startupParams, genproclimit, pubkey, customDaemon, customRpcPort) => {
   if (coin === 'KMD' &&
       mode === '-1') {
     return dispatch => {
@@ -502,7 +504,8 @@ export const apiGetConfig = (coin, mode, startupParams, genproclimit, pubkey, cu
             startupParams,
             null,
             pubkey,
-            customDaemon
+            customDaemon,
+            customRpcPort
           )
         )
       );
@@ -539,7 +542,8 @@ export const apiGetConfig = (coin, mode, startupParams, genproclimit, pubkey, cu
             startupParams,
             genproclimit,
             pubkey,
-            customDaemon
+            customDaemon,
+            customRpcPort
           )
         )
       );

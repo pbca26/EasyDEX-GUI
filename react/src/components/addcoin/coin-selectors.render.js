@@ -6,7 +6,7 @@ import addCoinOptionsAC from '../addcoin/addcoinOptionsAC';
 import mainWindow, { staticVar } from '../../util/mainWindow';
 import Select from 'react-select';
 import ReactTooltip from 'react-tooltip';
-import config from '../../config';
+import Config from '../../config';
 import { pubkeyToAddress } from 'agama-wallet-lib/src/keys';
 import bitcoinjsNetworks from 'agama-wallet-lib/src/bitcoinjs-networks';
 
@@ -31,6 +31,18 @@ const CoinSelectorsRender = function(item, coin, i) {
     value: 'VRSCTEST|native',
   }];
 
+  if (Config.pbaasChains.length > 0) {
+    coinOptions = coinOptions.concat(
+      Config.pbaasChains.map((pbaasChain, index) => {
+        return ({
+          label: translate(`CRYPTO.${pbaasChain}`),
+          icon: '',
+          value: `${pbaasChain}|native`,
+        })
+      }
+    ))
+  }
+
   if (item &&
       item.selectedCoin) {
     const _itemSplit = item.selectedCoin.split('|');
@@ -48,8 +60,8 @@ const CoinSelectorsRender = function(item, coin, i) {
   }
 
   let pubkeyAddress;
-  if (config.pubkey) {
-    pubkeyAddress = pubkeyToAddress(config.pubkey, bitcoinjsNetworks.kmd);
+  if (Config.pubkey) {
+    pubkeyAddress = pubkeyToAddress(Config.pubkey, bitcoinjsNetworks.kmd);
 
     if (!pubkeyAddress) {
       pubkeyAddress = translate('TOASTR.INVALID_PUBKEY');
@@ -332,8 +344,8 @@ const CoinSelectorsRender = function(item, coin, i) {
         </div>
       }
       { !this.hasMoreThanOneCoin() &&
-        config &&
-        config.pubkey &&
+        Config &&
+        Config.pubkey &&
         item.mode === '-1' &&
         <div className="col-sm-12 no-padding">
           <div className="col-sm-12 padding-bottom-10">
@@ -359,7 +371,7 @@ const CoinSelectorsRender = function(item, coin, i) {
           { this.state.usePubkey &&
             <div className="col-sm-12 padding-bottom-35">
               <div className="padding-bottom-15">
-                <strong>{ translate('INDEX.PUBKEY') }:</strong> { config.pubkey }
+                <strong>{ translate('INDEX.PUBKEY') }:</strong> { Config.pubkey }
               </div>
               <strong>{ translate('INDEX.ADDRESS') }:</strong> { pubkeyAddress }
             </div>
