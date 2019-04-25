@@ -176,8 +176,10 @@ class AppSettingsPanel extends React.Component {
                 Store.dispatch(saveAppConfig(_appSettingsPristine));
               }
             });
+          } else if (_configSchema[key][keyChild] && _configSchema[key][keyChild].type === 'number') {
+            _appSettingsPristine[key][keyChild] = Number(_appSettings[key][keyChild]);
           } else {
-            _appSettingsPristine[key][keyChild] = _configSchema[key][keyChild].type === 'number' ? Number(_appSettings[key][keyChild]) : _appSettings[key][keyChild];
+            _appSettingsPristine[key][keyChild] = _appSettings[key][keyChild];
           }
         }
       }
