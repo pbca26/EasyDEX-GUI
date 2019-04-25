@@ -397,7 +397,7 @@ class PBaaSCreate extends React.Component {
       
       //Give the infinite end of the graph an arbitrary length
       if (!end) {
-        end = initBlock + (halving*10.5)
+        end = initBlock + (halving*15.5)
       } 
 
       //Calculating individual data points
