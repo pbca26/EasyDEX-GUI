@@ -23,11 +23,11 @@ export const TxConfsRender = function(tx) {
     return (
       <span>
         { dpowCoins.indexOf(this.props.ActiveCoin.coin) > -1 &&
-          tx.hasOwnProperty('rawconfirmations') &&
+          Object.prototype.hasOwnProperty.call(tx, 'rawconfirmations') &&
           tx.confirmations !== tx.rawconfirmations &&
           <span>
             <span
-              data-tip={ `Raw confirmations: ${tx.rawconfirmations}` }
+              data-tip={`Raw confirmations: ${tx.rawconfirmations}` }
               data-for="txHistoryDpowRawConf">
               { tx.confirmations }
             </span>
@@ -37,12 +37,12 @@ export const TxConfsRender = function(tx) {
               className="text-left" />
           </span>
         }
-        { (dpowCoins.indexOf(this.props.ActiveCoin.coin) === -1 || !tx.hasOwnProperty('rawconfirmations') || (tx.hasOwnProperty('rawconfirmations') && tx.confirmations === tx.rawconfirmations)) &&
+        { (dpowCoins.indexOf(this.props.ActiveCoin.coin) === -1 || !Object.prototype.hasOwnProperty.call(tx, 'rawconfirmations') || (Object.prototype.hasOwnProperty.call(tx, 'rawconfirmations') && tx.confirmations === tx.rawconfirmations)) &&
           <span>{ tx.confirmations }</span>
         }
         { dpowCoins.indexOf(this.props.ActiveCoin.coin) > -1 &&
-          ((this.props.ActiveCoin.mode === 'spv' && tx.hasOwnProperty('dpowSecured') && tx.dpowSecured) ||
-           (this.props.ActiveCoin.mode === 'native' && tx.hasOwnProperty('rawconfirmations') && tx.confirmations >=2)) &&
+          ((this.props.ActiveCoin.mode === 'spv' && Object.prototype.hasOwnProperty.call(tx, 'dpowSecured') && tx.dpowSecured) ||
+           (this.props.ActiveCoin.mode === 'native' && Object.prototype.hasOwnProperty.call(tx, 'rawconfirmations') && tx.confirmations >= 2)) &&
           <span>
             <i
               className="icon fa-shield margin-left-10"
@@ -51,7 +51,8 @@ export const TxConfsRender = function(tx) {
             <ReactTooltip
               id="txHistoryDpow"
               effect="solid"
-              className="text-left" />
+              className="text-left"
+            />
           </span>
         }
       </span>
@@ -84,7 +85,7 @@ export const AddressTypeRender = function(tx) {
   return (
     <span>
       <span className={isPrivate(tx) ? "label label-dark" : "label label-default"}>
-        <i 
+        <i
         className={ 'icon fa-eye' + (isPrivate(tx) ? '-slash' : '')}
         data-tip={ isPrivate(tx) ? translate('DASHBOARD.PRIVATE_TX') : translate('DASHBOARD.PUBLIC_TX') }
         data-for={isPrivate(tx) ? "privateTxIcon" : "publicTxIcon"}
@@ -133,7 +134,7 @@ export const AddressRender = function(address) {
 
 export const AddressItemRender = function(address, type, amount, coin) {
   let _address = address;
-  
+
   if (this.props.AddressBook &&
       this.props.AddressBook.obj &&
       this.props.AddressBook.obj[address]) {
@@ -145,7 +146,7 @@ export const AddressItemRender = function(address, type, amount, coin) {
       key={ address }
       className={ address === this.state.currentAddress ? 'selected' : '' }>
       <a onClick={ () => this.updateAddressSelection(address) }>
-        <i className={ 'icon fa-eye' + (type === 'public' ? '' : '-slash') }></i>&nbsp;&nbsp;
+        <i className={ `icon fa-eye${ type === 'public' ? '' : '-slash'}` }></i>&nbsp;&nbsp;
         <span className="text">
           [ { amount } { coin } ]  <span className="selectable">{ _address }</span>
         </span>
@@ -487,12 +488,12 @@ export const WalletsDataRender = function() {
                                 className="text-left" />
                           </div>
                         </div>
-                      }  
+                      }
                       { this.props.ActiveCoin.txhistory !== 'loading' &&
                         this.props.ActiveCoin.txhistory !== 'connection error' &&
                         this.props.ActiveCoin.txhistory !== 'connection error or incomplete data' &&
                         this.props.ActiveCoin.txhistory !== 'cant get current height' &&
-                        this.state.showMiningButton && 
+                        this.state.showMiningButton &&
                         this.props.ActiveCoin.mode !== 'spv' &&
                         <MiningButton />
                       }
@@ -500,14 +501,14 @@ export const WalletsDataRender = function() {
                         this.props.ActiveCoin.txhistory !== 'connection error' &&
                         this.props.ActiveCoin.txhistory !== 'connection error or incomplete data' &&
                         this.props.ActiveCoin.txhistory !== 'cant get current height' &&
-                        this.state.filterMenuOpen && 
+                        this.state.filterMenuOpen &&
                         <div className="filter-options-wrapper">
                           <div className="filter-option">
                             <span className = {
-                              this.props.ActiveCoin.mode === 'spv' || 
+                              this.props.ActiveCoin.mode === 'spv' ||
                               (
-                                staticVar.chainParams && 
-                                staticVar.chainParams[this.props.ActiveCoin.coin] && 
+                                staticVar.chainParams &&
+                                staticVar.chainParams[this.props.ActiveCoin.coin] &&
                                 staticVar.chainParams[this.props.ActiveCoin.coin].ac_private
                               )
                               ? 'hide' : "filter-option-child"}>
@@ -526,10 +527,10 @@ export const WalletsDataRender = function() {
                               </div>
                             </span>
                             <span className = {
-                              this.props.ActiveCoin.mode === 'spv' || 
+                              this.props.ActiveCoin.mode === 'spv' ||
                               (
-                                staticVar.chainParams && 
-                                staticVar.chainParams[this.props.ActiveCoin.coin] && 
+                                staticVar.chainParams &&
+                                staticVar.chainParams[this.props.ActiveCoin.coin] &&
                                 staticVar.chainParams[this.props.ActiveCoin.coin].ac_private
                               )
                             ? 'hide' : "filter-option-child"}>
