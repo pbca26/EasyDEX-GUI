@@ -66,7 +66,7 @@ const NavbarRender = function() {
               </li>
             }
             { _activeCoin.mode === 'native' &&
-              (_activeCoin.coin === 'VRSC' || _activeCoin.coin === 'VRSCTEST') &&
+              (_activeCoin.coin === 'VRSCTEST') &&
               <li className={ 'nav-top-menu' + (this.isSectionActive('pbaas') ? ' active' : '') }>
                 <a onClick={ () => this.dashboardChangeSection('pbaas') }>
                 <i className="site-menu-icon"></i> PBaaS
@@ -182,13 +182,13 @@ const NavbarRender = function() {
                     </a>
                   </li>
                 }
-                { !this.isSectionActive('changelog') &&
+                {/* !this.isSectionActive('changelog') &&
                   <li>
                     <a onClick={ () => this.dashboardChangeSection('changelog') }>
                       <i className="icon fa-list"></i> Change log
                     </a>
                   </li>
-                }
+                */}
                 <li>
                   <a onClick={ this._toggleBlurSensitiveData }>
                     <i className={ 'nbps icon fa-eye' + (!this.props.Main.blurSensitiveData ? '-slash' : '') }></i>

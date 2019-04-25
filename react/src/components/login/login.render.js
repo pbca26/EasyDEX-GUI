@@ -50,11 +50,11 @@ const LoginRender = function() {
                       <i className="icon fa-wrench"></i> { translate('TOOLS.TOOLS') }
                     </a>
                   </li>
-                  <li>
+                  {/*<li>
                     <a onClick={ () => this.toggleLoginSettingsDropdownSection('changelog') }>
                       <i className="icon fa-list"></i> Change Log
                     </a>
-                  </li>
+                  </li>*/}
                   { this.renderResetSPVCoinsOption() &&
                     <li>
                       <a onClick={ this.resetSPVCoins }>

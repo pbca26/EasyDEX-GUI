@@ -29,12 +29,12 @@ const PBaaSNavRender = function() {
                 { ' ' + translate('PBAAS.CONNECT') }
               </a>
             </li>
-            <li className={ this.isSectionActive(DISCOVER) ? "active" : "" }>
+            {/*<li className={ this.isSectionActive(DISCOVER) ? "active" : "" }>
               <a onClick={ () => this.changeActiveSection(DISCOVER) }>
                 <span className="glyphicon glyphicon-globe" aria-hidden="true"/> 
                 { ' ' + translate('PBAAS.DISCOVER') }
               </a>
-            </li>
+            </li>*/}
             <li className={ this.isSectionActive(CREATE) ? "active" : "" }>
               <a onClick={ () => this.changeActiveSection(CREATE) }>
                 <span className="glyphicon glyphicon-wrench" aria-hidden="true"/>

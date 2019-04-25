@@ -22,6 +22,16 @@ class MiningButton extends React.Component {
 
   componentDidMount() {
     this.updateMiningStatus();
+
+    //TODO: Make this update to active coin's mining info when it is switched to
+    //Fix bug where mining threads are carried over from another coin that has this
+    //window open
+    if (this.props.Mining.miningInfo[this.props.ActiveCoin.coin]) {
+      this.setState({
+        numThreadsGUI: this.props.Mining.miningInfo[this.props.ActiveCoin.coin].genproclimit,
+      });
+    }
+    
     this.intervalUpdate = setInterval(() => this.updateMiningStatus(), 15000);
   }
 
