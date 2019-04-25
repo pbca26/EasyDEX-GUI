@@ -37,7 +37,9 @@ import {
   DASHBOARD_EXCHANGES_TOS_MODAL,
   DASHBOARD_EXCHANGES_SUPPORTED_COINS_MODAL,
   CHANGE_PBAAS_ACTIVE_SECTION,
-  UPDATE_PBAAS_FORM_STATE
+  UPDATE_PBAAS_FORM_STATE,
+  UPDATE_MINING_INFO,
+  TOGGLE_MINING_OPTIONS
 } from './storeType';
 
 export * from './actions/nativeSyncInfo';
@@ -373,5 +375,20 @@ export const updatePbaasFormState = (state) => {
   return {
     type: UPDATE_PBAAS_FORM_STATE,
     formState: state
+  }
+}
+
+export const updateMiningInfo = (coin, miningInfo) => {
+  return {
+    type: UPDATE_MINING_INFO,
+    coin: coin,
+    miningInfo: miningInfo
+  }
+}
+
+export const toggleMiningOptions = (coin) => {
+  return {
+    type: TOGGLE_MINING_OPTIONS,
+    coin: coin,
   }
 }

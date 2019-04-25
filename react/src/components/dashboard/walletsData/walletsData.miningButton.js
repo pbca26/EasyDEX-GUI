@@ -3,21 +3,18 @@ import { connect } from 'react-redux';
 import translate from '../../../translate/translate';
 import { 
   getMiningInfo,
-  setGenerate
+  setGenerate,
+  updateMiningInfo,
 } from '../../../actions/actionCreators';
 import ReactTooltip from 'react-tooltip';
 import Config from '../../../config';
+import Store from '../../../store';
 
 class MiningButton extends React.Component {
   constructor() {
     super();
     this.state = {
       numThreadsGUI: 0,
-      cliResponse: null,
-      isMining: false,
-      isStaking: false,
-      localHps: 0,
-      numThreadsCli: null,
       loading: false,
       firstTime: true
     };
@@ -34,21 +31,18 @@ class MiningButton extends React.Component {
 
   // TODO: rerender only if prop is changed
   updateMiningStatus() {
-    getMiningInfo(this.props.ActiveCoin.coin)
+    const coin = this.props.ActiveCoin.coin
+    getMiningInfo(coin)
     .then(json => {
-      this.updateMining(json);
+      Store.dispatch(updateMiningInfo(coin, json))
     });
   }
 
   updateMining(_cliResponse){
-    this.setState({
-      isMining: Number(_cliResponse.genproclimit) === 0 ? false : _cliResponse.generate,
-      numThreadsCli: _cliResponse.genproclimit,
-      localHps: _cliResponse.localhashps,
-      isStaking: _cliResponse.staking
-    }, () => {
-      this.updateNumThreadsGUI(this.state.numThreadsCli);
-    });
+    const coin = this.props.ActiveCoin.coin
+    Store.dispatch(updateMiningInfo(coin, _cliResponse))
+    this.updateNumThreadsGUI(this.props.Mining.miningInfo[coin].genproclimit);
+    console.log(_cliResponse)
   }
 
   startMining(_numThreads) {
@@ -78,7 +72,8 @@ class MiningButton extends React.Component {
   }
 
   stopMining() {
-    const wasStaking = this.state.isStaking;
+    const coin = this.props.ActiveCoin.coin
+    const wasStaking = this.props.Mining.miningInfo[coin].staking;
     setGenerate(this.props.ActiveCoin.coin, false, 0)
     .then(() => {
       if (wasStaking) {
@@ -133,6 +128,15 @@ class MiningButton extends React.Component {
   }
 
   render() {
+    const coin = this.props.ActiveCoin.coin
+    const miningInfo = this.props.Mining.miningInfo[coin] ? this.props.Mining.miningInfo[coin] : {}
+
+    const isMining = Number(miningInfo.genproclimit) === 0 ? false : miningInfo.generate
+    const numThreadsCli = miningInfo.genproclimit
+    const localHps = miningInfo.localhashps
+    const isStaking = miningInfo.staking
+    const mergeMining = Number(miningInfo.mergemining)
+
     if (
       this.props.ActiveCoin.coin === 'VRSC' || 
       this.props.ActiveCoin.coin === 'VRSCTEST' || 
@@ -148,18 +152,32 @@ class MiningButton extends React.Component {
             {
               this.state.loading ? translate('INDEX.LOADING_MINING_INFO') :
               (translate('INDEX.MINING_STATUS')) + ' ' + 
-                (this.state.isMining ? translate('INDEX.TRUE') : translate('INDEX.FALSE'))
+                (isMining ? translate('INDEX.TRUE') : translate('INDEX.FALSE'))
             }
           </div>
           <div>
             {
               this.state.loading ? translate('INDEX.LOADING_MINING_INFO') :
               (translate('INDEX.STAKING_STATUS')) + ' ' + 
-                (this.state.isStaking ? translate('INDEX.TRUE') : translate('INDEX.FALSE'))
+                (isStaking ? translate('INDEX.TRUE') : translate('INDEX.FALSE'))
             }
           </div>
           <div>
-            { this.state.loading ? translate('INDEX.LOADING_MINING_INFO') : ((translate('INDEX.MINING_HPS')) + ' ' + (this.state.isMining ? Number(this.state.localHps / 1000000).toFixed(3) : '0'))}
+            { this.state.loading ? 
+              translate('INDEX.LOADING_MINING_INFO') 
+              : 
+              ((translate('PBAAS.MERGE_MINING')) + ' ' + 
+                (mergeMining > 1 ? 
+                translate('PBAAS.MINING_X_CHAINS', mergeMining) 
+                : 
+                  mergeMining === 1 ? 
+                  translate('PBAAS.MERGE_MINING_MAIN_CHAIN')
+                  :
+                  translate('PBAAS.NOT_MERGE_MINING')))
+            }
+          </div>
+          <div>
+            { this.state.loading ? translate('INDEX.LOADING_MINING_INFO') : ((translate('INDEX.MINING_HPS')) + ' ' + (isMining ? Number(localHps / 1000000).toFixed(3) : '0'))}
           </div>
       </div>
       <div className="row">
@@ -184,13 +202,13 @@ class MiningButton extends React.Component {
                 className="btn btn-primary waves-effect waves-light margin-top-5 stakemineinput"
                 disabled={this.state.loading}
                 onClick={ 
-                  !this.state.isMining ? (() => this.startMining(this.state.numThreadsGUI)) : 
-                    !(this.state.numThreadsCli != this.state.numThreadsGUI) ? () => this.stopMining() : 
+                  !isMining ? (() => this.startMining(this.state.numThreadsGUI)) : 
+                    !(numThreadsCli != this.state.numThreadsGUI) ? () => this.stopMining() : 
                       () => this.updateGenerate(this.state.numThreadsGUI) 
                     }>
                       {this.state.loading ? translate('INDEX.LOADING_MINING_INFO') :
-                        !this.state.isMining ? translate('INDEX.START_MINING') :
-                          this.state.numThreadsCli != this.state.numThreadsGUI ? translate('INDEX.UPDATE_MINING') :
+                        !isMining ? translate('INDEX.START_MINING') :
+                          numThreadsCli != this.state.numThreadsGUI ? translate('INDEX.UPDATE_MINING') :
                             translate('INDEX.STOP_MINING')}
                             </button>            
             <button
@@ -198,11 +216,11 @@ class MiningButton extends React.Component {
                 className="btn btn-primary waves-effect waves-light margin-top-5 stakemineinput"
                 disabled={this.state.loading}
                 onClick={ 
-                  !this.state.isStaking ? (() => this.startStaking()) : 
+                  !isStaking ? (() => this.startStaking()) : 
                       () => this.stopStaking() 
                     }>
                       {this.state.loading ? translate('INDEX.LOADING_MINING_INFO') :
-                        !this.state.isStaking ? translate('INDEX.START_STAKING') :
+                        !isStaking ? translate('INDEX.START_STAKING') :
                             translate('INDEX.STOP_STAKING')}
                             </button>
             </div>
@@ -224,7 +242,8 @@ const mapStateToProps = (state) => {
       coins: state.Main.coins,
     },
     Settings: state.Settings,
-    ActiveCoin: state.ActiveCoin
+    ActiveCoin: state.ActiveCoin,
+    Mining: state.Mining
   };
 };
 

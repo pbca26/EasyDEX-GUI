@@ -18,6 +18,7 @@ import {
   apiNativeTransactionsCSV,
   triggerToaster,
   apiEthereumTransactions,
+  toggleMiningOptions
 } from '../../../actions/actionCreators';
 import Store from '../../../store';
 import {
@@ -67,7 +68,6 @@ class WalletsData extends React.Component {
       kvHistory: null,
       txhistoryCopy: null,
       generatingCSV: false,
-      showMiningButton: false,
       filterMenuOpen: false,
       filterPrivateTx: true,
       filterPublicTx: true,
@@ -230,9 +230,7 @@ class WalletsData extends React.Component {
   }
 
   toggleMiningButton() {
-    this.setState({
-      showMiningButton: !this.state.showMiningButton,
-    });
+    Store.dispatch(toggleMiningOptions(this.props.ActiveCoin.coin))
   }
 
   toggleFilterMenuOpen() {
@@ -1264,6 +1262,7 @@ const mapStateToProps = (state) => {
     AddressBook: state.Settings.addressBook,
     Main: state.Main,
     Dashboard: state.Dashboard,
+    Mining: state.Mining
   };
 };
 

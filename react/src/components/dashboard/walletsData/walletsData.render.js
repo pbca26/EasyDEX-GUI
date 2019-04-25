@@ -368,8 +368,10 @@ export const TxHistoryListRender = function() {
 };
 
 export const WalletsDataRender = function() {
+  const _coin = this.props.ActiveCoin.coin
   const _balance = this.props.ActiveCoin.balance;
   const _txhistory = this.props.ActiveCoin.txhistory;
+  const _showMiningButton = this.props.Mining.miningOpen[_coin]
 
   return (
     <span>
@@ -481,8 +483,8 @@ export const WalletsDataRender = function() {
                             <button
                               type="button"
                               className={this.props.ActiveCoin.mode === 'spv' ? 'hide' : "btn btn-dark waves-effect waves-light margin-top-5"}
-                              data-tip={ this.state.showMiningButton ? translate('DASHBOARD.MINING_DESC_CONTRACT') : translate('DASHBOARD.MINING_DESC_EXPAND') }
-                              onClick={ () => this.toggleMiningButton() }><i className="icon fa-cogs"></i>{ this.state.showMiningButton ? translate('DASHBOARD.CONTRACT_MINING') : translate('DASHBOARD.EXPAND_MINING') }</button>
+                              data-tip={ _showMiningButton ? translate('DASHBOARD.MINING_DESC_CONTRACT') : translate('DASHBOARD.MINING_DESC_EXPAND') }
+                              onClick={ () => this.toggleMiningButton() }><i className="icon fa-cogs"></i>{ _showMiningButton ? translate('DASHBOARD.CONTRACT_MINING') : translate('DASHBOARD.EXPAND_MINING') }</button>
                                 <ReactTooltip
                                 effect="solid"
                                 className="text-left" />
@@ -493,7 +495,7 @@ export const WalletsDataRender = function() {
                         this.props.ActiveCoin.txhistory !== 'connection error' &&
                         this.props.ActiveCoin.txhistory !== 'connection error or incomplete data' &&
                         this.props.ActiveCoin.txhistory !== 'cant get current height' &&
-                        this.state.showMiningButton &&
+                        _showMiningButton &&
                         this.props.ActiveCoin.mode !== 'spv' &&
                         <MiningButton />
                       }

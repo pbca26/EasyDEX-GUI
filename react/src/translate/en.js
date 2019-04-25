@@ -1485,7 +1485,11 @@ const LANG_EN = {
     PBAAS_CHAIN_SUBMITTED: 'Chain submitted!',
     PBAAS_CHAIN_FAILED_DESC: 'Failed to submit PBaaS chain: ',
     PBAAS_CHAIN_FAILED: 'Chain submission failed!',
-    PBAAS_CHAIN_SUBMITTED_DESC: 'Track this txid to see when your chain will come online, and then connect to it through the connect screen! '
+    PBAAS_CHAIN_SUBMITTED_DESC: 'Track this txid to see when your chain will come online, and then connect to it through the connect screen! ',
+    MERGE_MINING: 'Merge Mining:',
+    MINING_X_CHAINS: 'Merge mining @template@ chains',
+    MERGE_MINING_MAIN_CHAIN: 'Merge mining with main chain',
+    NOT_MERGE_MINING: 'Not merge mining'
   }
 };
 
