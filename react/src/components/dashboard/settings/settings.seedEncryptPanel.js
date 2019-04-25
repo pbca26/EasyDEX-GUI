@@ -5,10 +5,11 @@ import {
   encryptPassphrase,
   loadPinList,
   modifyPin,
+  changePin,
   triggerToaster,
 } from '../../../actions/actionCreators';
 import Store from '../../../store';
-import mainWindow from '../../../util/mainWindow';
+import mainWindow, { staticVar } from '../../../util/mainWindow';
 import ReactTooltip from 'react-tooltip';
 
 const SEED_TRIM_TIMEOUT = 5000;
@@ -40,6 +41,9 @@ class SeedEncryptPanel extends React.Component {
     this.setState({
       action: null,
       actionRenameFname: '',
+      encryptKey: null,
+      encryptKeyConfirm: null,
+      encryptKeyOld: null,
     });
   }
 
@@ -49,6 +53,9 @@ class SeedEncryptPanel extends React.Component {
         id,
         type,
       },
+      encryptKey: null,
+      encryptKeyConfirm: null,
+      encryptKeyOld: null,
     });
   }
 
@@ -79,6 +86,65 @@ class SeedEncryptPanel extends React.Component {
           );
         }
       });
+    } else if (type === 'changepw') {
+      const stringEntropy = mainWindow.checkStringEntropy(this.state.customWalletSeed);
+
+      if (this.state.encryptKey !== this.state.encryptKeyConfirm) {
+        Store.dispatch(
+          triggerToaster(
+            translate('LOGIN.ENCRYPTION_KEYS_DONT_MATCH'),
+            translate('LOGIN.SEED_ENCRYPT'),
+            'error'
+          )
+        );
+      } else {
+        if (!this.state.encryptKey ||
+            !this.state.encryptKeyConfirm) {
+          Store.dispatch(
+            triggerToaster(
+              translate('LOGIN.ENCRYPTION_KEY_EMPTY'),
+              translate('LOGIN.SEED_ENCRYPT'),
+              'error'
+            )
+          );
+        } else if (this.state.encryptKey === this.state.encryptKeyConfirm) {
+          const seedEncryptionKeyEntropy = mainWindow.checkStringEntropy(this.state.encryptKey);
+
+          if (!seedEncryptionKeyEntropy) {
+            Store.dispatch(
+              triggerToaster(
+                translate('LOGIN.SEED_ENCRYPTION_WEAK_PW'),
+                translate('LOGIN.WEAK_PW'),
+                'error'
+              )
+            );
+          } else {
+            changePin(
+              this.state.encryptKeyOld,
+              this.state.encryptKey,
+              this.props.Login.pinList[id]
+            )
+            .then((res) => {
+              if (res.msg === 'success') {
+                Store.dispatch(
+                  triggerToaster(
+                    translate('INDEX.PASSPHRASE_SUCCESSFULLY_CHANGED_PIN', this.props.Login.pinList[id]),
+                    translate('KMD_NATIVE.SUCCESS'),
+                    'success'
+                  )
+                );
+                this.setState({
+                  action: null,
+                  actionRenameFname: '',
+                  encryptKey: null,
+                  encryptKeyConfirm: null,
+                  encryptKeyOld: null,
+                });
+              }
+            });
+          }
+        }
+      }
     } else {
       const _customPinFilenameTest = /^[0-9a-zA-Z-_]+$/g;
 
@@ -144,7 +210,6 @@ class SeedEncryptPanel extends React.Component {
 
       // reset input vals
       this.refs.wifkeysPassphrase.value = '';
-      this.refs.wifkeysPassphraseTextarea.value = '';
       this.refs.encryptKey.value = '';
       this.refs.encryptKeyConfirm.value = '';
     }
@@ -181,7 +246,10 @@ class SeedEncryptPanel extends React.Component {
             )
           );
         } else {
-          encryptPassphrase(this.state.wifkeysPassphrase, this.state.encryptKey)
+          encryptPassphrase(
+            this.state.wifkeysPassphrase,
+            this.state.encryptKey
+          )
           .then((res) => {
             if (res.msg === 'success') {
               Store.dispatch(loadPinList());
@@ -216,35 +284,10 @@ class SeedEncryptPanel extends React.Component {
       }
     }, SEED_TRIM_TIMEOUT);
 
-    if (e.target.name === 'wifkeysPassphrase') {
-      this.resizeLoginTextarea();
-    }
-
     this.setState({
       trimPassphraseTimer: _trimPassphraseTimer,
-      [e.target.name === 'wifkeysPassphraseTextarea' ? 'wifkeysPassphrase' : e.target.name]: newValue,
+      [e.target.name]: newValue,
     });
-  }
-
-  resizeLoginTextarea() {
-    // auto-size textarea
-    setTimeout(() => {
-      if (this.state.seedInputVisibility) {
-        document.querySelector('#wifkeysPassphraseTextarea').style.height = '1px';
-        document.querySelector('#wifkeysPassphraseTextarea').style.height = `${(15 + document.querySelector('#wifkeysPassphraseTextarea').scrollHeight)}px`;
-      }
-    }, 100);
-  }
-
-  renderLB(_translationID) {
-    const _translationComponents = translate(_translationID).split('<br>');
-
-    return _translationComponents.map((_translation) =>
-      <span key={ `settings-label-${Math.random(0, 9) * 10}` }>
-        { _translation }
-        <br />
-      </span>
-    );
   }
 
   renderPinsList() {
@@ -263,11 +306,13 @@ class SeedEncryptPanel extends React.Component {
                 onClick={ () => this.triggerAction(i, 'delete') }
                 className="icon fa-trash"></i>
             </td>
-            <td>{ _pins[i] }</td>
+            <td className="selectable">{ _pins[i] }</td>
             { this.props.Settings.appInfo &&
               this.props.Settings.appInfo.dirs &&
-              this.props.Settings.appInfo.dirs.cacheLocation &&
-              <td>{ this.props.Settings.appInfo.dirs.cacheLocation }/{ _pins[i] }.pin</td>
+              this.props.Settings.appInfo.dirs.agamaDir &&
+              <td className="selectable">
+              { this.props.Settings.appInfo.dirs.agamaDir }/shepherd/pin/{ _pins[i] }.pin
+              </td>
             }
           </tr>
         );
@@ -288,8 +333,12 @@ class SeedEncryptPanel extends React.Component {
             }
             { !this.state.action.type &&
               <div className="pin-modify-block">
-                <div className="margin-bottom-10">{ translate('SETTINGS.OLD_PIN_NAME') }: { _pins[i] }</div>
-                <div className="margin-bottom-10">{ translate('SETTINGS.NEW_PIN_NAME') }</div>
+                <div className="margin-bottom-20">
+                  <strong>{ translate('SETTINGS.RENAME_PIN') }</strong>
+                </div>
+                <div className="margin-bottom-10">
+                  { translate('SETTINGS.OLD_PIN_NAME') }: <span className="selectable">{ _pins[i] }</span>
+                </div>
                 <div className="margin-bottom-10">
                   <input
                     type="text"
@@ -298,9 +347,57 @@ class SeedEncryptPanel extends React.Component {
                     className="form-control inline"
                     onChange={ this.updateInput }
                     autoComplete="off"
+                    placeholder={ translate('SETTINGS.NEW_PIN_NAME') }
                     value={ this.state.actionRenameFname || '' } />
                   <i
                     onClick={ () => this.confirmAction(i) }
+                    className="icon fa-check margin-left-20 margin-right-20 inline"></i>
+                  <i
+                    onClick={ () => this.cancelAction() }
+                    className="icon fa-close inline"></i>
+                </div>
+              </div>
+            }
+            { !this.state.action.type &&
+              <div className="pin-modify-block padding-bottom-20">
+                <hr />
+                <div className="margin-bottom-10">
+                  <strong>{ translate('SETTINGS.CHANGE_PIN') }</strong>
+                </div>
+                <div className="margin-bottom-10">
+                  <input
+                    type="password"
+                    name="encryptKeyOld"
+                    ref="encryptKeyOld"
+                    className="form-control inline"
+                    onChange={ this.updateInput }
+                    autoComplete="off"
+                    placeholder={ translate('LOGIN.SEED_ENCRYPT_KEY_OLD') }
+                    value={ this.state.encryptKeyOld || '' } />
+                </div>
+                <div className="margin-bottom-10">
+                  <input
+                    type="password"
+                    name="encryptKey"
+                    ref="encryptKey"
+                    className="form-control inline"
+                    onChange={ this.updateInput }
+                    autoComplete="off"
+                    placeholder={ translate('LOGIN.SEED_ENCRYPT_KEY_NEW') }
+                    value={ this.state.encryptKey || '' } />
+                </div>
+                <div className="margin-bottom-10">
+                  <input
+                    type="password"
+                    name="encryptKeyConfirm"
+                    ref="encryptKeyConfirm"
+                    className="form-control inline"
+                    onChange={ this.updateInput }
+                    autoComplete="off"
+                    placeholder={ translate('LOGIN.SEED_ENCRYPT_KEY_CONFIRM_NEW') }
+                    value={ this.state.encryptKeyConfirm || '' } />
+                  <i
+                    onClick={ () => this.confirmAction(i, 'changepw') }
                     className="icon fa-check margin-left-20 margin-right-20 inline"></i>
                   <i
                     onClick={ () => this.cancelAction() }
@@ -376,20 +473,17 @@ class SeedEncryptPanel extends React.Component {
                     id="wifkeysPassphrase"
                     onChange={ this.updateInput }
                     value={ this.state.wifkeysPassphrase } />
-                  <textarea
-                    className={ this.state.seedInputVisibility ? 'form-control blur' : 'hide' }
-                    autoComplete="off"
-                    id="wifkeysPassphraseTextarea"
-                    ref="wifkeysPassphraseTextarea"
-                    name="wifkeysPassphraseTextarea"
-                    onChange={ this.updateInput }
-                    value={ this.state.wifkeysPassphrase }></textarea>
+                  <div className={ this.state.seedInputVisibility ? 'form-control seed-reveal selectable blur' : 'hide' }>
+                    { this.state.wifkeysPassphrase || '' }
+                  </div>
                   <i
                     className={ 'seed-toggle fa fa-eye' + (!this.state.seedInputVisibility ? '-slash' : '') }
                     onClick={ this.toggleSeedInputVisibility }></i>
                   <label
                     className="floating-label"
-                    htmlFor="wifkeysPassphrase">{ translate('INDEX.PASSPHRASE') } / WIF</label>
+                    htmlFor="wifkeysPassphrase">
+                    { translate('INDEX.PASSPHRASE') } / WIF
+                  </label>
                   <div className="form-group form-material floating text-left margin-top-60">
                     <input
                       type="password"
@@ -401,7 +495,9 @@ class SeedEncryptPanel extends React.Component {
                       value={ this.state.encryptKey || '' } />
                     <label
                       className="floating-label"
-                      htmlFor="encryptKey">{ translate('LOGIN.SEED_ENCRYPT_KEY') }</label>
+                      htmlFor="encryptKey">
+                      { translate('LOGIN.SEED_ENCRYPT_KEY') }
+                    </label>
                   </div>
                   <div className="form-group form-material floating text-left margin-top-60 margin-bottom-40">
                     <input
@@ -414,18 +510,20 @@ class SeedEncryptPanel extends React.Component {
                       value={ this.state.encryptKeyConfirm || '' } />
                     <label
                       className="floating-label"
-                      htmlFor="encryptKeyConfirm">{ translate('LOGIN.SEED_ENCRYPT_KEY_CONF') }</label>
+                      htmlFor="encryptKeyConfirm">
+                      { translate('LOGIN.SEED_ENCRYPT_KEY_CONF') }
+                    </label>
                   </div>
                   { this.state.seedExtraSpaces &&
-                    <span>
-                      <i className="icon fa-warning seed-extra-spaces-warning"
-                        data-tip={ translate('LOGIN.SEED_TRAILING_CHARS') }
-                        data-html={ true }></i>
-                      <ReactTooltip
-                        effect="solid"
-                        className="text-left" />
-                    </span>
+                    <i className="icon fa-warning seed-extra-spaces-warning"
+                      data-tip={ translate('LOGIN.SEED_TRAILING_CHARS') }
+                      data-html={ true }
+                      data-for="seedEncrypt"></i>
                   }
+                  <ReactTooltip
+                    id="seedEncrypt"
+                    effect="solid"
+                    className="text-left" />
                 </div>
                 <div className="col-sm-12 col-xs-12 text-align-center">
                   <button
@@ -436,7 +534,9 @@ class SeedEncryptPanel extends React.Component {
                       !this.state.encryptKey ||
                       !this.state.encryptKeyConfirm
                     }
-                    onClick={ this.encryptSeed }>{ translate('SETTINGS.ENCRYPT') }</button>
+                    onClick={ this.encryptSeed }>
+                    { translate('SETTINGS.ENCRYPT') }
+                  </button>
                 </div>
               </div>
             </div>

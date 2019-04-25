@@ -1,40 +1,128 @@
 import translate from '../../translate/translate';
-import mainWindow from '../../util/mainWindow';
+import mainWindow, { staticVar } from '../../util/mainWindow';
 import config from '../../config';
 import { cryptoCoins } from '../../util/coinHelper';
+import { sortObject } from 'agama-wallet-lib/src/utils';
+import erc20ContractId from 'agama-wallet-lib/src/eth-erc20-contract-id';
 
 let _prepCoinsList;
 let coins = cryptoCoins;
+let _activeCoins;
+let _disableETH;
 
-const prepCoinsList = () => {
-  const availableKMDModes = mainWindow.arch === 'x64' ? 'spv|native' : 'spv';
-  let _coins = [];
+// sort coins by their title
+let _coins = [];
+let coinsList = [];
 
-  //if (!config.experimentalFeatures) {
-    coins = coins.slice(0, 6);
-  //}
+for (let i = 0; i < cryptoCoins.length; i++) {
+  _coins[translate('CRYPTO.' + cryptoCoins[i].toUpperCase())] = cryptoCoins[i];
+}
 
-  for (let i = 0; i < coins.length; i++) {
-    if (mainWindow.electrumServers[coins[i].toLowerCase()]) {
-      _coins.push({
-        label: `${translate('CRYPTO.' + coins[i])} (${coins[i]})`,
-        icon: coins[i],
-        value: `${coins[i]}|${((coins[i] === 'KMD') || (coins[i] === 'VRSC')) ? availableKMDModes : 'spv'}`,
+_coins = sortObject(_coins);
+
+for (let key in _coins) {
+  coinsList.push(_coins[key]);
+}
+
+coins = coinsList;
+
+const prepCoinsList = (options) => {
+  const availableKMDModes = staticVar.arch === 'x64' ? 'spv|native' : 'spv';
+  let _items = [];
+  
+  if (options.filterNonActive) {
+    if (_activeCoins.spv &&
+        _activeCoins.spv.length) {
+      for (let i = 0; i < _activeCoins.spv.length; i++) {
+        _items.push({
+          label: `${translate('CRYPTO.' + _activeCoins.spv[i])} (${_activeCoins.spv[i]})`,
+          icon: `btc/${_activeCoins.spv[i]}`,
+          value: `${_activeCoins.spv[i]}|spv`,
+        });
+      }
+    }
+
+    if (_activeCoins.eth.indexOf('eth') > -1) {
+      _items.push({
+        label: `${translate('CRYPTO.ETH')} (ETH)`,
+        icon: 'eth/ETH',
+        value: 'ETH',
       });
+    }
+
+    if (!_disableETH &&
+        _activeCoins.eth &&
+        _activeCoins.eth.length) {
+      for (let i = 0; i < _activeCoins.eth.length; i++) {
+        if (_activeCoins.eth[i] !== 'eth' ||
+            _activeCoins.eth[i] !== 'eth_ropsten') {
+          _items.push({
+            label: `${translate('CRYPTO.' + _activeCoins.eth[i])} (${_activeCoins.eth[i]})`,
+            icon: `eth/${_activeCoins.eth[i]}`,
+            value: `ETH|${_activeCoins.eth[i]}`,
+          });
+        }
+      }
+    }
+  } else {
+    for (let i = 0; i < coins.length; i++) {
+      try {
+        const _coinlc = coins[i].toLowerCase();
+        const _coinuc = coins[i].toUpperCase();
+        
+        if (staticVar.electrumServers &&
+            staticVar.electrumServers[_coinlc] &&
+            (_activeCoins === 'skip' || (_activeCoins !== 'skip' &&
+            _activeCoins &&
+            _activeCoins.spv &&
+            _activeCoins.native &&
+            _activeCoins.spv.indexOf(_coinuc) === -1 &&
+            _activeCoins.native.indexOf(_coinuc) === -1))) {
+          _items.push({
+            label: `${translate('CRYPTO.' + coins[i])} (${coins[i]})`,
+            icon: `btc/${coins[i]}`,
+            value: `${coins[i]}|${coins[i] === 'KMD' ? availableKMDModes : 'spv'}`,
+          });
+        }
+      } catch (e) {
+        console.warn('electron remote error addcoin' + e);
+      }
+    }
+
+    if (!_disableETH) {
+      _items.push({
+        label: `${translate('CRYPTO.ETH')} (ETH)`,
+        icon: 'eth/ETH',
+        value: 'ETH',
+      }, {
+        label: `${translate('CRYPTO.ETH_ROPSTEN')} (TESTNET)`,
+        icon: 'eth/ETH',
+        value: 'ETH|ropsten',
+      });
+
+      for (let key in erc20ContractId) {
+        _items.push({
+          label: `${translate('CRYPTO.' + key)} (${key} ERC20)`,
+          icon: `eth/${key}`,
+          value: `ETH|${key}`,
+        });
+      }
     }
   }
 
-  _prepCoinsList = _coins;
+  _prepCoinsList = _items;
 
-  return _coins;
+  return _items;
 };
 
-const addCoinOptionsCrypto = () => {
-  if (_prepCoinsList) {
-    return _prepCoinsList;
-  } else {
-    return prepCoinsList();
-  }
+const addCoinOptionsCrypto = (activeCoins, disableETH, filterNonActive) => {
+  _activeCoins = activeCoins;
+  _disableETH = disableETH;
+
+  return prepCoinsList({
+    filterActiveCoins: false,
+    filterNonActive,
+  });
 }
 
 export default addCoinOptionsCrypto;

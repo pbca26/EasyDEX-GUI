@@ -4,12 +4,12 @@ import translate from '../../../translate/translate';
 import {
   toggleDashboardTxInfoModal,
   getTxDetails,
-  getBlock
 } from '../../../actions/actionCreators';
 import Store from '../../../store';
 import WalletsTxInfoRender from './walletsTxInfo.render';
 import { explorerList } from 'agama-wallet-lib/src/coin-helpers';
 import Config from '../../../config';
+import erc20ContractId from 'agama-wallet-lib/src/eth-erc20-contract-id';
 
 const { shell } = window.require('electron');
 
@@ -20,7 +20,7 @@ class WalletsTxInfo extends React.Component {
       activeTab: 0,
       txDetails: null,
       rawTxDetails: null,
-      blockType: null,
+      className: 'hide',
     };
     this.toggleTxInfoModal = this.toggleTxInfoModal.bind(this);
     this.loadTxDetails = this.loadTxDetails.bind(this);
@@ -28,11 +28,17 @@ class WalletsTxInfo extends React.Component {
   }
 
   toggleTxInfoModal() {
-    Store.dispatch(toggleDashboardTxInfoModal(false));
-
     this.setState(Object.assign({}, this.state, {
-      activeTab: 0,
+      className: 'show out',
     }));
+
+    setTimeout(() => {
+      Store.dispatch(toggleDashboardTxInfoModal(false));
+
+      this.setState(Object.assign({}, this.state, {
+        activeTab: 0,
+      }));
+    }, 300);
   }
 
   capitalizeFirstLetter(string) {
@@ -40,25 +46,64 @@ class WalletsTxInfo extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    const _activeCoin = nextProps.ActiveCoin;
+
     if (this.props.ActiveCoin.mode === 'spv' &&
-        nextProps.ActiveCoin) {
+        _activeCoin &&
+        this.props.ActiveCoin.showTransactionInfoTxIndex !== _activeCoin.showTransactionInfoTxIndex) {
+      const _activeTab = Config.experimentalFeatures &&
+        _activeCoin.showTransactionInfoTxIndex &&
+        _activeCoin.showTransactionInfoTxIndex.opreturn &&
+        _activeCoin.showTransactionInfoTxIndex.opreturn.kvDecoded ? 4 : 0;
       this.setState(Object.assign({}, this.state, {
-        txDetails: nextProps.ActiveCoin.showTransactionInfoTxIndex,
-        rawTxDetails: nextProps.ActiveCoin.showTransactionInfoTxIndex,
-        activeTab: Config.experimentalFeatures && nextProps.ActiveCoin.showTransactionInfoTxIndex && nextProps.ActiveCoin.showTransactionInfoTxIndex.opreturn && nextProps.ActiveCoin.showTransactionInfoTxIndex.opreturn.kvDecoded ? 4 : 0,
+        txDetails: _activeCoin.showTransactionInfoTxIndex,
+        rawTxDetails: _activeCoin.showTransactionInfoTxIndex,
+        activeTab: _activeTab,
+        className: _activeCoin.showTransactionInfo ? 'show fade' : 'show out',
       }));
+
+      setTimeout(() => {
+        this.setState(Object.assign({}, this.state, {
+          className: _activeCoin.showTransactionInfo ? 'show in' : 'hide',
+        }));
+      }, _activeCoin.showTransactionInfo ? 50 : 300);
+    } else if (
+      this.props.ActiveCoin.mode === 'eth' &&
+      _activeCoin &&
+      this.props.ActiveCoin.showTransactionInfoTxIndex !== _activeCoin.showTransactionInfoTxIndex
+    ) {
+      this.setState(Object.assign({}, this.state, {
+        txDetails: _activeCoin.showTransactionInfoTxIndex,
+        rawTxDetails: _activeCoin.showTransactionInfoTxIndex,
+        activeTab: 0,
+        className: _activeCoin.showTransactionInfo ? 'show fade' : 'show out',
+      }));
+
+      setTimeout(() => {
+        this.setState(Object.assign({}, this.state, {
+          className: _activeCoin.showTransactionInfo ? 'show in' : 'hide',
+        }));
+      }, _activeCoin.showTransactionInfo ? 50 : 300);
     } else {
-      //TODO: Solve why nextProps.ActiveCoin.showTransactionInfoTxIndex is null if it is passed 0
-      //in activeCoin.js
-      if (nextProps.ActiveCoin &&
-          nextProps.ActiveCoin.txhistory /* && nextProps.ActiveCoin.showTransactionInfoTxIndex */) {
-        const txInfo = nextProps.ActiveCoin.txhistory[nextProps.ActiveCoin.showTransactionInfoTxIndex ? nextProps.ActiveCoin.showTransactionInfoTxIndex : 0];
+      if (_activeCoin &&
+          _activeCoin.txhistory &&
+          _activeCoin.showTransactionInfoTxIndex > -1 &&
+          _activeCoin.showTransactionInfoTxIndex !== false) {
+        const txInfo = _activeCoin.txhistory[_activeCoin.showTransactionInfoTxIndex];
 
         if (txInfo &&
-            this.props.ActiveCoin.showTransactionInfoTxIndex !== nextProps.ActiveCoin.showTransactionInfoTxIndex) {
-          this.loadTxDetails(nextProps.ActiveCoin.coin, txInfo.txid);
-          this.loadRawTxDetails(nextProps.ActiveCoin.coin, txInfo.txid);
-          this.fetchBlockType(nextProps.ActiveCoin.coin, txInfo.blockhash);
+            this.props.ActiveCoin.showTransactionInfoTxIndex !== _activeCoin.showTransactionInfoTxIndex) {
+          this.loadTxDetails(_activeCoin.coin, txInfo.txid);
+          this.loadRawTxDetails(_activeCoin.coin, txInfo.txid);
+          this.setState({
+            className: _activeCoin.showTransactionInfo ? 'show fade' : 'show out',
+          });
+
+          setTimeout(() => {
+            this.setState(Object.assign({}, this.state, {
+              className: _activeCoin.showTransactionInfo ? 'show in' : 'hide',
+            }));
+          }, _activeCoin.showTransactionInfo ? 50 : 300);
         }
       }
     }
@@ -99,8 +144,24 @@ class WalletsTxInfo extends React.Component {
   }
 
   openExplorerWindow(txid) {
-    const url = explorerList[this.props.ActiveCoin.coin].split('/').length - 1 > 2 ? `${explorerList[this.props.ActiveCoin.coin]}${txid}` : `${explorerList[this.props.ActiveCoin.coin]}/tx/${txid}`;
+    const _coin = this.props.ActiveCoin.coin;
+    let url;
+
+    if (erc20ContractId[this.props.ActiveCoin.coin]) {
+      url = `${explorerList.ETH}${txid}`;
+    } else {
+      url = explorerList[_coin].split('/').length - 1 > 2 ? `${explorerList[_coin]}${txid}` : `${explorerList[_coin]}/tx/${txid}`;      
+    }
     return shell.openExternal(url);
+  }
+
+  checkForPlural(term, time) {
+    if (time > 1 && time < 2){
+      return (translate('TX_INFO.' + term));
+    }
+    else {
+      return (translate('TX_INFO.' + term + 'S'));
+    }
   }
 
   renderTimeToUnlock(blockstomaturity){
@@ -151,49 +212,17 @@ class WalletsTxInfo extends React.Component {
     }
   }
 
-  fetchBlockType(coin, blockhash){
-    getBlock(coin, blockhash)
-    .then(result => {
-      this.updateBlockType(result);
-    })
-  }
-
-  updateBlockType(_cliresponse){
-    this.setState({
-      blockType: _cliresponse.blocktype,
-    });
-  }
-
-  checkForPlural(term, time) {
-    if (time > 1 && time < 2){
-      return (translate('TX_INFO.' + term));
-    }
-    else {
-      return (translate('TX_INFO.' + term + 'S'));
-    }
-  }
-
-  decodeMemo(memoEncoded) {
-    var j;
-    var hexes = memoEncoded.match(/.{1,4}/g) || [];
-    var memoDecoded = "";
-    for(j = 0; j<hexes.length; j++) {
-        memoDecoded += String.fromCharCode(parseInt(hexes[j], 16));
-    }
-
-    return memoDecoded;
-  }
-
   render() {
+    const _activeCoin = this.props.ActiveCoin;
+
     if (this.props &&
-        this.props.ActiveCoin &&
-        this.props.ActiveCoin.showTransactionInfo &&
-        this.props.ActiveCoin.activeSection === 'default') {
-      //TODO: Solve why this.props.ActiveCoin.showTransactionInfoTxIndex is null if it is passed 0
-      //in activeCoin.js
-      if (this.props.ActiveCoin.mode === 'native') {
-        if (this.props.ActiveCoin.txhistory /* && this.props.ActiveCoin.showTransactionInfoTxIndex */) {
-          const txInfo = this.props.ActiveCoin.txhistory[this.props.ActiveCoin.showTransactionInfoTxIndex ? this.props.ActiveCoin.showTransactionInfoTxIndex : 0];
+        _activeCoin &&
+        _activeCoin.showTransactionInfo &&
+        _activeCoin.activeSection === 'default') {
+      if (_activeCoin.mode === 'native') {
+        if (_activeCoin.txhistory &&
+            _activeCoin.showTransactionInfoTxIndex > -1) {
+          const txInfo = _activeCoin.txhistory[_activeCoin.showTransactionInfoTxIndex];
 
           return WalletsTxInfoRender.call(this, txInfo);
         } else {

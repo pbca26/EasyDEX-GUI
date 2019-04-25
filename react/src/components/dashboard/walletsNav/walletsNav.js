@@ -11,10 +11,7 @@ import {
 } from '../../../actions/actionCreators';
 import Store from '../../../store';
 import Config from '../../../config';
-import {
-  WalletsNavNoWalletRender,
-  WalletsNavWithWalletRender,
-} from './walletsNav.render';
+import WalletsNavWithWalletRender from './walletsNav.render';
 
 const NET_INFO_INTERVAL = 10000;
 
@@ -48,7 +45,7 @@ class WalletsNav extends React.Component {
        
       
     } else if (
-      _mode === 'spv' &&
+      (_mode === 'spv' || _mode === 'eth') &&
       this.props.ActiveCoin.balance.balance
     ) {
       _balance = this.props.ActiveCoin.balance.balance;
@@ -66,7 +63,8 @@ class WalletsNav extends React.Component {
   }
 
   toggleNativeWalletInfo() {
-    if (this.props.ActiveCoin.activeSection !== 'settings') {
+    if (this.props.ActiveCoin.activeSection !== 'settings' &&
+        this.props.ActiveCoin.mode === 'native') {
       Store.dispatch(getNativePeers(this.props.ActiveCoin.coin));
       Store.dispatch(getNativeNettotals(this.props.ActiveCoin.coin));
 
@@ -131,7 +129,6 @@ const mapStateToProps = (state) => {
       activeAddress: state.ActiveCoin.activeAddress,
     },
     Dashboard: state.Dashboard,
-    nativeOnly: Config.iguanaLessMode,
   };
 };
 

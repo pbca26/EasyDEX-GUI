@@ -1,30 +1,86 @@
 import translate from '../../translate/translate';
-import mainWindow from '../../util/mainWindow';
+import mainWindow, { staticVar } from '../../util/mainWindow';
 import config from '../../config';
 import { kmdAssetChains } from 'agama-wallet-lib/src/coin-helpers';
+import { sortObject } from 'agama-wallet-lib/src/utils';
 
-const addCoinOptionsAC = () => {
-  const _assetChains = kmdAssetChains;
+// TODO: detect if ac has electrums or not
+
+const _disabledAC = {
+  spv: [
+    'axo',
+    'etomic',
+    'mesh',
+    'ceal',
+    'dsec',
+    'pirate',
+    'koin',
+    'zex',
+  ],
+  native: [
+    'spltest',
+  ],
+  all: [
+    'mvp',
+  ],
+};
+
+// sort coins by their title
+let coinsList = [];
+let _coins = {};
+
+for (let i = 0; i < kmdAssetChains.length; i++) {
+  _coins[translate('ASSETCHAINS.' + kmdAssetChains[i].toUpperCase())] = kmdAssetChains[i];
+}
+
+_coins = sortObject(_coins);
+
+for (let key in _coins) {
+  coinsList.push(_coins[key]);
+}
+
+const addCoinOptionsAC = (activeCoins) => {
+  let _assetChains;
   let _items = [];
 
+  _assetChains = coinsList;
+
   for (let i = 0; i < _assetChains.length; i++) {
-    let availableModes = _assetChains[i] !== 'AXO' && _assetChains[i] !== 'ETOMIC' && 
-                          _assetChains[i] !== 'PIRATE' && _assetChains[i] !== 'MESH' && 
-                          _assetChains[i] !== 'CCL' && _assetChains[i] !== 'MGNX' && 
-                          _assetChains[i] !== 'DION' && _assetChains[i] !== 'PTX' && 
-                          _assetChains[i] !== 'KMDICE' && _assetChains[i] !== 'ZEX' && 
-                          _assetChains[i] !== 'CEAL' ? 'spv|native' : 'native';
+    const _coinuc = _assetChains[i].toUpperCase();
 
-    if (mainWindow.arch !== 'x64') {
-      availableModes = 'spv';
-    }
-
-    if (_assetChains[i] !== 'MVP' && _assetChains[i] !== 'VRSC') {
-      _items.push({
-        label: translate(`ASSETCHAINS.${_assetChains[i].toUpperCase()}`),
-        icon: _assetChains[i].toLowerCase(),
-        value: `${_assetChains[i].toUpperCase()}|${availableModes}`,
-      });
+    if (_coinuc !== 'VRSC' && _coinuc !== 'VRSCTEST') {
+      const _coinlc = _assetChains[i].toLowerCase();
+      let availableModes;
+  
+      if (_disabledAC.spv.indexOf(_coinlc) === -1) {
+        availableModes = 'spv|native';
+      } else {
+        availableModes = 'native'
+      }
+  
+      if (_disabledAC.native.indexOf(_coinlc) > -1) {
+        availableModes = 'spv';
+      }
+  
+      if (staticVar.arch !== 'x64') {
+        availableModes = 'spv';
+      }
+  
+      if (_disabledAC.all.indexOf(_coinlc) === -1 &&
+          (activeCoins === 'skip' || (activeCoins !== 'skip' &&
+           activeCoins &&
+           activeCoins.spv &&
+           activeCoins.native &&
+           activeCoins.spv.indexOf(_coinuc) === -1 &&
+           activeCoins.native.indexOf(_coinuc) === -1))) {
+        const _placeholder = translate(`ASSETCHAINS.${_coinuc}`);
+  
+        _items.push({
+          label: `${_placeholder}${_placeholder.indexOf('(') === -1 && _placeholder !== _coinuc ? ' (' + _coinuc + ')' : ''}`,
+          icon: `btc/${_coinlc}`,
+          value: `${_coinuc}|${availableModes}`,
+        });
+      }
     }
   }
 
@@ -38,11 +94,14 @@ const addCoinOptionsAC = () => {
 
     for (let key in _customAssetChains) {
       for (let i = 0; i < _customAssetChains[key].length; i++) {
+        const _customuc = _customAssetChains[key][i].toUpperCase();
+        const _customlc = _customAssetChains[key][i].toLowerCase();
+        const _placeholder = translate(`ASSETCHAINS.${_customuc}`);
 
         _items.push({
-          label: translate(`ASSETCHAINS.${_customAssetChains[key][i].toUpperCase()}`),
-          icon: _customAssetChains[key][i].toLowerCase(),
-          value: `${_customAssetChains[key][i].toUpperCase()}|${key}`,
+          label: _placeholder + (_placeholder.indexOf('(') === -1 && _placeholder !== _customuc ? ' (' + _customuc + ')' : ''),
+          icon: `btc/${_customlc}`,
+          value: `${_customuc}|${key}`,
         });
       }
     }

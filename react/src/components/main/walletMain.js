@@ -6,7 +6,7 @@ import Login from '../login/login';
 import Dashboard from '../dashboard/main/dashboard';
 import DexMain from '../dex/dexMain';
 import NotaryElectionsModal from '../dashboard/notaryElectionsModal/notaryElectionsModal';
-import mainWindow from '../../util/mainWindow';
+import mainWindow, { staticVar } from '../../util/mainWindow';
 import Store from '../../store';
 import {
   toggleDashboardTxInfoModal,
@@ -56,7 +56,7 @@ class WalletMain extends React.Component {
   }
 
   render() {
-    if (mainWindow.argv.indexOf('dexonly') > -1) {
+    if (staticVar.argv.indexOf('dexonly') > -1) { // deprecated
       return (
         <div className="full-height">
           <input
@@ -75,7 +75,7 @@ class WalletMain extends React.Component {
           <AddCoin />
           <Login />
           <NotaryElectionsModal />
-          <Toaster {...this.props.toaster} />
+          <Toaster { ...this.props.toaster } />
         </div>
       );
     }
@@ -99,4 +99,3 @@ const mapStateToProps = (state) => {
 };
 
 export default connect(mapStateToProps)(WalletMain);
-

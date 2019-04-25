@@ -7,7 +7,7 @@
     > div {
       display: flex;
       flex: 1;
-      
+
       .widget {
         flex: 1;
       }
@@ -25,6 +25,9 @@
 }
 
 @media only screen and (max-width : 767px) {
+  .navbar-brand-logo.hidden-lg {
+    display: inherit !important;
+  }
   .navbar-container.container-fluid {
     padding-left: 80px;
   }
@@ -287,27 +290,5 @@
         width: 100%;
       }
     }
-  }
-}
-
-@media screen {
-  .min-width-200 {
-    min-width: 200px;
-  }
-  .min-width-150l {
-    min-width: 150px;
-    text-align: left;
-  }
-  .min-width-160l {
-    min-width: 160px;
-    text-align: left;
-  }
-  .min-width-150r {
-    min-width: 150px;
-    text-align: right;
-  }
-  .min-width-160r {
-    min-width: 160px;
-    text-align: right;
   }
 }

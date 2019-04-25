@@ -82,7 +82,7 @@ textarea {
 
 #loginPassphrase,
 #wifkeysPassphraseTextarea,
-input[type='password'] {
+input[type="password"] {
   width: calc(100% - 35px);
 }
 #wifkeysPassphraseTextarea,
@@ -125,32 +125,6 @@ input[type='password'] {
 .register-form {
   .floating-label {
     font-size: 13px;
-  }
-}
-
-.login-settings-dropdown {
-  font-size: 16px;
-
-  .dropdown-menu {
-    left: 42%;
-    top: inherit;
-  }
-}
-
-.login-settings-dropdown-trigger {
-  cursor: pointer;
-}
-
-.login-settings-modal {
-  .modal-body {
-    overflow-y: scroll;
-    color: #757575;
-  }
-  .panel-title {
-    color: #757575;
-  }
-  a {
-    color: #fb8c00;
   }
 }
 
@@ -209,6 +183,11 @@ option.login-option {
     .login-help {
       top: -10px;
       left: 25px;
+
+      &.first {
+        top: 28px;
+        left: 131px;
+      }
     }
   }
   .seed-extra-spaces-warning {
@@ -262,6 +241,11 @@ option.login-option {
     top: 2px;
     left: 15px;
     color: #fff;
+  }
+  .page-content {
+    margin: 0 auto;
+    float: none;
+    min-width: 600px;
   }
 }
 

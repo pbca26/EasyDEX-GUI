@@ -1,5 +1,5 @@
-import { LANG_EN } from './en';
-import { LANG_DE } from './de';
+import LANG_EN from './en';
+import LANG_DE from './de';
 import Config from '../config';
 
 const _lang = {
@@ -8,7 +8,7 @@ const _lang = {
 };
 
 const translate = (langID, interpolateStr) => {
-  let defaultLang = Config.lang || 'EN';
+  let defaultLang = Config.lang.toUpperCase() || 'EN';
 
   if (langID &&
       langID.indexOf('.') > -1) {
@@ -16,6 +16,7 @@ const translate = (langID, interpolateStr) => {
 
     if (_lang &&
         langIDComponents &&
+        _lang[defaultLang][langIDComponents[0]] &&
         _lang[defaultLang][langIDComponents[0]][langIDComponents[1]]) {
       if (interpolateStr) {
         return _lang[defaultLang][langIDComponents[0]][langIDComponents[1]].replace('@template@', interpolateStr);
@@ -24,7 +25,7 @@ const translate = (langID, interpolateStr) => {
       }
     } else {
       console.warn(`Missing translation ${langID} in js/${defaultLang.toLowerCase()}.js`);
-      return `--> ${langID} <--`;
+      return langIDComponents[1];
     }
   } else {
     if (langID.length) {

@@ -3,68 +3,83 @@ import ReactTooltip from 'react-tooltip';
 import translate from '../../../translate/translate';
 import Spinner from '../spinner/spinner';
 import Config from '../../../config';
+import mainWindow, { staticVar } from '../../../util/mainWindow';
+import { isKomodoCoin } from 'agama-wallet-lib/src/coin-helpers';
 
 const WalletsBalanceRender = function() {
+  const _mode = this.props.ActiveCoin.mode;
+  const _coin = this.props.ActiveCoin.coin;
+  const _notAcPrivate = (staticVar.chainParams && staticVar.chainParams[_coin] && !staticVar.chainParams[_coin].ac_private) 
+  || Config.reservedChains.indexOf(_coin) === -1;
+  const _isAcPrivate = staticVar.chainParams && staticVar.chainParams[_coin] && staticVar.chainParams[_coin].ac_private;
+  const _balanceUnconf = this.props.ActiveCoin.balance && this.props.ActiveCoin.balance.unconfirmed ? this.props.ActiveCoin.balance.unconfirmed : 0;
+
   return (
     <div
       id="wallet-widgets"
       className="wallet-widgets">
       { this.renderBalance('transparent') !== -777 &&
         <div className="col-xs-12 flex">
-          <div className={
-            (this.props.ActiveCoin.coin === 'CHIPS' ||
-            (this.props.ActiveCoin.mode === 'spv' && this.props.ActiveCoin.coin !== 'KMD') ||
-            this.renderBalance('total') === this.renderBalance('transparent') ||
-            (this.renderBalance('total') === 0) && this.renderBalance('immature') === 0) ? 'col-lg-12 col-xs-12 balance-placeholder--bold' : 'col-lg-4 col-xs-12'
-          }>
-            <div className="widget widget-shadow">
-              <div className="widget-content">
-                { this.state.loading &&
-                  <span className="spinner--small">
-                    <Spinner />
-                  </span>
-                }
-                { !this.state.loading &&
-                  <i
-                    className="icon fa-refresh manual-balance-refresh pointer"
-                    onClick={ this.refreshBalance }></i>
-                }
-                <div className="padding-10 padding-top-10">
-                  <div className="clearfix cursor-default">
-                    <div className="pull-left padding-vertical-10 min-width-160l">
-                      { this.props.ActiveCoin.coin !== 'CHIPS' &&
-                        this.props.ActiveCoin.mode !== 'spv' &&
-                        <i className="icon fa-eye font-size-24 vertical-align-bottom margin-right-5"></i>
-                      }
-                      { this.props.ActiveCoin.mode === 'spv' &&
-                        Number(this.renderBalance('interest')) > 0 &&
-                        <span className="padding-right-30">&nbsp;</span>
-                      }
-                      { this.props.ActiveCoin.coin === 'CHIPS' || this.props.ActiveCoin.mode === 'spv' ? translate('INDEX.BALANCE') : translate('INDEX.TRANSPARENT_BALANCE') }
-                      { this.props.ActiveCoin.mode === 'spv' &&
-                        Number(this.props.ActiveCoin.balance.unconfirmed) < 0 &&
-                        <span>
-                          <i
-                            className="icon fa-info-circle margin-left-5 icon-unconf-balance"
-                            data-tip={ `${translate('INDEX.UNCONFIRMED_BALANCE')} ${Math.abs(this.props.ActiveCoin.balance.unconfirmed)}` }></i>
-                          <ReactTooltip
-                            effect="solid"
-                            className="text-left" />
-                        </span>
-                      }
-                    </div>
-                    <span
-                      className="pull-right padding-top-10 font-size-20 min-width-160r">
-                      { this.renderBalance('transparent', true) }
-                      <ReactTooltip
-                        effect="solid"
-                        className="text-left" />
+        { (_mode === 'spv' ||
+            _mode === 'eth' ||
+            (_mode === 'native' && _notAcPrivate) ||
+            (_mode === 'native' && _coin === 'KMD')) &&
+            <div className={
+              ((this.props.ActiveCoin.coin === 'CHIPS' ||
+              (this.props.ActiveCoin.mode === 'spv' && this.props.ActiveCoin.coin !== 'KMD') ||
+              this.renderBalance('total') === this.renderBalance('transparent') ||
+              (this.renderBalance('total') === 0) && this.renderBalance('immature') === 0)) &&
+              (this.renderBalance('immature') === 0) ? 'col-lg-12 col-xs-12 balance-placeholder--bold' : 'col-lg-4 col-xs-12'
+            }>
+              <div className="widget widget-shadow">
+                <div className="widget-content">
+                  { this.state.loading &&
+                    <span className="spinner--small">
+                      <Spinner />
                     </span>
+                  }
+                  { !this.state.loading &&
+                    <i
+                      className="icon fa-refresh manual-balance-refresh pointer"
+                      onClick={ this.refreshBalance }></i>
+                  }
+                  <div className="padding-10 padding-top-10">
+                    <div className="clearfix cursor-default">
+                      <div className="pull-left padding-vertical-10 min-width-160l">
+                        { this.props.ActiveCoin.coin !== 'CHIPS' &&
+                          this.props.ActiveCoin.mode !== 'spv' &&
+                          <i className="icon fa-eye font-size-24 vertical-align-bottom margin-right-5"></i>
+                        }
+                        { this.props.ActiveCoin.mode === 'spv' &&
+                          Number(this.renderBalance('interest')) > 0 &&
+                          <span className="padding-right-30">&nbsp;</span>
+                        }
+                        { this.props.ActiveCoin.coin === 'CHIPS' || this.props.ActiveCoin.mode === 'spv' ? translate('INDEX.BALANCE') : translate('INDEX.TRANSPARENT_BALANCE') }
+                        { this.props.ActiveCoin.mode === 'spv' &&
+                          Number(this.props.ActiveCoin.balance.unconfirmed) < 0 &&
+                          <span>
+                            <i
+                              className="icon fa-info-circle margin-left-5 icon-unconf-balance"
+                              data-tip={ `${translate('INDEX.UNCONFIRMED_BALANCE')} ${Math.abs(this.props.ActiveCoin.balance.unconfirmed)}` }></i>
+                            <ReactTooltip
+                              effect="solid"
+                              className="text-left" />
+                          </span>
+                        }
+                      </div>
+                      <span
+                        className="pull-right padding-top-10 font-size-20 min-width-160r">
+                        { this.renderBalance('transparent', true) }
+                        <ReactTooltip
+                          effect="solid"
+                          className="text-left" />
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          }
 
           <div className={ (this.props.ActiveCoin.mode === 'native' && Number(this.renderBalance('private'))) > 0 ? 'col-lg-4 col-xs-12' : 'hide' }>
             <div className="widget widget-shadow">
@@ -87,7 +102,11 @@ const WalletsBalanceRender = function() {
             </div>
           </div>
 
-          <div className={ (this.props.ActiveCoin.mode === 'native' && Number(this.renderBalance('immature'))) > 0 ? 'col-lg-4 col-xs-12' : 'hide' }>
+          <div className={ 
+            (this.props.ActiveCoin.mode === 'native' && Number(this.renderBalance('immature'))) > 0 ? 
+              ((Number(this.renderBalance('transparent')) > 0 || Number(this.renderBalance('private')) > 0) ? 'col-lg-4 col-xs-12' : 'col-lg-12 col-xs-12 balance-placeholder--bold')
+              : 
+              'hide' }>
             <div className="widget widget-shadow">
             <div className="widget-content">
               <div className="padding-10 padding-top-10">
@@ -145,12 +164,12 @@ const WalletsBalanceRender = function() {
                   <div className="clearfix cursor-default">
                     <div className="pull-left padding-vertical-10 min-width-160l">
                       <i className="icon fa-bullseye font-size-24 vertical-align-bottom margin-right-5"></i>
-                      { translate('INDEX.TOTAL_BALANCE') }
+                      { translate('INDEX.SPENDABLE_BALANCE') }
                     </div>
                     <span
                       className="pull-right padding-top-10 font-size-20 min-width-160r"
-                      data-tip={ Config.roundValues ? this.renderBalance('total') : '' }>
-                      { this.renderBalance('total', true) }
+                      data-tip={ Config.roundValues ? Number(this.renderBalance('total')) - Number(this.renderBalance('immature')) : '' }>
+                      { Number(this.renderBalance('total', true)) - Number(this.renderBalance('immature', true)) }
                     </span>
                     <ReactTooltip
                       effect="solid"
