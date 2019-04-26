@@ -208,7 +208,7 @@ const WalletsInfoRender = function() {
                   <tr>
                     <td>{ translate('INDEX.SPENDABLE_BALANCE') }</td>
                     <td>
-                      { _balance && _walletinfo ? Number(_balance.total) - Number(_walletinfo.immature_balance) : null }
+                      { _balance ? _balance.total : null }
                     </td>
                   </tr>
                   <tr>
