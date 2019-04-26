@@ -169,7 +169,7 @@ const WalletsBalanceRender = function() {
                     <span
                       className="pull-right padding-top-10 font-size-20 min-width-160r"
                       data-tip={ Config.roundValues ? this.renderBalance('total') : '' }>
-                      { this.renderBalance('spendable', true) }
+                      { this.renderBalance('total', true) }
                     </span>
                     <ReactTooltip
                       effect="solid"
