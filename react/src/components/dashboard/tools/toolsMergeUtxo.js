@@ -1,6 +1,7 @@
 import React from 'react';
 import translate from '../../../translate/translate';
 import addCoinOptionsAC from '../../addcoin/addcoinOptionsAC';
+import addCoinOptionsCustom from '../../addcoin/addcoinOptionsCustom';
 import Select from 'react-select';
 import {
   triggerToaster,
@@ -295,11 +296,12 @@ class ToolsMergeUTXO extends React.Component {
             optionRenderer={ this.renderCoinOption }
             valueRenderer={ this.renderCoinOption }
             options={
-              [{
+              addCoinOptionsCustom()
+              .concat([{
                 label: 'Komodo (KMD)',
                 icon: 'btc/KMD',
                 value: 'KMD|native',
-              }]
+              }])
               .concat(addCoinOptionsAC('skip'))
             } />
         </div>

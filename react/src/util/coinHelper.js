@@ -283,6 +283,7 @@ export const getModeInfo = (mode) => {
 
 export const coindList = () => {
   const _coins = [
+    'VRSCTEST',
     'KMD',
     'CHIPS',
   ]

@@ -2,6 +2,7 @@ import React from 'react';
 import translate from '../../../translate/translate';
 import addCoinOptionsCrypto from '../../addcoin/addcoinOptionsCrypto';
 import addCoinOptionsAC from '../../addcoin/addcoinOptionsAC';
+import addCoinOptionsCustom from '../../addcoin/addcoinOptionsCustom';
 import Select from 'react-select';
 import {
   triggerToaster,
@@ -113,7 +114,8 @@ class ToolsSeedToWif extends React.Component {
             optionRenderer={ this.renderCoinOption }
             valueRenderer={ this.renderCoinOption }
             options={
-              addCoinOptionsCrypto('skip', true, false)
+              addCoinOptionsCustom()
+              .concat(addCoinOptionsCrypto('skip', true, false))
               .concat(addCoinOptionsAC('skip'))
             } />
         </div>

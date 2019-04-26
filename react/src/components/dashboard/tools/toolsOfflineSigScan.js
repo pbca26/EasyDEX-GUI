@@ -1,6 +1,7 @@
 import React from 'react';
 import translate from '../../../translate/translate';
 import addCoinOptionsAC from '../../addcoin/addcoinOptionsAC';
+import addCoinOptionsCustom from '../../addcoin/addcoinOptionsCustom';
 import Select from 'react-select';
 import {
   triggerToaster,

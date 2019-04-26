@@ -99,7 +99,12 @@ class WalletsBalance extends React.Component {
         if (_propsBalance &&
           _propsBalance[type]) {
           _balance = _propsBalance[type];
-        }
+        } else if (_propsBalance && 
+          type === 'spendable' &&
+          !isNaN(_propsBalance.immature) &&
+          !isNaN(_propsBalance.total)) {
+            _balance = Number(_propsBalance.total) - Number(_propsBalance.immature);
+          }
       } else if (
         _mode === 'spv' &&
         _propsBalance
