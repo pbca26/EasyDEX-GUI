@@ -220,7 +220,7 @@ class SendCoin extends React.Component {
           triggerToaster(
             [
               translate('SEND.COINBASE_SHIELD_SUCCESS'),
-              'Transaction OPID: ' + json.result,
+              'Transaction OPID: ' + json.result ? (json.result.opid ? json.result.opid : json.result) : null,
             ],
             translate('TOASTR.SHIELD_SUCCESS'),
             'success',
