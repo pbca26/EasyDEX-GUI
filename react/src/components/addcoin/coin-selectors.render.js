@@ -2,6 +2,7 @@ import React from 'react';
 import translate from '../../translate/translate';
 import addCoinOptionsCrypto from '../addcoin/addcoinOptionsCrypto';
 import addCoinOptionsAC from '../addcoin/addcoinOptionsAC';
+import addCoinOptionsCustom from '../addcoin/addcoinOptionsCustom';
 // import addCoinOptionsACFiat from '../addcoin/addcoinOptionsACFiat';
 import mainWindow, { staticVar } from '../../util/mainWindow';
 import Select from 'react-select';
@@ -20,28 +21,6 @@ const CoinSelectorsRender = function(item, coin, i) {
   ];
   let _availModes = {};
   let _coinName;
-
-  let coinOptions = [{
-    label: 'Verus (VRSC)',
-    icon: 'btc/vrsc',
-    value: 'VRSC|native|spv',
-  }, {
-    label: 'Verus Testnet (VRSCTEST)',
-    icon: 'btc/vrsctest',
-    value: 'VRSCTEST|native',
-  }];
-
-  if (Config.pbaasChains.length > 0) {
-    coinOptions = coinOptions.concat(
-      Config.pbaasChains.map((pbaasChain, index) => {
-        return ({
-          label: translate(`CRYPTO.${pbaasChain}`),
-          icon: '',
-          value: `${pbaasChain}|native`,
-        })
-      }
-    ))
-  }
 
   if (item &&
       item.selectedCoin) {
@@ -81,7 +60,7 @@ const CoinSelectorsRender = function(item, coin, i) {
             optionRenderer={ this.renderCoinOption }
             valueRenderer={ this.renderCoinOption }
             options={
-              coinOptions
+              addCoinOptionsCustom()
               .concat(addCoinOptionsCrypto(this.props.Main.coins))
               .concat(addCoinOptionsAC(this.props.Main.coins))
             } />

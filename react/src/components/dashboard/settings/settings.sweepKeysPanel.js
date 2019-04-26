@@ -10,6 +10,7 @@ import {
 } from '../../../actions/actionCreators';
 import addCoinOptionsCrypto from '../../addcoin/addcoinOptionsCrypto';
 import addCoinOptionsAC from '../../addcoin/addcoinOptionsAC';
+import addCoinOptionsCustom from '../../addcoin/addcoinOptionsCustom';
 import Select from 'react-select';
 import Store from '../../../store';
 import mainWindow, { staticVar } from '../../../util/mainWindow';
@@ -283,7 +284,8 @@ class SweepKeysPanel extends React.Component {
 
   renderCoinsList() {
     const _activeCoins = this.props.Dashboard.electrumCoins;
-    const allCoins = addCoinOptionsCrypto('skip', true)
+    const allCoins = addCoinOptionsCustom()
+                    .concat(addCoinOptionsCrypto('skip', true))
                     .concat(addCoinOptionsAC('skip'));
     let _items = [];
 
