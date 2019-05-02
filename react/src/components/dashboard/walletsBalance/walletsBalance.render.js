@@ -29,7 +29,7 @@ const WalletsBalanceRender = function() {
               (this.props.ActiveCoin.mode === 'spv' && this.props.ActiveCoin.coin !== 'KMD') ||
               this.renderBalance('total') === this.renderBalance('transparent') ||
               (this.renderBalance('total') === 0) && this.renderBalance('immature') === 0)) &&
-              (this.renderBalance('immature') === 0) ? 'col-lg-12 col-xs-12 balance-placeholder--bold' : 'col-lg-4 col-xs-12'
+              (this.renderBalance('immature') === 0 || this.props.ActiveCoin.mode === 'spv') ? 'col-lg-12 col-xs-12 balance-placeholder--bold' : (this.renderBalance('total') === 0 && this.renderBalance('immature') > 0) ? 'hide' : 'col-lg-4 col-xs-12'
             }>
               <div className="widget widget-shadow">
                 <div className="widget-content">
@@ -90,7 +90,7 @@ const WalletsBalanceRender = function() {
                     { translate('INDEX.Z_BALANCE') }
                   </div>
                   <span
-                    className="pull-right padding-top-10 font-size-20 min-width-160r"
+                    className="pull-right padding-top-10 font-size-20 balance-text"
                     data-tip={ Config.roundValues ? this.renderBalance('private') : '' }>
                     { this.renderBalance('private', true) }
                   </span>
@@ -116,7 +116,7 @@ const WalletsBalanceRender = function() {
                     { translate('INDEX.IMMATURE_BALANCE') }
                   </div>
                   <span
-                    className="pull-right padding-top-10 font-size-20 min-width-160r"
+                    className={"pull-right padding-top-10 font-size-20" + (this.renderBalance('total') === 0 && this.renderBalance('immature') > 0 ? 'min-width-160r' : 'balance-text')}
                     data-tip={ Config.roundValues ? this.renderBalance('immature') : '' }>
                     { this.renderBalance('immature', true) }
                   </span>
@@ -139,7 +139,7 @@ const WalletsBalanceRender = function() {
                       { translate('INDEX.INTEREST_EARNED') }
                     </div>
                     <span
-                      className="pull-right padding-top-10 font-size-20 min-width-160r"
+                      className="pull-right padding-top-10 font-size-20 balance-text"
                       data-tip={ Config.roundValues ? this.renderBalance('interest') : '' }>
                       { this.renderBalance('interest', true) }
                     </span>
@@ -167,7 +167,7 @@ const WalletsBalanceRender = function() {
                       { translate('INDEX.SPENDABLE_BALANCE') }
                     </div>
                     <span
-                      className="pull-right padding-top-10 font-size-20 min-width-160r"
+                      className="pull-right padding-top-10 font-size-20 balance-text"
                       data-tip={ Config.roundValues ? this.renderBalance('total') : '' }>
                       { this.renderBalance('total', true) }
                     </span>

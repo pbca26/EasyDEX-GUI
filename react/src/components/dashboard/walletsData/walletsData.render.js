@@ -301,7 +301,7 @@ export const TxAmountRender = function(tx) {
 
   return (
     <span>
-      { this.props.ActiveCoin.mode === 'eth' ? formatValue(tx.amount) : Math.abs(tx.interest) !== Math.abs(tx.amount) ? (Number(tx.amount) || translate('DASHBOARD.UNKNOWN')) : '' }
+      { this.props.ActiveCoin.mode === 'eth' ? formatValue(tx.amount) : Math.abs(tx.interest) !== Math.abs(tx.amount) ? (typeof tx.amount !== undefined ? Number(tx.amount) : translate('DASHBOARD.UNKNOWN')) : '' }
       { tx.interest &&
         <span
           className="tx-interest"

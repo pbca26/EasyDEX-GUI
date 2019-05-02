@@ -7,6 +7,7 @@ import Config from '../../../config';
 const CONNECT = 'connect'
 const CREATE = 'create'
 const DISCOVER = 'discover'
+const HELP = 'help'
 
 const PBaaSNavRender = function() {
   return (
@@ -29,29 +30,23 @@ const PBaaSNavRender = function() {
                 { ' ' + translate('PBAAS.CONNECT') }
               </a>
             </li>
-            {/*<li className={ this.isSectionActive(DISCOVER) ? "active" : "" }>
+            {<li className={ this.isSectionActive(DISCOVER) ? "active" : "" }>
               <a onClick={ () => this.changeActiveSection(DISCOVER) }>
                 <span className="glyphicon glyphicon-globe" aria-hidden="true"/> 
                 { ' ' + translate('PBAAS.DISCOVER') }
               </a>
-            </li>*/}
+            </li>}
             <li className={ this.isSectionActive(CREATE) ? "active" : "" }>
               <a onClick={ () => this.changeActiveSection(CREATE) }>
                 <span className="glyphicon glyphicon-wrench" aria-hidden="true"/>
                 { ' ' + translate('PBAAS.CREATE') }
               </a>
             </li>
-          </ul>
-          <ul className="nav navbar-nav navbar-right">
-            <li className="dropdown">
-              <a href="#" className="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span className="glyphicon glyphicon-question-sign" aria-hidden="true"></span> Help<span className="caret"></span></a>
-              <ul className="dropdown-menu">
-                <li><a href="#">Action</a></li>
-                <li><a href="#">Another action</a></li>
-                <li><a href="#">Something else here</a></li>
-                <li role="separator" className="divider"></li>
-                <li><a href="#">Separated link</a></li>
-              </ul>
+            <li className={ this.isSectionActive(HELP) ? "active" : "" }>
+              <a onClick={ () => this.changeActiveSection(HELP) }>
+                <span className="glyphicon glyphicon-question-sign" aria-hidden="true"/>
+                { ' ' + translate('PBAAS.HELP') }
+              </a>
             </li>
           </ul>
         </div>

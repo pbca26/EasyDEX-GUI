@@ -16,6 +16,7 @@ import {
   toggleCoindDownModal,
   displayImportKeyModal,
   toggleNotaryElectionsModal,
+  togglePbaasChainInfoModal
 } from '../../actions/actionCreators';
 
 class WalletMain extends React.Component {
@@ -50,6 +51,8 @@ class WalletMain extends React.Component {
           Store.dispatch(toggleLoginSettingsModal(false));
         } else if (this.props.activeModals.displayNotaryElectionsModal) {
           Store.dispatch(toggleNotaryElectionsModal(false));
+        } else if (this.props.PBaaS.showChainInfo) {
+          Store.dispatch(togglePbaasChainInfoModal(false));
         }
       }
     };
@@ -85,6 +88,9 @@ class WalletMain extends React.Component {
 const mapStateToProps = (state) => {
   return {
     toaster: state.toaster,
+    PBaaS: {
+      showChainInfo: state.PBaaS.showChainInfo
+    },
     activeModals: {
       showTransactionInfo: state.ActiveCoin.showTransactionInfo,
       displayClaimInterestModal: state.Dashboard.displayClaimInterestModal,

@@ -38,6 +38,8 @@ import {
   DASHBOARD_EXCHANGES_SUPPORTED_COINS_MODAL,
   CHANGE_PBAAS_ACTIVE_SECTION,
   UPDATE_PBAAS_FORM_STATE,
+  UPDATE_DEFINED_CHAINS,
+  PBAAS_ACTIVE_CHAININFO_MODAL,
   UPDATE_MINING_INFO,
   TOGGLE_MINING_OPTIONS
 } from './storeType';
@@ -378,6 +380,13 @@ export const updatePbaasFormState = (state) => {
   }
 }
 
+export const updatePbaasDefinedChains = (definedChains) => {
+  return {
+    type: UPDATE_DEFINED_CHAINS,
+    definedChains: definedChains
+  }
+}
+
 export const updateMiningInfo = (coin, miningInfo) => {
   return {
     type: UPDATE_MINING_INFO,
@@ -390,5 +399,13 @@ export const toggleMiningOptions = (coin) => {
   return {
     type: TOGGLE_MINING_OPTIONS,
     coin: coin,
+  }
+}
+
+export const togglePbaasChainInfoModal = (display, txIndex) => {
+  return {
+    type: PBAAS_ACTIVE_CHAININFO_MODAL,
+    showChainInfo: display,
+    showChainInfoChainIndex: !display ? null : txIndex,
   }
 }

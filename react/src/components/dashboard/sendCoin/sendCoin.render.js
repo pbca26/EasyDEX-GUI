@@ -207,7 +207,7 @@ export const _SendFormRender = function() {
               onChange={ this.updateInput }
               disabled={ this.props.initState }
               id="kmdWalletAmount"
-              placeholder="0.000"
+              placeholder={translate('SEND.ENTER_AMOUNT')}
               autoComplete="off" />
           </div>
           { (this.props.ActiveCoin.coin === 'VRSC' || this.props.ActiveCoin.coin === 'VRSCTEST') && (this.state.sendTo.length === 95 || this.state.sendTo.length === 78) && 

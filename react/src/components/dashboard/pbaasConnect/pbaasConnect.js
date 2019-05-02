@@ -5,8 +5,6 @@ import Config from '../../../config';
 import mainWindow from '../../../util/mainWindow';
 import { 
   PBaaSConnectRender,
-  _erasRender,
-  _chainInfoRender
 } from './pbaasConnect.render';
 import { 
   getChainDefinition, 
@@ -43,8 +41,6 @@ class PBaaSConnect extends React.Component {
     };
 
     this.updateInput = this.updateInput.bind(this)
-    this.erasRender = _erasRender.bind(this)
-    this.chainInfoRender = _chainInfoRender.bind(this)
   }
 
   getChainInfo() {

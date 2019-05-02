@@ -20,6 +20,7 @@ import ZcparamsFetchModal from '../zcparamsFetchModal/zcparamsFetchModal';
 import ClaimInterestModal from '../claimInterestModal/claimInterestModal';
 import Dice from '../dice/dice';
 import PBaaS from '../pbaas/pbaas';
+import PbaasChainInfo from '../pbaasChainInfo/pbaasChainInfo';
 import Exchanges from '../exchanges/exchanges';
 import ChangeLog from '../changeLog/changeLog';
 
@@ -69,7 +70,10 @@ const DashboardRender = function() {
           <Tools />
         }
         { this.isSectionActive('pbaas') &&
-          <PBaaS  />
+          <div className={ 'page-main page-main-pbaas navbar-collapse' }>
+            <PbaasChainInfo />
+            <PBaaS />
+          </div>
         }
       </div>
     </div>

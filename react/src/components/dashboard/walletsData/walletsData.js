@@ -442,11 +442,9 @@ class WalletsData extends React.Component {
   }
 
   generateItemsListColumns(itemsCount) {
-    const _isAcPrivate = this.props.ActiveCoin.mode === 'native' && staticVar.chainParams && staticVar.chainParams[this.props.ActiveCoin.coin] && staticVar.chainParams[this.props.ActiveCoin.coin].ac_private;
     let columns = [];
     let _col;
 
-    //TODO: Make private display in type for private transactions
     if (this.props.ActiveCoin.mode === 'native') {
       _col = {
         id: 'type',

@@ -13,6 +13,9 @@ export const _nameFormRender = function() {
   return (
     <div className="row">
       <div className="col-xlg-12 form-group form-material">
+        <div className="font-weight-600">{ translate('PBAAS.CREATE_CHAIN') }</div>
+        <div className="create-form-description">{ translate('PBAAS.CREATE_CHAIN_DESC') }</div>
+        <div className="create-form-description font-weight-600">{ translate('PBAAS.FORM_COIN_WARNING') }</div>
         <div className="font-weight-600">{ translate('PBAAS.CHAIN_ID') }</div>
         <div className="create-form-description">{ translate('PBAAS.CHAIN_ID_DESC') }</div>
         <label
@@ -23,7 +26,7 @@ export const _nameFormRender = function() {
           type="text"
           className={ 'form-control' }
           name="chainName"
-          onChange={ this.updateInput }
+          onChange={ this.updateChainName }
           value={ this.state.chainName }
           id="pbaasChainName"
           placeholder={ translate('PBAAS.CHAIN_NAME_HOLDER') }
@@ -142,7 +145,7 @@ export const _launchFormRender = function() {
                     { translate('PBAAS.INVALID_AMOUNT') }
                   </label> }
                 </div>
-                <div className="margin-bottom-10">
+                <div className="margin-bottom-10 margin-top-10">
                   <label
                   className="control-label">
                   { translate('PBAAS.LAUNCH_FEE') }
@@ -154,7 +157,7 @@ export const _launchFormRender = function() {
                     onChange={ this.updateAmountInput }
                     value={ this.state.convertible }
                     id="pbaasLaunchfee"
-                    placeholder={ translate('PBAAS.LAUNCH_FEE_AMOUNT_HOLDER') }
+                    placeholder={ translate('PBAAS.LAUNCH_FEE_HOLDER') }
                     autoComplete="off"
                     required />
                   { this.state.errors.launchfee && 
@@ -442,6 +445,7 @@ export const _nodesFormRender = function() {
     <div>
       <div className="font-weight-600">{ translate('PBAAS.BOOTSTRAP_NODES') }</div>
       <div className="create-form-description">{ translate('PBAAS.BOOTSTRAP_NODES_DESC') }</div>
+      <div className="create-form-description font-weight-600">{ translate('PBAAS.BOOTSTRAP_NODES') }</div>
       <button
         type="button"
         className="btn btn-success waves-effect waves-light"
@@ -485,6 +489,11 @@ export const _renderNodeCapsules = function() {
                 placeholder={ translate('PBAAS.NODE_ADDRESS_HOLDER') }
                 autoComplete="off"
                 required />
+              { this.state.nodes[index].errors.nodeAddress && 
+              <label
+                className="control-label error-text">
+                { translate('PBAAS.INVAID_IP') }
+              </label>}
             </div>
 
             <div>
@@ -680,7 +689,7 @@ export const _confirmFormRender = function() {
             <tr>
               <td>{ translate('PBAAS.PUBLIC_PREMINE_QUESTION') }</td>
               <td>
-                {this.state.publicPremine ? translate('SETTINGS.YES') : translate('SETTINGS.NO') }
+                {this.state.publicPremine && this.state.includePremine ? translate('SETTINGS.YES') : translate('SETTINGS.NO') }
               </td>
             </tr>
 

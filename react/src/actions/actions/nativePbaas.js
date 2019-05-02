@@ -138,3 +138,35 @@ export const defineAndCreateChain = (_params) => {
     })
   });
 }
+
+export const getDefinedChains = () => {
+  return new Promise((resolve, reject) => {
+    const payload = {
+      mode: null,
+      chain: PBAAS_ROOT_CHAIN,
+      cmd: 'getdefinedchains',
+      rpc2cli,
+      token,
+      params: [],
+    };
+
+    fetch(
+      `http://127.0.0.1:${agamaPort}/api/cli`,
+      fetchType(JSON.stringify({ payload })).post
+    )
+    .catch((error) => {
+      console.log(error);
+      Store.dispatch(
+        triggerToaster(
+          translate('API.getDefinedChains') + chain + ' (code: getDefinedChains)',
+          translate('TOASTR.ERROR'),
+          'error'
+        )
+      );
+    })
+    .then(response => response.json())
+    .then(json => {
+      resolve(json);
+    });
+  });
+}

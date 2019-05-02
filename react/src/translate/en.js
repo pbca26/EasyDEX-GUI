@@ -178,7 +178,8 @@ const LANG_EN = {
     'apiElectrumPushTx': 'Unable to push transaction',
     'zmergeToAddressPromise': 'Unable to merge funds',
     'getChainDefinition': 'Unable to fetch chain definition for ',
-    'defineChain': 'Unable to define chain '
+    'defineChain': 'Unable to define chain ',
+    'getDefinedChains': 'Unable to fetch defined chains'
   },
   NN_ELECTIONS: {
     WRONG_ADDR_FORMAT: 'Wrong address format',
@@ -1195,7 +1196,8 @@ const LANG_EN = {
     SEND_NATIVE_SYNC_WARNING: 'Your wallet is not fully synced! Please wait until it reached 100% to avoid possible transaction send implications.',
     WARNING_FEE_EXCEEDS_DEFAULT_THRESHOLD: 'Provided fee exceeds default fee @template@ times!',
     PRIVATE_MESSAGE: 'Private Message',
-    PRIVATE_MESSAGE_DESC: 'Attach a secret message to your transaction'
+    PRIVATE_MESSAGE_DESC: 'Attach a secret message to your transaction',
+    ENTER_AMOUNT: 'Enter an amount to send'
   },
   FIAT_CURRENCIES: {
     AUD: 'Australian Dollar',
@@ -1384,11 +1386,13 @@ const LANG_EN = {
     PBAAS_CONNECT: 'Connect to a PBaaS Chain',
     ENTER_CHAIN_NAME: 'Enter the name of a PBaaS chain, then press connect',
     CONNECT: 'Connect',
+    FIND: 'Find',
     CHAIN_PARAMS: 'Chain Parameters',
     ACTIVATE: 'Activate',
     CANCEL: 'Cancel',
     DISCOVER: 'Discover',
     CREATE: 'Create',
+    HELP: 'Help',
     NAME: 'Name',
     PREMINE: 'Premine',
     LAUNCH: 'Launch Options',
@@ -1420,7 +1424,7 @@ const LANG_EN = {
     PREMINE_ADDRESS_HOLDER: 'Enter the address to which the premined finds will go',
     PREMINE_AMOUNT_HOLDER: 'Enter the total premined supply',
     CONVERTIBLE_AMOUNT_HOLDER: 'Enter the maximum amount people are able to convert from VRSC into your premine',
-    LAUNCH_FEE_DESC: 'This is the % conversion fee for each conversion that will go to the premine address',
+    LAUNCH_FEE_HOLDER: 'Enter the % conversion fee for each conversion that will go to the premine address',
     START_BLOCK: 'Start Block',
     START_BLOCK_HOLDER: 'Enter a starting Verus block height for your chain',
     LAUNCH_OPTIONS_DESC: 'Here you can configure your chain launch details',
@@ -1460,8 +1464,10 @@ const LANG_EN = {
     INVALID_ADDRESS: 'Please enter a valid public address',
     INVALID_BLOCK: 'Please enter a valid block value',
     INVALID_AMOUNT: 'Please enter a valid amount',
+    INVAID_IP: 'Please enter a valid public node address in the form of \'address:port\'',
     BOOTSTRAP_NODES: 'Bootstrap Nodes',
     BOOTSTRAP_NODES_DESC: 'Here you can optionally add at most two nodes that will be connected to your chain. If you know these nodes are reliable, this could help initial connectivity speeds.',
+    BOOTSTRAP_NODES_TESTNET: 'For VRSCTEST please add two working nodes with and their ports',
     NODE_ADDRESS: 'Address',
     NODE_ADDRESS_HOLDER: 'Enter the internet, TOR, or other supported address for your node (address:port)',
     PAYMENT_ADDRESS: 'Payment Address',
@@ -1483,13 +1489,29 @@ const LANG_EN = {
     CONVERSION_PERCENT: 'Conversion Percent',
     VERSION: 'Version',
     PBAAS_CHAIN_SUBMITTED: 'Chain submitted!',
-    PBAAS_CHAIN_FAILED_DESC: 'Failed to submit PBaaS chain: ',
+    PBAAS_CHAIN_FAILED_DESC: 'Failed to submit PBaaS chain with the following error (All coin amount values in the following message are represented in satoshis, where 1 satoshi = 0.00000001 coins): ',
     PBAAS_CHAIN_FAILED: 'Chain submission failed!',
     PBAAS_CHAIN_SUBMITTED_DESC: 'This is your txid, go to your transactions screen in VRSCTEST to see your chain defining transaction! ',
     MERGE_MINING: 'Merge Mining:',
     MINING_X_CHAINS: 'Merge mining @template@ chains',
     MERGE_MINING_MAIN_CHAIN: 'Merge mining with main chain',
-    NOT_MERGE_MINING: 'Not merge mining'
+    NOT_MERGE_MINING: 'Not merge mining',
+    CREATE_CHAIN: 'Chain Creator Form',
+    CREATE_CHAIN_DESC: 'This form will allow you to create your own Public Blockchain as a Service, a secure, decentralized blockchain with cutting edge zero knowledge proof technology. Once it is created, ' + 
+    'you will be able to mine it with up to fourteen other chains. All you will need is the currency of the main chain, either VRSCTEST or VRSC, depending on what you\'re using, and two nodes with public ' + 
+    ' IP addresses (in the very near future they will be optional, and you will be able to automatically use other people\'s nodes at a cost, but for now, on the testnet, please enter two working nodes and their ports).',
+    FORM_COIN_WARNING: 'ALL amount values in this form are coin values, NOT satoshis, unless specifically stated otherwise.',
+    LAST_NOTARY_HEIGHT: 'Last Notarized Height',
+    LATEST_BLOCK_REWARD: 'Last Block Reward',
+    NOTARY_REWARD: 'Notary Reward',
+    CHAIN_INFO: 'Chain Info',
+    DEFINED_CHAINS: 'Defined Chains',
+    CHAIN_DETAILS: 'Chain Details',
+    PBAAS_LONG_NAME: 'Public Blockchains as a Service (PBaaS)',
+    PBAAS_QUESTION_WHAT: 'What is PBaaS?',
+    PBAAS_QUESTION_WHY: 'Why is this important?',
+    PBAAS_QUESTION_HOW_CREATE: 'How do I create a chain?',
+    PBAAS_QUESTION_HOW_CONNECT: 'How do I connect to a chain?'
   }
 };
 

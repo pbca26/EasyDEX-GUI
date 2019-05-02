@@ -5,23 +5,35 @@ import ReactTooltip from 'react-tooltip';
 import Config from '../../../config';
 import PBaaSNav from '../pbaasNav/pbaasNav';
 import PBaaSConnect from '../pbaasConnect/pbaasConnect';
-import PBaasCreate from '../pbaasCreate/pbaasCreate';
+import PBaaSCreate from '../pbaasCreate/pbaasCreate';
+import PBaaSDiscover from '../pbaasDiscover/pbaasDiscover';
+import PBaaSHelp from '../pbaasHelp/pbaasHelp';
 
 const PBaaSRender = function() {
   return (
     <div className={ 'full-height' }>
       <div
-        className={ 'page-main page-main-pbaas navbar-collapse' }
+        //className={ 'page-main page-main-pbaas navbar-collapse' }
         id="pbaas-dashboard">
         <PBaaSNav/>
         <div className={ this.isSectionActive('connect') ? '' : 'hide' }>
           <PBaaSConnect/>
         </div>
+        { this.isSectionActive('discover') &&
+          <div>
+            <PBaaSDiscover />
+          </div>
+        }
         { this.isSectionActive('create') &&
           <div>
-            <PBaasCreate />
+            <PBaaSCreate />
           </div>
-         }
+        }
+        { this.isSectionActive('help') &&
+          <div>
+            <PBaaSHelp />
+          </div>
+        }
       </div>
     </div>
   );

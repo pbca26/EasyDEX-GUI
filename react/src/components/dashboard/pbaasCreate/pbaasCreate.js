@@ -85,6 +85,7 @@ class PBaaSCreate extends React.Component {
     this.confirmFormRender = _confirmFormRender.bind(this)
     this.confirmNodesRender = _confirmNodesRender.bind(this)
     this.updateInput = this.updateInput.bind(this)
+    this.updateChainName = this.updateChainName.bind(this)
     this.updateAddressInput = this.updateAddressInput.bind(this)
     this.updateAmountInput = this.updateAmountInput.bind(this)
     this.updateBlockInput = this.updateBlockInput.bind(this)
@@ -186,6 +187,15 @@ class PBaaSCreate extends React.Component {
   updateInput(e) {
     this.setState({
       [e.target.name]: e.target.value,
+    });
+  }
+
+  updateChainName(e) {
+    let value = e.target.value
+    value = (value.replace(/\s/g,'')).toUpperCase();
+
+    this.setState({
+      [e.target.name]: value,
     });
   }
 
@@ -303,13 +313,14 @@ class PBaaSCreate extends React.Component {
 
     _nodes[index][valueName] = value
 
-    if (valueName !== 'nodeAddress' && addressVersionCheck(networks['vrsc'], value) === 'Invalid pub address' && value.length > 0) {
+    if (valueName === 'paymentAddress' && addressVersionCheck(networks['vrsc'], value) === 'Invalid pub address' && value.length > 0) {
+      _nodes[index].errors[valueName] = true
+    } else if (valueName === 'nodeAddress' && value.length > 0 && !(/^\S+:{1}\S+$/.test(value))) {
       _nodes[index].errors[valueName] = true
     } else if (_nodes[index].errors[valueName]) {
       _nodes[index].errors[valueName] = false
     }
 
-    
     this.setState({
       nodes: _nodes,
     });
