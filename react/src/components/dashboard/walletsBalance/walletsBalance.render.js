@@ -104,7 +104,7 @@ const WalletsBalanceRender = function() {
 
           <div className={ 
             (this.props.ActiveCoin.mode === 'native' && Number(this.renderBalance('immature'))) > 0 ? 
-              ((Number(this.renderBalance('transparent')) > 0 || Number(this.renderBalance('private')) > 0) ? 'col-lg-4 col-xs-12' : 'col-lg-12 col-xs-12 balance-placeholder--bold')
+              ((Number(this.renderBalance('total')) > 0) ? 'col-lg-4 col-xs-12' : 'col-lg-12 col-xs-12 balance-placeholder--bold')
               : 
               'hide' }>
             <div className="widget widget-shadow">
@@ -116,7 +116,7 @@ const WalletsBalanceRender = function() {
                     { translate('INDEX.IMMATURE_BALANCE') }
                   </div>
                   <span
-                    className={"pull-right padding-top-10 font-size-20" + (this.renderBalance('total') === 0 && this.renderBalance('immature') > 0 ? 'min-width-160r' : 'balance-text')}
+                    className={"pull-right padding-top-10 font-size-20 " + ((Number(this.renderBalance('total')) > 0) ? 'balance-text' : 'min-width-160r')}
                     data-tip={ Config.roundValues ? this.renderBalance('immature') : '' }>
                     { this.renderBalance('immature', true) }
                   </span>
