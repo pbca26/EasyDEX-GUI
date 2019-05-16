@@ -106,27 +106,83 @@ export const ChainsListRender = function() {
 };
 
 export const chainNameRender = function(chain) {
-  const name = chain.name;
+  const name = chain.chaindefinition.name;
 
   return (<span>{ name }</span>)
 };
 
-export const lastNotaryRender = function(chain) {
-  const lastnotarizationheight = 0;
+export const lastHeightRender = function(chain) {
+  const lastHeight = chain.latestheight;
 
-  return (<span>{ translate('DASHBOARD.NA') }</span>)
+  return (<span>{ Number(lastHeight) }</span>)
 };
 
 export const lastRewardRender = function(chain) {
-  const reward = 0;
+  const eras = chain.chaindefinition.eras
+  const lastHeight = Number(chain.latestheight);
+  let eraIndex = 0;
+  let reward = 0;
 
-  return (<span>{ translate('DASHBOARD.NA') }</span>)
+  while (
+    eraIndex < eras.length && 
+    Number(eras[eraIndex].eraend) != 0 && 
+    lastHeight > Number(eras[eraIndex].eraend)) { 
+    eraIndex++;
+  }
+
+  let currentEra = eras[eraIndex]
+
+  if (Number(currentEra.decay) === LINEAR_DECAY) {
+    let yChange = ((eraIndex < eras.length - 1) ? Number(eras[eraIndex + 1].reward) : 0) - Number(currentEra.reward)
+    let xChange = Number(currentEra.eraend) - (eraIndex === 0 ? 0 : Number(eras[eraIndex - 1].eraend))
+    reward = satsToCoins((yChange/xChange)*(lastHeight) + Number(currentEra.reward))
+  } else {
+    let xChange = lastHeight - (eraIndex === 0 ? 0 : Number(eras[eraIndex - 1].eraend))
+    
+    let decay = Number(currentEra.eraend.decay) === 0 ? 
+      (LINEAR_DECAY/2) 
+    : 
+      Number(currentEra.eraend.decay)
+    
+    reward = satsToCoins((Number(currentEra.reward))/
+            (Math.pow(LINEAR_DECAY/(decay), xChange/Number(currentEra.halving))))
+  }
+
+  return (<span>{ reward }</span>)
 };
 
 export const notaryRewardRender = function(chain) {
-  const reward = chain.notarizationreward
+  const reward = chain.chaindefinition.notarizationreward
 
   return (<span>{ satsToCoins(Number(reward)) }</span>)
+}
+
+export const lastHeightHeaderRender = function() {
+  return(
+    <span>
+      <div
+      data-tip={ translate('PBAAS.LAST_NOTARY_HEIGHT_DESC') }
+      data-html={ true }
+      data-for="lastHeight">{ translate('PBAAS.LAST_NOTARY_HEIGHT') }</div>
+      <ReactTooltip
+        id="lastHeight"
+        effect="solid"
+        className="text-left" />
+    </span>)
+}
+
+export const lastRewardHeaderRender = function() {
+  return(
+    <span>
+      <div
+      data-tip={ translate('PBAAS.LAST_BLOCK_REWARD_DESC') }
+      data-html={ true }
+      data-for="lastReward">{ translate('PBAAS.LAST_BLOCK_REWARD') }</div>
+      <ReactTooltip
+        id="lastReward"
+        effect="solid"
+        className="text-left" />
+    </span>)
 }
 
 export const chainDetailRender = function(chainIndex) {
@@ -141,7 +197,7 @@ export const chainDetailRender = function(chainIndex) {
 };
 
 export const premineRender = function(chain) {
-  const premine = chain.premine
+  const premine = chain.chaindefinition.premine
 
   return (<span>{ Number(premine) > 0 ? translate('SETTINGS.YES') : translate('SETTINGS.NO') }</span>)
 }

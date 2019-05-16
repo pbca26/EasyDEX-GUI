@@ -5,8 +5,10 @@ import Config from '../../../config';
 import mainWindow from '../../../util/mainWindow';
 import { 
   PBaaSDiscoverRender,
-  lastNotaryRender,
+  lastHeightRender,
   lastRewardRender,
+  lastHeightHeaderRender,
+  lastRewardHeaderRender,
   notaryRewardRender,
   chainDetailRender,
   premineRender,
@@ -111,8 +113,8 @@ class PBaaSDiscover extends React.Component {
       return true;
     }
     else if (
-      (this.contains(chain.notarizationreward, term) ||
-      this.contains(chain.name, term)))
+      (this.contains(chain.chaindefinition.notarizationreward, term) ||
+      this.contains(chain.chaindefinition.name, term)))
     {
       return true;
     }
@@ -154,19 +156,19 @@ class PBaaSDiscover extends React.Component {
   }
 
   activatePbaasChain() {
-    if (this.isCoinAlreadyAdded(this.state.chainInfo.name)) {
+    if (this.isCoinAlreadyAdded(this.state.chainInfo.chaindefinition.name)) {
       return;
     }
 
     let rpcPort;
     //Parse first time rpc port from chain info
-    if (this.state.chainInfo.nodes.length && this.state.chainInfo.nodes[0].networkaddress) {
-      let splitAddress = this.state.chainInfo.nodes[0].networkaddress.split(':')
+    if (this.state.chainInfo.chaindefinition.nodes.length && this.state.chainInfo.chaindefinition.nodes[0].networkaddress) {
+      let splitAddress = this.state.chainInfo.chaindefinition.nodes[0].networkaddress.split(':')
       rpcPort = Number(splitAddress[1]) + 1
     }
     
     Store.dispatch(addCoin(
-      this.state.chainInfo.name,
+      this.state.chainInfo.chaindefinition.name,
       NATIVE_MODE,
       null,
       null,
@@ -221,7 +223,7 @@ class PBaaSDiscover extends React.Component {
       );
     } else {
       return (
-        <div className="padding-left-15">{ translate('INDEX.NO_DATA') }</div>
+        <div className="padding-left-15">{ translate('PBAAS.NO_CHAINS') }</div>
       );
     }
   }
@@ -301,14 +303,14 @@ class PBaaSDiscover extends React.Component {
     },
     {
       id: 'lastnotarization',
-      Header: translate('PBAAS.LAST_NOTARY_HEIGHT'),
+      Header: lastHeightHeaderRender,
       Footer: translate('PBAAS.LAST_NOTARY_HEIGHT'),
       sortMethod: this.defaultSorting,
-      accessor: (chain) => lastNotaryRender.call(this, chain),
+      accessor: (chain) => lastHeightRender.call(this, chain),
     },
     {
       id: 'lastblockreward',
-      Header: translate('PBAAS.LATEST_BLOCK_REWARD'),
+      Header: lastRewardHeaderRender,
       Footer: translate('PBAAS.LATEST_BLOCK_REWARD'),
       sortMethod: this.defaultSorting,
       accessor: (chain) => lastRewardRender.call(this, chain),

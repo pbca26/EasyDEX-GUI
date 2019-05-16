@@ -31,7 +31,7 @@ const ChainInfoRender = function(chainInfo) {
              </div>
             <div className="modal-body modal-body-container">
               <div className="panel-body">
-                { this.state.chainInfo ? chainInfoTableRender.call(this, chainInfo) : (translate('INDEX.NO_DATA')) }
+                { this.state.chainInfo ? chainInfoTableRender.call(this, chainInfo) : (translate('PBAAS.FAILED_LOAD_CHAIN')) }
               </div>
             </div>
             <div className="modal-footer">

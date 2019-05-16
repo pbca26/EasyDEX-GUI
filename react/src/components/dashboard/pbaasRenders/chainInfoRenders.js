@@ -7,6 +7,7 @@ const LINEAR = 'linear'
 const LINEAR_DECAY = 100000000
 
 export const chainInfoTableRender = function(chain) {
+  let _chain = chain.chaindefinition ? chain.chaindefinition : chain
   return (
     <div>
       <div className="table-responsive">
@@ -15,64 +16,64 @@ export const chainInfoTableRender = function(chain) {
             <tr>
               <td>{ translate('PBAAS.NAME') }</td>
               <td>
-                { chain.name }
+                { _chain.name }
               </td>
             </tr>
             <tr>
               <td>{ translate('PBAAS.START_BLOCK') }</td>
               <td>
-                { chain.startblock }
+                { _chain.startblock }
               </td>
             </tr>
             <tr>
               <td>{ translate('PBAAS.PREMINE_AMOUNT') }</td>
               <td>
-                { satsToCoins(Number(chain.premine)) }
+                { satsToCoins(Number(_chain.premine)) }
               </td>
             </tr>
             <tr>
               <td>{ translate('PBAAS.NOTARIZATION_REWARD') }</td>
               <td>
-                { satsToCoins(Number(chain.notarizationreward)) }
+                { satsToCoins(Number(_chain.notarizationreward)) }
               </td>
             </tr>
             <tr>
               <td>{ translate('PBAAS.NUMBER_OF_ERAS') }</td>
               <td>
-                { chain.eras.length }
+                { _chain.eras.length }
               </td>
             </tr>
             <tr>
               <td>{ translate('PBAAS.REWARD_ERAS') }</td>
               <td>
                 <div className={ "era-capsule-container" }>
-                  { erasRender.call(this, chain) }
+                  { erasRender.call(this, _chain) }
                 </div>
               </td>
             </tr>
             <tr>
               <td>{ translate('PBAAS.CONVERTIBLE_AMOUNT') }</td>
               <td>
-                { satsToCoins(Number(chain.conversion)) }
+                { satsToCoins(Number(_chain.conversion)) }
               </td>
             </tr>
             <tr>
               <td>{ translate('PBAAS.CONVERSION_PERCENT') }</td>
               <td>
-                { chain.conversionpercent }
+                { _chain.conversionpercent }
               </td>
             </tr>
             <tr>
               <td>{ translate('PBAAS.VERSION') }</td>
               <td>
-                { chain.version }
+                { _chain.version }
               </td>
             </tr>
             <tr>
               <td>{ translate('PBAAS.NODES') }</td>
               <td>
                 <div className={ "era-capsule-container" }>
-                  { nodesRender.call(this, chain) }
+                  { nodesRender.call(this, _chain) }
                 </div>
               </td>
             </tr>

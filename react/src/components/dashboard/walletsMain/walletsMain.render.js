@@ -21,9 +21,10 @@ const _skipCoins = [
 
 const DEFAULT_CHAIN = "defaultChain.png"
 
+const MAX_LENGTH = 8
+
 const WalletsMainRender = function() {
   const _coin = this.props.ActiveCoin.coin;
-
   return (
     <div className="page margin-left-0">
       <div className="padding-top-0">
@@ -46,7 +47,15 @@ const WalletsMainRender = function() {
               }
               { _skipCoins.indexOf(_coin) === -1 &&
                 <span className="margin-left-20 easydex-section-image">
-                  { translate(((this.props.ActiveCoin.mode === 'spv' || this.props.ActiveCoin.mode === 'native') && isKomodoCoin(_coin) ? 'ASSETCHAINS.' : 'CRYPTO.') + _coin.toUpperCase()) }
+                  { _coin.length <= MAX_LENGTH ?
+                      translate(((this.props.ActiveCoin.mode === 'spv' || 
+                      this.props.ActiveCoin.mode === 'native') && 
+                      isKomodoCoin(_coin) ? 'ASSETCHAINS.' : 'CRYPTO.') + _coin.toUpperCase()) 
+                    :
+                      ((
+                        translate(((this.props.ActiveCoin.mode === 'spv' || 
+                        this.props.ActiveCoin.mode === 'native') && 
+                        isKomodoCoin(_coin) ? 'ASSETCHAINS.' : 'CRYPTO.') + _coin.toUpperCase())).substr(0, MAX_LENGTH) + '...')}
                 </span>
               }
             </li>

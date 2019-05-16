@@ -1440,7 +1440,7 @@ const LANG_EN = {
     REWARD_DECAY_TYPE: 'Decay Type',
     TRADITIONAL: 'Traditional Style Halving',
     LINEAR: 'Linear',
-    FREQUENCY: 'Decay Frequency',
+    FREQUENCY: 'Decay Frequency (# of your chain blocks per decay interval)',
     FREQUENCY_HOLDER: 'How frequently the block reward will decay (be divided by the magnitude)',
     MAGNITUDE: 'Magnitude',
     MAGNITUDE_HOLDER: 'How much the reward will get divided by',
@@ -1502,7 +1502,9 @@ const LANG_EN = {
     ' IP addresses (in the very near future they will be optional, and you will be able to automatically use other people\'s nodes at a cost, but for now, on the testnet, please enter two working nodes and their ports).',
     FORM_COIN_WARNING: 'ALL amount values in this form are coin values, NOT satoshis, unless specifically stated otherwise.',
     LAST_NOTARY_HEIGHT: 'Last Notarized Height',
-    LATEST_BLOCK_REWARD: 'Last Block Reward',
+    LAST_NOTARY_HEIGHT_DESC: 'The most recent VRSC blockheight that this chain has been notarized to',
+    LAST_BLOCK_REWARD: 'Last Est. Reward',
+    LAST_BLOCK_REWARD_DESC: 'The estimated current block reward (in the chain\'s currency) for this chain based on the latest notarized height',
     NOTARY_REWARD: 'Notary Reward',
     CHAIN_INFO: 'Chain Info',
     DEFINED_CHAINS: 'Defined Chains',
@@ -1511,7 +1513,9 @@ const LANG_EN = {
     PBAAS_QUESTION_WHAT: 'What is PBaaS?',
     PBAAS_QUESTION_WHY: 'Why is this important?',
     PBAAS_QUESTION_HOW_CREATE: 'How do I create a chain?',
-    PBAAS_QUESTION_HOW_CONNECT: 'How do I connect to a chain?'
+    PBAAS_QUESTION_HOW_CONNECT: 'How do I connect to a chain?',
+    NO_CHAINS: 'No chains found',
+    FAILED_LOAD_CHAIN: 'Failed to load chain'
   }
 };
 
