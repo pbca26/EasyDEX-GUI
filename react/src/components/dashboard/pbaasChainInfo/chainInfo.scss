@@ -2,7 +2,7 @@
   overflow-y: auto;
   max-height: 300px;
 }
-.tx-details-modal {
+.chain-details-modal {
   min-height: 560px;
 
   .panel {
@@ -17,4 +17,8 @@
   .modal-footer {
     padding: 0 20px 20px;
   }
+}
+
+.chain-info-table {
+  overflow-y: auto;
 }

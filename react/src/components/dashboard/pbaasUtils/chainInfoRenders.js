@@ -1,16 +1,26 @@
 import React from 'react';
 import translate from '../../../translate/translate';
 import { satsToCoins } from '../../../util/satMath';
+import { estimateReward } from './chainData';
 
 const EXPONENTIAL = 'exponential'
 const LINEAR = 'linear'
 const LINEAR_DECAY = 100000000
 
 export const chainInfoTableRender = function(chain) {
-  let _chain = chain.chaindefinition ? chain.chaindefinition : chain
+  let _chain
+  let _latestHeight
+  if (chain.chaindefinition) {
+    _chain = chain.chaindefinition
+    _latestHeight = chain.latestheight
+  } else {
+    _chain = chain
+    _latestHeight = null
+  }
+
   return (
     <div>
-      <div className="table-responsive">
+      <div className="table-responsive chain-info-table">
         <table className="table table-striped">
           <tbody>
             <tr>
@@ -75,6 +85,18 @@ export const chainInfoTableRender = function(chain) {
                 <div className={ "era-capsule-container" }>
                   { nodesRender.call(this, _chain) }
                 </div>
+              </td>
+            </tr>
+            <tr className={!isNaN(_latestHeight) ? "" : "hide"}>
+              <td>{ translate('PBAAS.LAST_NOTARY_HEIGHT') }</td>
+              <td>
+                { _latestHeight }
+              </td>
+            </tr>
+            <tr className={!isNaN(_latestHeight) ? "" : "hide"}>
+              <td>{ translate('PBAAS.LAST_BLOCK_REWARD') }</td>
+              <td>
+                { estimateReward(_chain, _latestHeight) }
               </td>
             </tr>
           </tbody>

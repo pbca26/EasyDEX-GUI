@@ -20,14 +20,18 @@ class PbaasChainInfo extends React.Component {
     this.state = {
       activeTab: 0,
       chainInfo: {
-        name: '',
-        startblock: '',
-        premine: '',
-        notarizationreward: '',
-        eras: [],
-        conversion: '',
-        conversionpercent: '',
-        version: ''
+        chaindefinition: {
+          name: '',
+          startblock: '',
+          premine: '',
+          notarizationreward: '',
+          eras: [],
+          conversion: '',
+          conversionpercent: '',
+          version: ''
+        },
+        confirmedheight: '',
+        latestheight: ''
       },
       className: 'hide',
     };
@@ -147,20 +151,22 @@ class PbaasChainInfo extends React.Component {
   }
 
   activatePbaasChain() {
-    if (this.isCoinAlreadyAdded(this.state.chainInfo.name)) {
+    let chainDefition = this.state.chainInfo.chaindefinition
+
+    if (this.isCoinAlreadyAdded(chainDefition.name)) {
       return;
     }
 
     let rpcPort;
     //Parse first time rpc port from chain info
-    if (this.state.chainInfo.nodes.length && this.state.chainInfo.nodes[0].networkaddress) {
-      let splitAddress = this.state.chainInfo.nodes[0].networkaddress.split(':')
+    if (chainDefition.nodes.length && chainDefition.nodes[0].networkaddress) {
+      let splitAddress = chainDefition.nodes[0].networkaddress.split(':')
       rpcPort = Number(splitAddress[1]) + 1
     }
     
     this.toggleChainInfoModal();
     Store.dispatch(addCoin(
-      this.state.chainInfo.name,
+      chainDefition.name,
       NATIVE_MODE,
       null,
       null,

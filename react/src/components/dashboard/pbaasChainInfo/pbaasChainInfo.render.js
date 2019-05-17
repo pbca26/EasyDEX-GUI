@@ -2,13 +2,13 @@ import React from 'react';
 import translate from '../../../translate/translate';
 import { secondsToString } from 'agama-wallet-lib/src/time';
 import { explorerList } from 'agama-wallet-lib/src/coin-helpers';
-import { chainInfoTableRender } from '../pbaasRenders/chainInfoRenders';
+import { chainInfoTableRender } from '../pbaasUtils/chainInfoRenders';
 
 const ChainInfoRender = function(chainInfo) { 
   return (
     <div onKeyDown={ (event) => this.handleKeydown(event) }>
       <div
-        className={ `modal modal-3d-sign tx-details-modal ${this.state.className}` }
+        className={ `modal modal-3d-sign chain-details-modal ${this.state.className}` }
         id="kmd_txid_info_mdl">
         <div
           onClick={ this.toggleChainInfoModal }
@@ -29,7 +29,7 @@ const ChainInfoRender = function(chainInfo) {
                  { translate('PBAAS.CHAIN_DETAILS') }
                </h4>
              </div>
-            <div className="modal-body modal-body-container">
+            <div className="modal-body modal-body-container chain-info-table">
               <div className="panel-body">
                 { this.state.chainInfo ? chainInfoTableRender.call(this, chainInfo) : (translate('PBAAS.FAILED_LOAD_CHAIN')) }
               </div>

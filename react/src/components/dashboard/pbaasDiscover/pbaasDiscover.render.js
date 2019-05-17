@@ -8,6 +8,7 @@ import ReactTable from 'react-table';
 import mainWindow, { staticVar } from '../../../util/mainWindow';
 import { tableSorting } from '../pagination/utils';
 import { satsToCoins } from '../../../util/satMath';
+import { estimateReward } from '../pbaasUtils/chainData';
 
 const VRSC_LOGO_DIR = `assets/images/cryptologo/btc/vrsc.png`
 const EXPONENTIAL = 'exponential'
@@ -118,37 +119,7 @@ export const lastHeightRender = function(chain) {
 };
 
 export const lastRewardRender = function(chain) {
-  const eras = chain.chaindefinition.eras
-  const lastHeight = Number(chain.latestheight);
-  let eraIndex = 0;
-  let reward = 0;
-
-  while (
-    eraIndex < eras.length && 
-    Number(eras[eraIndex].eraend) != 0 && 
-    lastHeight > Number(eras[eraIndex].eraend)) { 
-    eraIndex++;
-  }
-
-  let currentEra = eras[eraIndex]
-
-  if (Number(currentEra.decay) === LINEAR_DECAY) {
-    let yChange = ((eraIndex < eras.length - 1) ? Number(eras[eraIndex + 1].reward) : 0) - Number(currentEra.reward)
-    let xChange = Number(currentEra.eraend) - (eraIndex === 0 ? 0 : Number(eras[eraIndex - 1].eraend))
-    reward = satsToCoins((yChange/xChange)*(lastHeight) + Number(currentEra.reward))
-  } else {
-    let xChange = lastHeight - (eraIndex === 0 ? 0 : Number(eras[eraIndex - 1].eraend))
-    
-    let decay = Number(currentEra.eraend.decay) === 0 ? 
-      (LINEAR_DECAY/2) 
-    : 
-      Number(currentEra.eraend.decay)
-    
-    reward = satsToCoins((Number(currentEra.reward))/
-            (Math.pow(LINEAR_DECAY/(decay), xChange/Number(currentEra.halving))))
-  }
-
-  return (<span>{ reward }</span>)
+  return (<span>{ estimateReward(chain.chaindefinition, chain.latestheight) }</span>)
 };
 
 export const notaryRewardRender = function(chain) {
