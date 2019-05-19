@@ -87,13 +87,13 @@ export const chainInfoTableRender = function(chain) {
                 </div>
               </td>
             </tr>
-            <tr className={!isNaN(_latestHeight) ? "" : "hide"}>
+            <tr className={_latestHeight !== null ? "" : "hide"}>
               <td>{ translate('PBAAS.LAST_NOTARY_HEIGHT') }</td>
               <td>
                 { _latestHeight }
               </td>
             </tr>
-            <tr className={!isNaN(_latestHeight) ? "" : "hide"}>
+            <tr className={_latestHeight !== null ? "" : "hide"}>
               <td>{ translate('PBAAS.LAST_BLOCK_REWARD') }</td>
               <td>
                 { estimateReward(_chain, _latestHeight) }
