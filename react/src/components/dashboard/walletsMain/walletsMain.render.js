@@ -21,7 +21,7 @@ const _skipCoins = [
 
 const DEFAULT_CHAIN = "defaultChain.png"
 
-const MAX_LENGTH = 8
+const MAX_LENGTH = 10
 
 const WalletsMainRender = function() {
   const _coin = this.props.ActiveCoin.coin;
