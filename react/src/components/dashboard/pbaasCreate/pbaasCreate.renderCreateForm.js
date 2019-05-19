@@ -114,11 +114,11 @@ export const _launchFormRender = function() {
                   readOnly />
                 <div
                   className="slider"
-                  onClick={ this.togglePublicPremine.bind(this) }></div>
+                  onClick={ () => {return 0}/*this.togglePublicPremine.bind(this)*/ }></div>
               </label>
               <div
                 className="toggle-label"
-                onClick={ this.togglePublicPremine.bind(this) }>
+                onClick={ () => {return 0}/*this.togglePublicPremine.bind(this)*/ }>
                 { translate('PBAAS.PUBLIC_PREMINE') }
               </div>
             </span>

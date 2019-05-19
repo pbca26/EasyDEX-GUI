@@ -1416,7 +1416,7 @@ const LANG_EN = {
     CHAIN_ID_DESC: 'This is where it all starts. Your chosen chain ticker will be a unique identifier, and all anyone will need in order to discover your blockchain.',
     PREMINE_DESC: 'You have to the option to allocate your coins before launch with a premine. Here you can decide where those coins would go, and how many there would be.',
     INCLUDE_PREMINE: 'Include a premine?',
-    PUBLIC_PREMINE: 'Open premine to public',
+    PUBLIC_PREMINE: 'Open premine to public (Coming Soon)',
     PREMINE_ADDRESS: 'Premine Address',
     PREMINE_AMOUNT: 'Premine Amount',
     CONVERTIBLE_AMOUNT: 'Convertible Amount',
