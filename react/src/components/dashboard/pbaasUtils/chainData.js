@@ -24,14 +24,14 @@ export const estimateReward = (chainDefinition, latestHeight) => {
   } else {
     //If decay is halving, calculate how many halvings there have been
     let xChange = lastHeight - (eraIndex === 0 ? 0 : Number(eras[eraIndex - 1].eraend))
-    
-    let decay = Number(currentEra.eraend.decay) === 0 ? 
+
+    let decay = Number(currentEra.decay) === 0 ? 
       (LINEAR_DECAY/2) 
     : 
-      Number(currentEra.eraend.decay)
+      Number(currentEra.decay)
     
     reward = satsToCoins((Number(currentEra.reward))/
-            (Math.pow(LINEAR_DECAY/(decay), xChange/Number(currentEra.halving))))
+            (Math.pow(LINEAR_DECAY/(decay), Math.floor(xChange/Number(currentEra.halving)))))
   }
 
   return reward

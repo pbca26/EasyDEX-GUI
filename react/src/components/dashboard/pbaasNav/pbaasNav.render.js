@@ -42,12 +42,12 @@ const PBaaSNavRender = function() {
                 { ' ' + translate('PBAAS.CREATE') }
               </a>
             </li>
-            <li className={ this.isSectionActive(HELP) ? "active" : "" }>
+            {/*<li className={ this.isSectionActive(HELP) ? "active" : "" }>
               <a onClick={ () => this.changeActiveSection(HELP) }>
                 <span className="glyphicon glyphicon-question-sign" aria-hidden="true"/>
                 { ' ' + translate('PBAAS.HELP') }
               </a>
-            </li>
+            </li>*/}
           </ul>
         </div>
       </div>

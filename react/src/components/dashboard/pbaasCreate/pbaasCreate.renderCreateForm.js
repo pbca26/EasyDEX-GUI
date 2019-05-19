@@ -423,7 +423,7 @@ export const _billingFormRender = function() {
             type="text"
             className={ 'form-control' }
             name="billingPeriod"
-            onChange={ this.updateBlockInput }
+            onChange={ this.updateBillingPeriod }
             value={ this.state.billingPeriod }
             id="pbaasBillingPeriod"
             placeholder={ translate('PBAAS.BILLING_PERIOD_HOLDER') }
@@ -432,7 +432,7 @@ export const _billingFormRender = function() {
           { this.state.errors.billingPeriod && 
             <label
               className="control-label error-text">
-              { translate('PBAAS.INVALID_BLOCK') }
+              { translate('PBAAS.INVALID_BILLING_PERIOD') }
             </label>}
         </div>
       </div>

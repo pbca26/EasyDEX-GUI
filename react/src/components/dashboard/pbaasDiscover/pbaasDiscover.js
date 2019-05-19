@@ -27,6 +27,7 @@ import {
 import translate from '../../../translate/translate';
 import DoubleScrollbar from 'react-double-scrollbar';
 import { coinsToSats } from '../../../util/satMath';
+import { estimateReward } from '../pbaasUtils/chainData';
 
 const BOTTOM_BAR_DISPLAY_THRESHOLD = 15;
 
@@ -114,7 +115,9 @@ class PBaaSDiscover extends React.Component {
     }
     else if (
       (this.contains(chain.chaindefinition.notarizationreward, term) ||
-      this.contains(chain.chaindefinition.name, term)))
+      this.contains(chain.chaindefinition.name, term) ||
+      this.contains(chain.latestheight, term) ||
+      this.contains(estimateReward(chain.chaindefinition, chain.latestheight), term)))
     {
       return true;
     }

@@ -33,6 +33,7 @@ const END = 'END'
 const FREQUENCY = 'FREQUENCY'
 const MAGNITUDE = 'MAGNITUDE'
 const LINEAR_DECAY = 100000000
+const MIN_BILLING_PERIOD = 480
 
 class PBaaSCreate extends React.Component {
   constructor(props) {
@@ -90,6 +91,7 @@ class PBaaSCreate extends React.Component {
     this.updateAddressInput = this.updateAddressInput.bind(this)
     this.updateAmountInput = this.updateAmountInput.bind(this)
     this.updateBlockInput = this.updateBlockInput.bind(this)
+    this.updateBillingPeriod = this.updateBillingPeriod.bind(this)
     this.updateDecayType = this.updateDecayType.bind(this)
     this.updateEraCapsuleData = this.updateEraCapsuleData.bind(this)
     this.updateNodeCapsuleData = this.updateNodeCapsuleData.bind(this)
@@ -139,7 +141,8 @@ class PBaaSCreate extends React.Component {
         end: false,
         halving: false,
         magnitude: false,
-        initReward: false
+        initReward: false,
+        maxInt: false
       }
     })
 
@@ -206,6 +209,23 @@ class PBaaSCreate extends React.Component {
     let _errors = this.state.errors
 
     if (isNaN(value) || !Number.isInteger(Number(value)) || Number(value) < 0) {
+      _errors[name] = true
+    } else if (_errors[name]) {
+      _errors[name] = false
+    }
+
+    this.setState({
+      errors: _errors,
+      [name]: value,
+    });
+  }
+
+  updateBillingPeriod(e) {
+    let value = e.target.value
+    let name = e.target.name
+    let _errors = this.state.errors
+
+    if (isNaN(value) || !Number.isInteger(Number(value)) || Number(value) < MIN_BILLING_PERIOD) {
       _errors[name] = true
     } else if (_errors[name]) {
       _errors[name] = false
@@ -479,7 +499,14 @@ class PBaaSCreate extends React.Component {
     payload.eras = this.state.rewardEras.map((rewardEra, index) => {
       let returnObj = {
         reward: coinsToSats(Number(rewardEra.initReward)),
-        decay: rewardEra.decay.type === LINEAR ? LINEAR_DECAY : LINEAR_DECAY/Number(rewardEra.decay.magnitude),
+
+        decay: rewardEra.decay.type === LINEAR ? 
+          LINEAR_DECAY 
+        : 
+            (Number(rewardEra.decay.magnitude) === 2 ? 0 
+          : 
+            LINEAR_DECAY/Number(rewardEra.decay.magnitude)),
+
         halving: rewardEra.decay.type === LINEAR ? 1 : Number(rewardEra.decay.halving),
         eraend: index === this.state.rewardEras - 1 ? 0 : Number(Number(rewardEra.end))
       }

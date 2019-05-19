@@ -1463,6 +1463,7 @@ const LANG_EN = {
     BILLING_PERIOD_HOLDER: 'Amount of blocks for each billing period',
     INVALID_ADDRESS: 'Please enter a valid public address',
     INVALID_BLOCK: 'Please enter a valid block value',
+    INVALID_BILLING_PERIOD: 'Please enter a valid billing period value (minimum 480 blocks)',
     INVALID_AMOUNT: 'Please enter a valid amount',
     INVAID_IP: 'Please enter a valid public node address in the form of \'address:port\'',
     BOOTSTRAP_NODES: 'Bootstrap Nodes',
