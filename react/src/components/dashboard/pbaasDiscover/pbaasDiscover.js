@@ -41,7 +41,7 @@ class PBaaSDiscover extends React.Component {
       filteredItemsList: [],
       itemsList: [],
       pageSize: 20,
-      showPagination: true,
+      showPagination: false,
       defaultPageSize: 20,
       filterMenuOpen: false,
       searchTerm: null,
