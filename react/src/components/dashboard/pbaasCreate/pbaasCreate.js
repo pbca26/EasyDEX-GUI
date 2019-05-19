@@ -32,6 +32,7 @@ const LINEAR = 'linear'
 const END = 'END'
 const FREQUENCY = 'FREQUENCY'
 const MAGNITUDE = 'MAGNITUDE'
+const LINEAR_DECAY = 100000000
 
 class PBaaSCreate extends React.Component {
   constructor(props) {
@@ -478,8 +479,8 @@ class PBaaSCreate extends React.Component {
     payload.eras = this.state.rewardEras.map((rewardEra, index) => {
       let returnObj = {
         reward: coinsToSats(Number(rewardEra.initReward)),
-        decay: rewardEra.decay.type === LINEAR ? 100000000 : 100000000/Number(rewardEra.decay.magnitude),
-        halving: Number(rewardEra.decay.halving),
+        decay: rewardEra.decay.type === LINEAR ? LINEAR_DECAY : LINEAR_DECAY/Number(rewardEra.decay.magnitude),
+        halving: rewardEra.decay.type === LINEAR ? 1 : Number(rewardEra.decay.halving),
         eraend: index === this.state.rewardEras - 1 ? 0 : Number(Number(rewardEra.end))
       }
       
