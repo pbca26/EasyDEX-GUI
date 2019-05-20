@@ -1384,7 +1384,7 @@ const LANG_EN = {
   },
   PBAAS: {
     PBAAS_CONNECT: 'Connect to a PBaaS Chain',
-    ENTER_CHAIN_NAME: 'Enter the name of a PBaaS chain, then press connect',
+    ENTER_CHAIN_NAME: 'Enter the name of a PBaaS chain, then press find',
     CONNECT: 'Connect',
     FIND: 'Find',
     CHAIN_PARAMS: 'Chain Parameters',
