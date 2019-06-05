@@ -53,6 +53,7 @@ const coins = {
     ZEX: 'Zaddex',
     SPLTEST: 'Sapling Test Chain',
     LUMBER: 'Lumberscout',
+    K64: 'Komodore64'
   },
   CRYPTO: {
     VRSC: 'Verus',

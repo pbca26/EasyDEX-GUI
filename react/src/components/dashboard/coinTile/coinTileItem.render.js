@@ -46,13 +46,13 @@ const CoinTileItemRender = function() {
         <i
           data-tip={ translate('INDEX.TOGGLE_COIN_CONTEXT_MENU') }
           data-for="coinTile1"
-          className="fa fa-ellipsis-v coin-tile-context-menu-trigger"></i>
+          className="fa fa-ellipsis-v coin-tile-context-menu-trigger"/>
         <ReactTooltip
           id="coinTile1"
           effect="solid"
           className="text-left" />
       </button>
-      { item.mode === 'native' &&
+      {/* item.mode === 'native' &&
         staticVar.chainParams[_coinuc] &&
         staticVar.chainParams[_coinuc].ac_reward &&
         !staticVar.chainParams[_coinuc].ac_stake &&
@@ -62,7 +62,7 @@ const CoinTileItemRender = function() {
           data-tip={ translate('INDEX.MINING_IS_ENABLED') }
           data-for="coinTile2"
           className="icon fa-gavel custom-ac-icon"></i>
-      }
+      */}
       {/*<ReactTooltip
         id="coinTile2"
         effect="solid"

@@ -151,7 +151,6 @@ export const acHerdData = {
 		],
 		genproclimit: true,
 	},
-
 	DION: {
 		ac_supply: 3900000000,
 		ac_reward: 22260000000,
@@ -176,6 +175,11 @@ export const acHerdData = {
 		ac_cc: 2,
 		ac_founders: 1,
 		addnode: '5.9.102.210',
-	}
-
+  },
+  K64: {
+    ac_supply: 64000777,
+    ac_reward: 0,
+    ac_staked: 10,
+    addnode: '18.197.20.211'
+  }
 };

@@ -251,6 +251,10 @@ const LoginRender = function() {
                           label: 'pirate',
                         },
                         {
+                          value: 'k64',
+                          label: 'k64'
+                        },
+                        {
                           value: 'mnz',
                           label: 'mnz',
                         },
@@ -307,6 +311,10 @@ const LoginRender = function() {
                       {
                         value: 'kmd',
                         label: 'kmd',
+                      },
+                      {
+                        value: 'k64',
+                        label: 'k64'
                       },
                       {
                         value: 'chips',
