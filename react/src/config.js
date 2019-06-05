@@ -1,6 +1,18 @@
+import {
+  testConfig
+} from './util/testutil/testConfig'
+
 const mainWindow = window.require('electron').remote.getGlobal('app');
-let Config = mainWindow.appConfig;
-Config.token = mainWindow.appSessionHash;
+
+let Config = {}
+
+if (mainWindow) {
+  Config = mainWindow.appConfig;
+  Config.token = mainWindow.appSessionHash;
+} else {
+  // If mainwindow is null, assume jest testmode
+  Config = testConfig;
+}
 
 export const agamaPort = Config.agamaPort;
 export const token = Config.token;
