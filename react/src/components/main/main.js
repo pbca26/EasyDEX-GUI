@@ -4,9 +4,14 @@ import Store from '../../store';
 import {
   getDexCoins,
   activeHandle,
-  shepherdElectrumCoins,
+  apiElectrumCoins,
+  apiEthereumCoins,
+  loadAddressBook,
 } from '../../actions/actionCreators';
-import mainWindow from '../../util/mainWindow';
+import mainWindow, { staticVar } from '../../util/mainWindow';
+import Config from '../../config';
+
+// TODO: add loader comp wrapper to preload vars from ipc
 
 class Main extends React.Component {
   constructor(props) {
@@ -18,26 +23,40 @@ class Main extends React.Component {
 
   componentDidMount() {
     const appVersion = mainWindow.appBasicInfo;
-    const appConfig = mainWindow.appConfig;
 
     if (appVersion) {
-      document.title = `${appVersion.name} (v${appVersion.version.replace('version=', '')}${mainWindow.arch === 'x64' ? '' : '-32bit'}-beta)`;
+      const _arch = `${mainWindow.arch === 'x64' ? '' : (mainWindow.arch === 'spv-only' ? '-spv-only' : '-32bit')}`;
+      const _version = `v${appVersion.version.replace('version=', '')}${_arch}`;
+      
+      document.title = `${appVersion.name} (${_version})`;
     }
 
+    // prevent drag n drop external files
     document.addEventListener('dragover', event => event.preventDefault());
     document.addEventListener('drop', event => event.preventDefault());
+
+    // apply dark theme
+    if (Config.darkmode) {
+      document.body.setAttribute('darkmode', true);
+    }
   }
 
   componentWillMount() {
+    Store.dispatch(loadAddressBook());
     Store.dispatch(getDexCoins());
     Store.dispatch(activeHandle());
-    Store.dispatch(shepherdElectrumCoins());
+    Store.dispatch(apiElectrumCoins());
+    Store.dispatch(apiEthereumCoins());
   }
 
   render() {
-    return (
-      <WalletMain />
-    );
+    if (staticVar) {
+      return (
+        <WalletMain />
+      );
+    } else {
+      return null;
+    }
   }
 }
 

@@ -11,10 +11,12 @@ import {
   saveAppConfig,
   skipFullDashboardUpdate,
   triggerToaster,
-  shepherdElectrumKvServersList,
+  apiElectrumKvServersList,
 } from '../../../actions/actionCreators';
 import Store from '../../../store';
-import mainWindow from '../../../util/mainWindow';
+import mainWindow, { staticVar } from '../../../util/mainWindow';
+import { pubkeyToAddress } from 'agama-wallet-lib/src/keys';
+import bitcoinjsNetworks from 'agama-wallet-lib/src/bitcoinjs-networks';
 
 class AppSettingsPanel extends React.Component {
   constructor() {
@@ -27,30 +29,43 @@ class AppSettingsPanel extends React.Component {
     this._resetAppConfig = this._resetAppConfig.bind(this);
     this._skipFullDashboardUpdate = this._skipFullDashboardUpdate.bind(this);
     this._resetSPVCache = this._resetSPVCache.bind(this);
-    this._shepherdElectrumKvServersList = this._shepherdElectrumKvServersList.bind(this);
+    this._apiElectrumKvServersList = this._apiElectrumKvServersList.bind(this);
     this.updateInput = this.updateInput.bind(this);
   }
 
-  _shepherdElectrumKvServersList() {
-    shepherdElectrumKvServersList()
+  validatePubkey(pubkey) {
+    const address = pubkeyToAddress(pubkey, bitcoinjsNetworks.kmd);
+
+    if (address) {
+      Store.dispatch(
+        triggerToaster(
+          translate('TOASTR.YOUR_PUBKEY') + pubkey + translate('TOASTR.CORRESPONDS_TO_T_ADDR') + address,
+          translate('INDEX.SETTINGS'),
+          'success toastr-wide',
+          false
+        )
+      );
+    } else {
+      Store.dispatch(
+        triggerToaster(
+          translate('TOASTR.INVALID_PUBKEY'),
+          translate('INDEX.SETTINGS'),
+          'error'
+        )
+      );
+    }
+  }
+
+  _apiElectrumKvServersList() {
+    apiElectrumKvServersList()
     .then((res) => {
-      if (res.msg === 'success') {
-        Store.dispatch(
-          triggerToaster(
-            translate('SETTINGS.DOWNLOAD_KV_ELECTRUMS_DONE'),
-            translate('INDEX.SETTINGS'),
-            'success'
-          )
-        );
-      } else {
-        Store.dispatch(
-          triggerToaster(
-            translate('SETTINGS.DOWNLOAD_KV_ELECTRUMS_ERR'),
-            translate('INDEX.SETTINGS'),
-            'error'
-          )
-        );
-      }
+      Store.dispatch(
+        triggerToaster(
+          translate('SETTINGS.' + (res.msg === 'success' ? 'DOWNLOAD_KV_ELECTRUMS_DONE' : 'DOWNLOAD_KV_ELECTRUMS_ERR')),
+          translate('INDEX.SETTINGS'),
+          res.msg === 'success' ? 'success' : 'error',
+        )
+      );
     });
   }
 
@@ -59,7 +74,7 @@ class AppSettingsPanel extends React.Component {
   }
 
   componentWillMount() {
-    const _appConfigSchema = mainWindow.appConfigSchema;
+    const _appConfigSchema = staticVar.appConfigSchema;
     const _appSettings = this.props.Settings.appSettings ? this.props.Settings.appSettings : Object.assign({}, mainWindow.appConfig);
 
     this.setState(Object.assign({}, this.state, {
@@ -83,16 +98,17 @@ class AppSettingsPanel extends React.Component {
 
   _saveAppConfig() {
     const _appSettings = this.state.appSettings;
-    let _appSettingsPristine = Object.assign({}, this.props.Settings.appSettings);
+    const _configSchema = this.state.appConfigSchema;
+    let _appSettingsPristine = Object.assign({}, this.state.appSettings || this.props.Settings.appSettings);
     let isError = false;
     let saveAfterPathCheck = false;
 
     for (let key in _appSettings) {
       if (typeof _appSettings[key] !== 'object') {
-        _appSettingsPristine[key] = this.state.appConfigSchema[key] && this.state.appConfigSchema[key].type === 'number' ? Number(_appSettings[key]) : _appSettings[key];
+        _appSettingsPristine[key] = _configSchema[key] && _configSchema[key].type === 'number' ? Number(_appSettings[key]) : _appSettings[key];
 
-        if (this.state.appConfigSchema[key] &&
-            this.state.appConfigSchema[key].type === 'folder' &&
+        if (_configSchema[key] &&
+            _configSchema[key].type === 'folder' &&
             _appSettings[key] &&
             _appSettings[key].length) {
           const _testLocation = mainWindow.testLocation;
@@ -127,7 +143,44 @@ class AppSettingsPanel extends React.Component {
         }
       } else {
         for (let keyChild in _appSettings[key]) {
-          _appSettingsPristine[key][keyChild] = this.state.appConfigSchema[key][keyChild].type === 'number' ? Number(_appSettings[key][keyChild]) : _appSettings[key][keyChild];
+          if (_configSchema[key][keyChild] &&
+              _configSchema[key][keyChild].type === 'folder' &&
+              _appSettings[key][keyChild] &&
+              _appSettings[key][keyChild].length) {
+            const _testLocation = mainWindow.testLocation;
+            saveAfterPathCheck = true;
+  
+            _testLocation(_appSettings[key][keyChild])
+            .then((res) => {
+              if (res === -1) {
+                isError = true;
+                Store.dispatch(
+                  triggerToaster(
+                    this.renderLB('TOASTR.KOMODO_DATADIR_INVALID'),
+                    translate('INDEX.SETTINGS'),
+                    'error',
+                    false
+                  )
+                );
+              } else if (res === false) {
+                isError = true;
+                Store.dispatch(
+                  triggerToaster(
+                    this.renderLB('TOASTR.KOMODO_DATADIR_NOT_DIR'),
+                    translate('INDEX.SETTINGS'),
+                    'error',
+                    false
+                  )
+                );
+              } else {
+                Store.dispatch(saveAppConfig(_appSettingsPristine));
+              }
+            });
+          } else if (_configSchema[key][keyChild] && _configSchema[key][keyChild].type === 'number') {
+            _appSettingsPristine[key][keyChild] = Number(_appSettings[key][keyChild]);
+          } else {
+            _appSettingsPristine[key][keyChild] = _appSettings[key][keyChild];
+          }
         }
       }
     }
@@ -142,24 +195,29 @@ class AppSettingsPanel extends React.Component {
 
   renderLB(_translationID) {
     const _translationComponents = translate(_translationID).split('<br>');
-
-    return _translationComponents.map((_translation) =>
-      <span key={ `translate-${Math.random(0, 9) * 10}` }>
-        {_translation}
-        <br />
-      </span>
-    );
+    let _items = [];
+  
+    for (let i = 0; i < _translationComponents.length; i++) {
+      _items.push(
+        <span key={ `jumblr-label-${Math.random(0, 9) * 10}` }>
+          { _translationComponents[i] }
+          <br />
+        </span>
+      );
+    }
+  
+    return _items;
   }
 
-  renderSelectOptions(data, name) {
+  renderSelectOptions(data, translateSelector, name) {
     let _items = [];
 
     for (let i = 0; i < data.length; i++) {
       _items.push(
         <option
           key={ `settings-${name}-opt-${i}` }
-          value={ data[i].name }>
-          { data[i].label }
+          value={ data[i] }>
+          { translate(`${translateSelector}.${data[i].toUpperCase()}`) }
         </option>
       );
     }
@@ -169,53 +227,54 @@ class AppSettingsPanel extends React.Component {
 
   renderConfigEditForm() {
     const _appConfig = this.state.appSettings;
+    const _configSchema = this.state.appConfigSchema
     let items = [];
 
     for (let key in _appConfig) {
-      if (this.state.appConfigSchema[key] &&
+      if (_configSchema[key] &&
           typeof _appConfig[key] === 'object') {
-        if ((this.state.appConfigSchema[key].display && this.state.appConfigSchema[key].type !== 'select') ||
-            (this.state.appConfigSchema[key].display && this.state.appConfigSchema[key].type === 'select' && Config.experimentalFeatures)) {
+        if ((_configSchema[key].display && _configSchema[key].type !== 'select') ||
+            (_configSchema[key].display && _configSchema[key].type === 'select' && Config.experimentalFeatures)) {
           items.push(
             <tr key={ `app-settings-${key}` }>
               <td className="padding-15">
-                { this.state.appConfigSchema[key].displayName ? this.state.appConfigSchema[key].displayName : key }
-                { this.state.appConfigSchema[key].info &&
-                  <span>
-                    <i
-                      className="icon fa-question-circle settings-help"
-                      data-tip={ this.state.appConfigSchema[key].info }
-                      data-html={ true }></i>
-                    <ReactTooltip
-                      effect="solid"
-                      className="text-left" />
-                  </span>
+                { _configSchema[key].displayName ? _configSchema[key].displayName : key }
+                { _configSchema[key].info &&
+                  <i
+                    className="icon fa-question-circle settings-help"
+                    data-tip={ _configSchema[key].info }
+                    data-for="appSettings1"
+                    data-html={ true }></i>
                 }
+                <ReactTooltip
+                  id="appSettings1"
+                  effect="solid"
+                  className="text-left" />
               </td>
               <td className="padding-15"></td>
             </tr>
           );
 
           for (let _key in _appConfig[key]) {
-            if (this.state.appConfigSchema[key][_key]) {
+            if (_configSchema[key][_key]) {
               items.push(
                 <tr key={ `app-settings-${key}-${_key}` }>
                   <td className="padding-15 padding-left-30">
-                    { this.state.appConfigSchema[key][_key].displayName ? this.state.appConfigSchema[key][_key].displayName : _key }
-                    { this.state.appConfigSchema[key][_key].info &&
-                      <span>
-                        <i
-                          className="icon fa-question-circle settings-help"
-                          data-tip={ this.state.appConfigSchema[key][_key].info }
-                          data-html={ true }></i>
-                        <ReactTooltip
-                          effect="solid"
-                          className="text-left" />
-                      </span>
+                    { _configSchema[key][_key].displayName ? _configSchema[key][_key].displayName : _key }
+                    { _configSchema[key][_key].info &&
+                      <i
+                        className="icon fa-question-circle settings-help"
+                        data-tip={ _configSchema[key][_key].info }
+                        data-html={ true }
+                        data-for="appSettings2"></i>
                     }
+                    <ReactTooltip
+                      id="appSettings2"
+                      effect="solid"
+                      className="text-left" />
                   </td>
                   <td className="padding-15">
-                    { this.state.appConfigSchema[key][_key].type === 'number' &&
+                    { _configSchema[key][_key].type === 'number' &&
                       <input
                         type="number"
                         pattern="[0-9]*"
@@ -223,23 +282,24 @@ class AppSettingsPanel extends React.Component {
                         value={ _appConfig[key][_key] }
                         onChange={ (event) => this.updateInputSettings(event, key, _key) } />
                     }
-                    { (this.state.appConfigSchema[key][_key].type === 'string' ||
-                      this.state.appConfigSchema[key][_key].type === 'folder') &&
+                    { (_configSchema[key][_key].type === 'string' ||
+                      _configSchema[key][_key].type === 'folder') &&
                       <input
                         type="text"
                         name={ `${key}__${_key}` }
                         value={ _appConfig[key][_key] }
-                        className={ this.state.appConfigSchema[key][_key].type === 'folder' ? 'full-width': '' }
+                        className="full-width"
                         onChange={ (event) => this.updateInputSettings(event, key, _key) } />
                     }
-                    { this.state.appConfigSchema[key][_key].type === 'boolean' &&
+                    { _configSchema[key][_key].type === 'boolean' &&
                       <span className="pointer toggle">
                         <label className="switch">
                           <input
                             type="checkbox"
                             name={ `${key}__${_key}` }
                             value={ _appConfig[key] }
-                            checked={ _appConfig[key][_key] } />
+                            checked={ _appConfig[key][_key] }
+                            readOnly />
                           <div
                             className="slider"
                             onClick={ (event) => this.updateInputSettings(event, key, _key) }></div>
@@ -249,70 +309,73 @@ class AppSettingsPanel extends React.Component {
                   </td>
                 </tr>
               );
-            }
-            
-            if (key === 'spv' &&
-                _key === 'cache' &&
-                this.props.Settings.appInfo &&
-                this.props.Settings.appInfo.cacheSize &&
-                this.props.Settings.appInfo.cacheSize !== '2 Bytes') {
-              items.push(
-                <tr key={ `app-settings-${key}-${_key}-size` }>
-                  <td
-                    colSpan="2"
-                    className="padding-15 padding-left-30">
-                    { translate('SETTINGS.CURRENT_CACHE_SIZE') }: <strong>{ this.props.Settings.appInfo.cacheSize }</strong>
-                    <button
-                      type="button"
-                      className="btn btn-info waves-effect waves-light margin-left-30"
-                      onClick={ this._resetSPVCache }>
-                      { translate('SETTINGS.CLEAR_CACHE') }
-                    </button>
-                  </td>
-                </tr>
-              );
-            }
-
-            if (key === 'spv' &&
-                _key === 'syncServerListFromKv') {
-              items.push(
-                <tr key={ `app-settings-${key}-${_key}-size` }>
-                  <td
-                    colSpan="2"
-                    className="padding-15">
-                    <button
-                      type="button"
-                      className="btn btn-info waves-effect waves-light margin-left-15"
-                      onClick={ this._shepherdElectrumKvServersList }>
-                      { translate('SETTINGS.DOWNLOAD_KV_ELECTRUMS') }
-                    </button>
-                  </td>
-                </tr>
-              );
+  
+              const _appInfo = this.props.Settings.appInfo;
+  
+              if (key === 'spv' &&
+                  _key === 'cache' &&
+                  _appInfo &&
+                  _appInfo.cacheSize &&
+                  _appInfo.cacheSize !== '2 Bytes') {
+                items.push(
+                  <tr key={ `app-settings-${key}-${_key}-size` }>
+                    <td
+                      className="padding-15 padding-left-30">
+                      { translate('SETTINGS.CURRENT_CACHE_SIZE') }: <strong>{ _appInfo.cacheSize }</strong>
+                    </td>
+                    <td className="padding-15">
+                      <button
+                        type="button"
+                        className="btn btn-info waves-effect waves-light"
+                        onClick={ this._resetSPVCache }>
+                        { translate('SETTINGS.CLEAR_CACHE') }
+                      </button>
+                    </td>
+                  </tr>
+                );
+              }
+  
+              if (key === 'spv' &&
+                  _key === 'syncServerListFromKv') {
+                items.push(
+                  <tr key={ `app-settings-${key}-${_key}-size` }>
+                    <td
+                      colSpan="2"
+                      className="padding-15">
+                      <button
+                        type="button"
+                        className="btn btn-info waves-effect waves-light margin-left-15"
+                        onClick={ this._apiElectrumKvServersList }>
+                        { translate('SETTINGS.DOWNLOAD_KV_ELECTRUMS') }
+                      </button>
+                    </td>
+                  </tr>
+                );
+              }
             }
           }
         }
       } else {
-        if ((this.state.appConfigSchema[key] && this.state.appConfigSchema[key].display && this.state.appConfigSchema[key].type !== 'select') ||
-            (this.state.appConfigSchema[key] && this.state.appConfigSchema[key].display && this.state.appConfigSchema[key].type === 'select' && Config.experimentalFeatures)) {
+        if ((_configSchema[key] && _configSchema[key].display && _configSchema[key].type !== 'select') ||
+            (_configSchema[key] && _configSchema[key].display && _configSchema[key].type === 'select' && Config.experimentalFeatures)) {
           items.push(
             <tr key={ `app-settings-${key}` }>
               <td className="padding-15">
-                { this.state.appConfigSchema[key].displayName ? this.state.appConfigSchema[key].displayName : key }
-                { this.state.appConfigSchema[key].info &&
-                  <span>
-                    <i
-                      className="icon fa-question-circle settings-help"
-                      data-tip={ this.state.appConfigSchema[key].info }
-                      data-html={ true }></i>
-                    <ReactTooltip
-                      effect="solid"
-                      className="text-left" />
-                  </span>
+                { _configSchema[key].displayName ? _configSchema[key].displayName : key }
+                { _configSchema[key].info &&
+                  <i
+                    className="icon fa-question-circle settings-help"
+                    data-tip={ _configSchema[key].info }
+                    data-html={ true }
+                    data-for="appSettings3"></i>
                 }
+                <ReactTooltip
+                  id="appSettings3"
+                  effect="solid"
+                  className="text-left" />
               </td>
               <td className="padding-15">
-                { this.state.appConfigSchema[key].type === 'number' &&
+                { _configSchema[key].type === 'number' &&
                   <input
                     type="number"
                     pattern="[0-9]*"
@@ -320,37 +383,49 @@ class AppSettingsPanel extends React.Component {
                     value={ _appConfig[key] }
                     onChange={ (event) => this.updateInputSettings(event, key) } />
                 }
-                { (this.state.appConfigSchema[key].type === 'string' ||
-                  this.state.appConfigSchema[key].type === 'folder') &&
+                { (_configSchema[key].type === 'string' ||
+                  _configSchema[key].type === 'folder') &&
                   <input
                     type="text"
                     name={ `${key}` }
                     value={ _appConfig[key] }
-                    className={ this.state.appConfigSchema[key].type === 'folder' ? 'full-width': '' }
+                    className="full-width"
                     onChange={ (event) => this.updateInputSettings(event, key) } />
                 }
-                { this.state.appConfigSchema[key].type === 'boolean' &&
+                { (_configSchema[key].type === 'string' ||
+                  _configSchema[key].type === 'folder') &&
+                  key === 'pubkey' &&
+                  _appConfig[key].length > 0 &&
+                  <button
+                    type="button"
+                    className="btn btn-info waves-effect waves-light margin-top-15"
+                    onClick={ () => this.validatePubkey(_appConfig[key]) } >
+                    { translate('SETTINGS.VALIDATE_PUBKEY') }
+                  </button>
+                }
+                { _configSchema[key].type === 'boolean' &&
                   <span className="pointer toggle">
                     <label className="switch">
                       <input
                         type="checkbox"
                         name={ `${key}` }
                         value={ _appConfig[key] }
-                        checked={ _appConfig[key] } />
+                        checked={ _appConfig[key] }
+                        readOnly />
                       <div
                         className="slider"
                         onClick={ (event) => this.updateInputSettings(event, key) }></div>
                     </label>
                   </span>
                 }
-                { this.state.appConfigSchema[key].type === 'select' &&
+                { _configSchema[key].type === 'select' &&
                   Config.experimentalFeatures &&
                   <select
                     className="form-control select-settings"
                     name={ `${key}` }
                     value={ _appConfig[key] }
                     onChange={ (event) => this.updateInputSettings(event, key) }>
-                    { this.renderSelectOptions(this.state.appConfigSchema[key].data, key) }
+                    { this.renderSelectOptions(_configSchema[key].data, _configSchema[key].translateSelector, key) }
                   </select>
                 }
               </td>
@@ -361,14 +436,16 @@ class AppSettingsPanel extends React.Component {
     }
 
     items.push(
-      <tr key={ `kmd-main-sync-only` }>
+      <tr key="kmd-main-sync-only">
         <td className="padding-15">
           { translate('SETTINGS.KMD_MAIN_SYNC_ONLY') }
           <i
             className="icon fa-question-circle settings-help"
             data-tip={ translate('SETTINGS.RPC_FETCH_ONLY_DESC') }
-            data-html={ true }></i>
+            data-html={ true }
+            data-for="appSettings4"></i>
           <ReactTooltip
+            id="appSettings4"
             effect="solid"
             className="text-left" />
         </td>
@@ -377,9 +454,10 @@ class AppSettingsPanel extends React.Component {
             <label className="switch">
               <input
                 type="checkbox"
-                name={ `kmd-main-sync-only` }
+                name="kmd-main-sync-only"
                 value={ this.props.Dashboard.skipFullDashboardUpdate }
-                checked={ this.props.Dashboard.skipFullDashboardUpdate } />
+                checked={ this.props.Dashboard.skipFullDashboardUpdate }
+                readOnly />
               <div
                 className="slider"
                 onClick={ this._skipFullDashboardUpdate }></div>
@@ -399,36 +477,37 @@ class AppSettingsPanel extends React.Component {
   }
 
   updateInputSettings(e, parentKey, childKey) {
+    const _configSchema = this.state.appConfigSchema;
+    const _val = e.target.value;
+    const _name = e.target.name;    
     let _appSettings = this.state.appSettings;
     let _appSettingsPrev = Object.assign({}, _appSettings);
-
+    
     if (!childKey &&
-        this.state.appConfigSchema[parentKey].type === 'boolean') {
+        _configSchema[parentKey].type === 'boolean') {
       _appSettings[parentKey] = typeof _appSettings[parentKey] !== undefined ? !_appSettings[parentKey] : !this.state.appSettings[parentKey];
     } else if (
       childKey &&
-      this.state.appConfigSchema[parentKey][childKey].type === 'boolean'
+      _configSchema[parentKey][childKey].type === 'boolean'
     ) {
       _appSettings[parentKey][childKey] = typeof _appSettings[parentKey][childKey] !== undefined ? !_appSettings[parentKey][childKey] : !this.state.appSettings[parentKey][childKey];
     } else if (
-      (!childKey && this.state.appConfigSchema[parentKey].type === 'number') ||
-      (childKey && this.state.appConfigSchema[parentKey][childKey].type === 'number')
+      (!childKey && _configSchema[parentKey].type === 'number') ||
+      (childKey && _configSchema[parentKey][childKey].type === 'number')
     ) {
       if (!childKey) {
-        if (e.target.value === '') {
-          _appSettings[e.target.name] = _appSettingsPrev[e.target.name];
-        } else {
-          _appSettings[e.target.name] = e.target.value.replace(/[^0-9]+/g, '');
-        }
+        _appSettings[_name] = _val === '' ? _appSettingsPrev[_name] : _val.replace(/[^0-9]+/g, '');
       } else {
-        if (e.target.value === '') {
-          _appSettings[parentKey][childKey] = _appSettingsPrev[parentKey][childKey];
-        } else {
-          _appSettings[parentKey][childKey] = e.target.value.replace(/[^0-9]+/g, '');
-        }
+        _appSettings[parentKey][childKey] = _val === '' ? _appSettingsPrev[parentKey][childKey] : _val.replace(/[^0-9]+/g, '');
       }
+    } else if (
+      childKey &&
+      parentKey &&
+      (_configSchema[parentKey][childKey].type === 'string' || _configSchema[parentKey][childKey].type === 'folder')
+    ) {
+      _appSettings[parentKey][childKey] = _val;
     } else {
-      _appSettings[e.target.name] = e.target.value;
+      _appSettings[_name] = _val;
     }
 
     this.setState({

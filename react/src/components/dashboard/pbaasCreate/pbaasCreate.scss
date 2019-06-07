@@ -1,0 +1,44 @@
+.create-form-description {
+  margin-bottom: 10px;
+}
+
+.era-capsule {
+  margin-top: 20px;
+  margin-right: 50px;
+  flex: 1;
+}
+
+.confirm-era-capsule {
+  flex: 1;
+}
+
+.era-capsule-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+
+.capsule-title {
+  font-weight: 600;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.error-input {
+  border: 1px solid red;
+}
+
+.error-text {
+  color: red;
+}
+
+.era-plot {
+  flex: 1;
+}
+
+.era-plot-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}

@@ -4,7 +4,7 @@
       .icon {
         &.fa-eye {
           position: relative;
-          top: -2px;
+          top: -5px;
           padding-right: 5px;
         }
       }
@@ -27,4 +27,33 @@
   font-size: 16px;
   position: relative;
   top: -3px;
+}
+
+.font {
+  &-weight-600 {
+    font-weight: 600;
+  }
+  &-size-22 {
+    font-size: 22px;
+  }
+  &-size-80-percent {
+    font-size: 80%;
+  }
+}
+
+.icon-price-change {
+  font-size: 14px;
+  margin-left: 2px;
+  
+  &.green {
+    color: #66bb6a;
+  }
+  &.red {
+    color: #f96868;
+  }
+}
+
+.balance-text {
+  width: 100%;
+  text-align: right;
 }

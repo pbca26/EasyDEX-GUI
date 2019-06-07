@@ -1,26 +1,21 @@
-// obsolete(?)
-let Config;
-let _config = {
-  iguanaCorePort: 7778,
-  agamaPort: 17776,
-  enableCacheApi: true,
-  useBasiliskInstance: true,
-  openAlias: false,
-  debug: true,
-  defaultLang: 'EN',
-  cli: {
-    passthru: true,
-    default: true
-  },
-  iguanaLessMode: true,
-  roundValues: true,
-};
+import {
+  testConfig
+} from './util/testutil/testConfig'
 
-try {
-  Config = window.require('electron').remote.getCurrentWindow().appConfig;
-  Config.token = window.require('electron').remote.getCurrentWindow().appSessionHash;
-} catch (e) {
-  Config = _config;
+const mainWindow = window.require('electron').remote.getGlobal('app');
+
+let Config = {}
+
+if (mainWindow) {
+  Config = mainWindow.appConfig;
+  Config.token = mainWindow.appSessionHash;
+} else {
+  // If mainwindow is null, assume jest testmode
+  Config = testConfig;
 }
+
+export const agamaPort = Config.agamaPort;
+export const token = Config.token;
+export const rpc2cli = Config.native.rpc2cli;
 
 export default Config;

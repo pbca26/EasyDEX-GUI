@@ -2,10 +2,14 @@ import React from 'react';
 import ReactTooltip from 'react-tooltip';
 import translate from '../../../translate/translate';
 import ReactTable from 'react-table';
-import TablePaginationRenderer from './pagination';
+import TablePaginationRenderer from '../pagination/pagination';
 import { formatValue } from 'agama-wallet-lib/src/utils';
 import Config from '../../../config';
 import Spinner from '../spinner/spinner';
+import mainWindow, { staticVar } from '../../../util/mainWindow';
+import { tableSorting } from '../pagination/utils';
+import dpowCoins from 'agama-wallet-lib/src/electrum-servers-dpow';
+import { isPrivate } from '../../../util/zTxUtils';
 import MiningButton from './walletsData.miningButton';
 
 const kvCoins = {
@@ -14,18 +18,62 @@ const kvCoins = {
   'PIZZA': true,
 };
 
-export const TxConfsRender = function(confs) {
-  if (Number(confs) > -1) {
+export const TxConfsRender = function(tx) {
+  if (Number(tx.confirmations) > -1) {
     return (
-      <span>{ confs }</span>
+      <span>
+        { dpowCoins.indexOf(this.props.ActiveCoin.coin) > -1 &&
+          Object.prototype.hasOwnProperty.call(tx, 'rawconfirmations') &&
+          tx.confirmations !== tx.rawconfirmations &&
+          <span>
+            <span
+              data-tip={`Raw confirmations: ${tx.rawconfirmations}` }
+              data-for="txHistoryDpowRawConf">
+              { tx.confirmations }
+            </span>
+            <ReactTooltip
+              id="txHistoryDpowRawConf"
+              effect="solid"
+              className="text-left" />
+          </span>
+        }
+        { (dpowCoins.indexOf(this.props.ActiveCoin.coin) === -1 || !Object.prototype.hasOwnProperty.call(tx, 'rawconfirmations') || (Object.prototype.hasOwnProperty.call(tx, 'rawconfirmations') && tx.confirmations === tx.rawconfirmations)) &&
+          <span>{ tx.confirmations }</span>
+        }
+        { dpowCoins.indexOf(this.props.ActiveCoin.coin) > -1 &&
+          ((this.props.ActiveCoin.mode === 'spv' && Object.prototype.hasOwnProperty.call(tx, 'dpowSecured') && tx.dpowSecured) ||
+           (this.props.ActiveCoin.mode === 'native' && Object.prototype.hasOwnProperty.call(tx, 'rawconfirmations') && tx.confirmations >= 2)) &&
+          <span>
+            <i
+              className="icon fa-shield margin-left-10"
+              data-tip="This transaction is secured with dPoW"
+              data-for="txHistoryDpow"></i>
+            <ReactTooltip
+              id="txHistoryDpow"
+              effect="solid"
+              className="text-left"
+            />
+          </span>
+        }
+      </span>
+    );
+  } else if (
+    this.props.ActiveCoin.mode === 'native' &&
+    staticVar.chainParams &&
+    staticVar.chainParams[this.props.ActiveCoin.coin] &&
+    staticVar.chainParams[this.props.ActiveCoin.coin].ac_private) {
+    return (
+      <span>{ translate('DASHBOARD.NA') }</span>
     );
   } else {
     return (
       <span>
         <i
           className="icon fa-warning color-warning margin-right-5"
-          data-tip={ translate('DASHBOARD.FAILED_TX_INFO') }></i>
+          data-tip={ translate('DASHBOARD.FAILED_TX_INFO') }
+          data-for="txHistory1"></i>
         <ReactTooltip
+          id="txHistory1"
           effect="solid"
           className="text-left" />
       </span>
@@ -36,9 +84,16 @@ export const TxConfsRender = function(confs) {
 export const AddressTypeRender = function(tx) {
   return (
     <span>
-      <span className={!tx.memo ? "label label-default" : "label label-dark"}>
-        <i className={ 'icon fa-eye' + (!tx.memo ? '' : '-slash')}></i>&nbsp;
-        { !tx.memo ? translate('IAPI.PUBLIC_SM') : translate('IAPI.PRIVATE_SM') }
+      <span className={isPrivate(tx) ? "label label-dark" : "label label-default"}>
+        <i
+        className={ 'icon fa-eye' + (isPrivate(tx) ? '-slash' : '')}
+        data-tip={ isPrivate(tx) ? translate('DASHBOARD.PRIVATE_TX') : translate('DASHBOARD.PUBLIC_TX') }
+        data-for={isPrivate(tx) ? "privateTxIcon" : "publicTxIcon"}
+        ></i>
+        <ReactTooltip
+          id={isPrivate(tx) ? "privateTxIcon" : "publicTxIcon"}
+          effect="solid"
+          className="text-left" />
       </span>
     </span>
   );
@@ -55,8 +110,8 @@ export const TransactionDetailRender = function(transactionIndex) {
   );
 };
 
-export const AddressRender = function(tx) {
-  if (!tx.address) {
+export const AddressRender = function(address) {
+  if (!address) {
     return (
       <span>
         <span className="label label-dark">
@@ -66,17 +121,35 @@ export const AddressRender = function(tx) {
     );
   }
 
-  return (<span className="blur">{ tx.address }</span>);
+  if (this.props.AddressBook &&
+      this.props.AddressBook.obj &&
+      this.props.AddressBook.obj[address]) {
+    address = this.props.AddressBook.obj[address].title;
+  }
+
+  return (
+    <span className="blur">{ address }</span>
+  );
 };
 
 export const AddressItemRender = function(address, type, amount, coin) {
+  let _address = address;
+
+  if (this.props.AddressBook &&
+      this.props.AddressBook.obj &&
+      this.props.AddressBook.obj[address]) {
+    _address = this.props.AddressBook.obj[address].title;
+  }
+
   return (
     <li
       key={ address }
       className={ address === this.state.currentAddress ? 'selected' : '' }>
       <a onClick={ () => this.updateAddressSelection(address) }>
-        <i className={ 'icon fa-eye' + (type === 'public' ? '' : '-slash') }></i>&nbsp;&nbsp;
-        <span className="text">[ { amount } { coin } ]  { address }</span>
+        <i className={ `icon fa-eye${ type === 'public' ? '' : '-slash'}` }></i>&nbsp;&nbsp;
+        <span className="text">
+          [ { amount } { coin } ]  <span className="selectable">{ _address }</span>
+        </span>
         <span className="glyphicon glyphicon-ok check-mark"></span>
       </a>
     </li>
@@ -84,8 +157,9 @@ export const AddressItemRender = function(address, type, amount, coin) {
 };
 
 export const AddressListRender = function() {
-  const isMultiPublicAddress = this.props.ActiveCoin.addresses && this.props.ActiveCoin.addresses.public && this.props.ActiveCoin.addresses.public.length > 1;
-  const isMultiPrivateAddress = this.props.ActiveCoin.addresses && this.props.ActiveCoin.addresses.private && this.props.ActiveCoin.addresses.private.length > 1;
+  const _addresses = this.props.ActiveCoin.addresses;
+  const isMultiPublicAddress = _addresses && _addresses.public && _addresses.public.length > 1;
+  const isMultiPrivateAddress = _addresses && _addresses.private && _addresses.private.length > 1;
 
   if (isMultiPublicAddress ||
       isMultiPrivateAddress) {
@@ -94,7 +168,8 @@ export const AddressListRender = function() {
         <button
           type="button"
           className="btn dropdown-toggle btn-info"
-          data-tip={ `${translate('KMD_NATIVE.SELECT_ADDRESS')}` }
+          data-tip={ translate('KMD_NATIVE.SELECT_ADDRESS') }
+          data-for="txHistory2"
           onClick={ this.openDropMenu }>
           <span className="filter-option pull-left">{ this.renderSelectorCurrentLabel() } </span>&nbsp;
           <span className="bs-caret">
@@ -102,6 +177,7 @@ export const AddressListRender = function() {
           </span>
         </button>
         <ReactTooltip
+          id="txHistory2"
           effect="solid"
           className="text-left" />
         <div className="dropdown-menu open">
@@ -126,7 +202,8 @@ export const AddressListRender = function() {
 };
 
 export const TxTypeRender = function(tx) {
-  let category = tx.category || tx.type;
+  const category = tx.category || tx.type;
+
   if (category === 'send' ||
       category === 'sent') {
     return (
@@ -140,7 +217,7 @@ export const TxTypeRender = function(tx) {
   ) {
     return (
       <span className="label label-success">
-        <i className="icon fa-arrow-circle-right"></i> <span>{ translate('DASHBOARD.IN') } &nbsp; &nbsp;</span>
+        <i className="icon fa-arrow-circle-right"></i> <span>{ translate('DASHBOARD.IN') }</span>
       </span>
     );
   } else if (category === 'generate') {
@@ -176,90 +253,102 @@ export const TxTypeRender = function(tx) {
   } else if (category === 'self') {
     return (
       <span className="label label-info self-send">
-        <span>self</span>
+        <span>{ translate('INDEX.SELF_SM') }</span>
       </span>
     );
   }
 };
 
 export const TxAmountRender = function(tx) {
-  let _amountNegative;
-
-  if ((tx.category === 'send' ||
-      tx.category === 'sent') ||
-      (tx.type === 'send' ||
-      tx.type === 'sent')) {
-    _amountNegative = -1;
-  } else {
-    _amountNegative = 1;
-  }
-
   if (Config.roundValues) {
     return (
       <span>
-        <span data-tip={ tx.amount * _amountNegative }>
-          { Math.abs(tx.interest) !== Math.abs(tx.amount) ? (formatValue(tx.amount) * _amountNegative === null ? translate('DASHBOARD.UNKNOWN') : tx.amount * _amountNegative) : '' }
+        <span
+          data-for="txHistory3"
+          data-tip={ tx.amount }>
+          { this.props.ActiveCoin.mode === 'eth' ? formatValue(tx.amount) : Math.abs(tx.interest) !== Math.abs(tx.amount) ? (typeof tx.amount !== undefined ? formatValue(tx.amount) : translate('DASHBOARD.UNKNOWN')) : '' }
           { tx.interest &&
             <span
               className="tx-interest"
-              data-tip={ `${translate('DASHBOARD.SPV_CLAIMED_INTEREST')} ${formatValue(Math.abs(tx.interest))}` }>+{ formatValue(Math.abs(tx.interest)) }</span>
+              data-for="txHistory4"
+              data-tip={ `${translate('DASHBOARD.SPV_CLAIMED_INTEREST')} ${formatValue(Math.abs(tx.interest))}` }>
+              +{ formatValue(Math.abs(tx.interest)) }
+            </span>
           }
-          { tx.interest &&
-            <ReactTooltip
-              effect="solid"
-              className="text-left" />
-          }
+          <ReactTooltip
+            id="txHistory4"
+            effect="solid"
+            className="text-left" />
         </span>
         <ReactTooltip
+          id="txHistory4"
           effect="solid"
           className="text-left" />
         { tx.vinLen > tx.vinMaxLen &&
-          <span>
-            <i
-              className="icon fa-question tx-history-vin-len-err"
-              data-tip={ translate('INDEX.SPV_TX_VIN_COUNT_WARN') }
-              data-html={ true }></i>
-            <ReactTooltip
-              effect="solid"
-              className="text-left" />
-          </span>
+          <i
+            className="icon fa-question tx-history-vin-len-err"
+            data-tip={ translate('INDEX.SPV_TX_VIN_COUNT_WARN') }
+            data-html={ true }
+            data-for="txHistory5"></i>
         }
+        <ReactTooltip
+          id="txHistory5"
+          effect="solid"
+          className="text-left" />
       </span>
     );
   }
 
   return (
     <span>
-      { Math.abs(tx.interest) !== Math.abs(tx.amount) ? (tx.amount * _amountNegative === null ? translate('DASHBOARD.UNKNOWN') : tx.amount * _amountNegative) : '' }
+      { this.props.ActiveCoin.mode === 'eth' ? formatValue(tx.amount) : Math.abs(tx.interest) !== Math.abs(tx.amount) ? (typeof tx.amount !== undefined ? Number(tx.amount) : translate('DASHBOARD.UNKNOWN')) : '' }
       { tx.interest &&
         <span
           className="tx-interest"
-          data-tip={ `${translate('DASHBOARD.SPV_CLAIMED_INTEREST')} ${Math.abs(tx.interest)}` }>+{ Math.abs(tx.interest) }</span>
-      }
-      { tx.interest &&
-        <ReactTooltip
-          effect="solid"
-          className="text-left" />
-      }
-      { tx.vinLen > tx.vinMaxLen &&
-        <span>
-          <i
-            className="icon fa-question tx-history-vin-len-err"
-            data-tip={ translate('INDEX.SPV_TX_VIN_COUNT_WARN') }
-            data-html={ true }></i>
-          <ReactTooltip
-            effect="solid"
-            className="text-left" />
+          data-for="txHistory6"
+          data-tip={ `${translate('DASHBOARD.SPV_CLAIMED_INTEREST')} ${Math.abs(Number(tx.interest))}` }>
+          +{ Math.abs(Number(tx.interest)) }
         </span>
       }
+      <ReactTooltip
+        id="txHistory6"
+        effect="solid"
+        className="text-left" />
+      { tx.vinLen > tx.vinMaxLen &&
+        <i
+          className="icon fa-question tx-history-vin-len-err"
+          data-for="txHistory7"
+          data-tip={ translate('INDEX.SPV_TX_VIN_COUNT_WARN') }
+          data-html={ true }></i>
+      }
+      <ReactTooltip
+        id="txHistory7"
+        effect="solid"
+        className="text-left" />
     </span>
   );
 };
 
 export const TxHistoryListRender = function() {
+  const _activeCoin = this.props.ActiveCoin.coins[mainWindow.activeCoin];
+  let _data;
+
+  if (_activeCoin &&
+      _activeCoin.txhistory &&
+      !this.state.searchTerm) {
+    _data = this.props.ActiveCoin.txhistory || _activeCoin;
+  }
+
+  _data = _data || this.state.filteredItemsList;
+
+  if (typeof _data === 'string' &&
+      typeof this.state.itemsList === 'object') {
+    _data = this.state.itemsList;
+  }
+
   return (
     <ReactTable
-      data={ this.state.filteredItemsList }
+      data={ _data }
       columns={ this.state.itemsListColumns }
       minRows="0"
       sortable={ true }
@@ -269,7 +358,7 @@ export const TxHistoryListRender = function() {
       previousText={ translate('INDEX.PREVIOUS_PAGE') }
       showPaginationBottom={ this.state.showPagination }
       pageSize={ this.state.pageSize }
-      defaultSortMethod={ this.defaultSorting }
+      defaultSortMethod={ this.tableSorting }
       defaultSorted={[{ // default sort
         id: 'timestamp',
         desc: true,
@@ -279,11 +368,15 @@ export const TxHistoryListRender = function() {
 };
 
 export const WalletsDataRender = function() {
+  const _coin = this.props.ActiveCoin.coin
+  const _balance = this.props.ActiveCoin.balance;
+  const _txhistory = this.props.ActiveCoin.txhistory;
+  const _showMiningButton = this.props.Mining.miningOpen[_coin]
+
   return (
     <span>
       <div id="edexcoin_dashboardinfo">
-        { (this.displayClaimInterestUI() === 777 ||
-          this.displayClaimInterestUI() === -777) &&
+        { (this.displayClaimInterestUI() === 777 || this.displayClaimInterestUI() === -777) &&
           <div className="col-xs-12 margin-top-20 backround-gray">
             <div className="panel no-margin">
               <div>
@@ -291,13 +384,26 @@ export const WalletsDataRender = function() {
                   <div className="panel no-margin padding-top-10 padding-bottom-10 center">
                     { this.displayClaimInterestUI() === 777 &&
                       <div>
-                        { translate('DASHBOARD.CLAIM_INTEREST_HELPER_BAR_P1') } <strong>{ this.props.ActiveCoin.balance.interest }</strong> KMD { translate('DASHBOARD.CLAIM_INTEREST_HELPER_BAR_P2') }.
+                        { translate('DASHBOARD.CLAIM_INTEREST_HELPER_BAR_P1') } <strong>{ _balance.interest }</strong> KMD { translate('DASHBOARD.CLAIM_INTEREST_HELPER_BAR_P2') }.
                         <button
                           type="button"
                           className="btn btn-success waves-effect waves-light dashboard-claim-interest-btn"
                           onClick={ this.openClaimInterestModal }>
                           <i className="icon fa-dollar"></i> { translate('DASHBOARD.CLAIM_INTEREST_HELPER_BAR_P3') }
                         </button>
+                        { this.props.ActiveCoin &&
+                          _balance &&
+                          _balance.utxoIssues &&
+                          <i
+                            data-tip={ translate('DASHBOARD.KMD_UTXO_ISSUES') }
+                            data-html={ true }
+                            data-for="txHistory8"
+                            className="fa-exclamation-circle red dashboard-utxo-issues-icon"></i>
+                        }
+                        <ReactTooltip
+                          id="txHistory8"
+                          effect="solid"
+                          className="text-left" />
                       </div>
                     }
                     { this.displayClaimInterestUI() === -777 &&
@@ -341,53 +447,55 @@ export const WalletsDataRender = function() {
                         type="button"
                         className="btn btn-default btn-switch-kv"
                         onClick={ this.toggleKvView }>
-                        { !this.state.kvView ? translate('KV.KV_VIEW') : translate('KV.TX_VIEW') }
+                        { translate('KV.' + (!this.state.kvView ? 'KV_VIEW' : 'TX_VIEW')) }
                       </button>
                     }
                   </header>
                   <div className="panel-body">
                     <div className="row padding-bottom-30 padding-top-10">
-                      { this.props.ActiveCoin.txhistory !== 'loading' &&
-                        this.props.ActiveCoin.txhistory !== 'no data' &&
-                        this.props.ActiveCoin.txhistory !== 'connection error' &&
-                        this.props.ActiveCoin.txhistory !== 'connection error or incomplete data' &&
-                        this.props.ActiveCoin.txhistory !== 'cant get current height' &&
+                      { _txhistory !== 'loading' &&
+                        _txhistory !== 'no data' &&
+                        _txhistory !== 'connection error' &&
+                        _txhistory !== 'connection error or incomplete data' &&
+                        _txhistory !== 'cant get current height' &&
                         !this.state.kvView &&
-                          <div className="search-box">
-                            <button
+                        <div className="search-box">
+                          <button
                               type="button"
                               className="btn btn-primary waves-effect waves-light col-sm-4"
                               data-tip={ this.state.filterMenuOpen ? translate('FILTER.FILTER_DESC_CONTRACT') : translate('FILTER.FILTER_DESC_EXPAND') }
                               onClick={ this.toggleFilterMenuOpen }>{ translate('FILTER.FILTER_OPTIONS') }</button>
-                            <input
-                              className="form-control"
-                              onChange={ e => this.onSearchTermChange(e.target.value) }
-                              placeholder={ translate('DASHBOARD.SEARCH') } />
-                          </div>
+                          <input
+                            className="form-control"
+                            onChange={ e => this.onSearchTermChange(e.target.value) }
+                            placeholder={ translate('DASHBOARD.SEARCH') } />
+                        </div>
                       }
                       { this.props.ActiveCoin.txhistory !== 'loading' &&
                         this.props.ActiveCoin.txhistory !== 'connection error' &&
                         this.props.ActiveCoin.txhistory !== 'connection error or incomplete data' &&
                         this.props.ActiveCoin.txhistory !== 'cant get current height' &&
-                        (this.props.ActiveCoin.coin === 'VRSC' || this.props.ActiveCoin.coin === 'VERUSTEST') &&
+                        (this.props.ActiveCoin.coin === 'VRSC' || 
+                        this.props.ActiveCoin.coin === 'VRSCTEST' ||
+                        Config.reservedChains.indexOf(this.props.ActiveCoin.coin) === -1) &&
                         <div className="row">
                           <div className="col-sm-4">
                             <button
                               type="button"
                               className={this.props.ActiveCoin.mode === 'spv' ? 'hide' : "btn btn-dark waves-effect waves-light margin-top-5"}
-                              data-tip={ this.state.showMiningButton ? translate('DASHBOARD.MINING_DESC_CONTRACT') : translate('DASHBOARD.MINING_DESC_EXPAND') }
-                              onClick={ () => this.toggleMiningButton() }><i className="icon fa-cogs"></i>{ this.state.showMiningButton ? translate('DASHBOARD.CONTRACT_MINING') : translate('DASHBOARD.EXPAND_MINING') }</button>
+                              data-tip={ _showMiningButton ? translate('DASHBOARD.MINING_DESC_CONTRACT') : translate('DASHBOARD.MINING_DESC_EXPAND') }
+                              onClick={ () => this.toggleMiningButton() }><i className="icon fa-cogs"></i>{ _showMiningButton ? translate('DASHBOARD.CONTRACT_MINING') : translate('DASHBOARD.EXPAND_MINING') }</button>
                                 <ReactTooltip
                                 effect="solid"
                                 className="text-left" />
                           </div>
                         </div>
-                      }  
+                      }
                       { this.props.ActiveCoin.txhistory !== 'loading' &&
                         this.props.ActiveCoin.txhistory !== 'connection error' &&
                         this.props.ActiveCoin.txhistory !== 'connection error or incomplete data' &&
                         this.props.ActiveCoin.txhistory !== 'cant get current height' &&
-                        this.state.showMiningButton && 
+                        _showMiningButton &&
                         this.props.ActiveCoin.mode !== 'spv' &&
                         <MiningButton />
                       }
@@ -395,10 +503,17 @@ export const WalletsDataRender = function() {
                         this.props.ActiveCoin.txhistory !== 'connection error' &&
                         this.props.ActiveCoin.txhistory !== 'connection error or incomplete data' &&
                         this.props.ActiveCoin.txhistory !== 'cant get current height' &&
-                        this.state.filterMenuOpen && 
+                        this.state.filterMenuOpen &&
                         <div className="filter-options-wrapper">
                           <div className="filter-option">
-                            <span className = {this.props.ActiveCoin.mode === 'spv' ? 'hide' : "filter-option-child"}>
+                            <span className = {
+                              this.props.ActiveCoin.mode === 'spv' ||
+                              (
+                                staticVar.chainParams &&
+                                staticVar.chainParams[this.props.ActiveCoin.coin] &&
+                                staticVar.chainParams[this.props.ActiveCoin.coin].ac_private
+                              )
+                              ? 'hide' : "filter-option-child"}>
                               <div>
                               { translate('FILTER.PRIVATE') }
                               </div>
@@ -413,7 +528,14 @@ export const WalletsDataRender = function() {
                                 </label>
                               </div>
                             </span>
-                            <span className = {this.props.ActiveCoin.mode === 'spv' ? 'hide' : "filter-option-child"}>
+                            <span className = {
+                              this.props.ActiveCoin.mode === 'spv' ||
+                              (
+                                staticVar.chainParams &&
+                                staticVar.chainParams[this.props.ActiveCoin.coin] &&
+                                staticVar.chainParams[this.props.ActiveCoin.coin].ac_private
+                              )
+                            ? 'hide' : "filter-option-child"}>
                               <div>
                               { translate('FILTER.PUBLIC') }
                               </div>
@@ -507,7 +629,7 @@ export const WalletsDataRender = function() {
                         </div>
                       }
                     </div>
-                    <div className="row">
+                    <div className="row txhistory-table">
                       { this.renderTxHistoryList() }
                     </div>
                   </div>

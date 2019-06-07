@@ -10,8 +10,21 @@ import {
   isKomodoCoin,
 } from '../../../util/coinHelper';
 import translate from '../../../translate/translate';
+import ReactImageFallback from "react-image-fallback";
+
+const _skipCoins = [
+  'KMD',
+  'JUMBLR',
+  'MESH',
+  'MVP',
+];
+
+const DEFAULT_CHAIN = "defaultChain.png"
+
+const MAX_LENGTH = 10
 
 const WalletsMainRender = function() {
+  const _coin = this.props.ActiveCoin.coin;
   return (
     <div className="page margin-left-0">
       <div className="padding-top-0">
@@ -19,26 +32,37 @@ const WalletsMainRender = function() {
           id="easydex-header-div"
           className="background-color-white"
           style={ this.getCoinStyle('transparent') }>
-          <ol className={ 'coin-logo breadcrumb' + (this.props.ActiveCoin.coin === 'KMD' || this.props.ActiveCoin.coin === 'JUMBLR' || this.props.ActiveCoin.coin === 'MESH' || this.props.ActiveCoin.coin === 'MVP' ? ' coin-logo-wide' : '') + ' native-coin-logo' }>
+          <ol className={ 'coin-logo breadcrumb' + (_skipCoins.indexOf(_coin) > -1 ? ' coin-logo-wide' : '') + ' native-coin-logo' }>
             <li className="header-easydex-section">
               { this.getCoinStyle('title') &&
-                <img
-                  className={ 'coin-icon' + (this.props.ActiveCoin.coin === 'KMD' ? ' kmd' : '') }
-                  src={ this.getCoinStyle('title') } />
+                <ReactImageFallback
+                  className={ 'coin-icon' + (_coin === 'KMD' ? ' kmd' : '') }
+                  src={ this.getCoinStyle('title') } 
+                  fallbackImage={ `assets/images/cryptologo/${DEFAULT_CHAIN}` } />
               }
-              { this.props.ActiveCoin.coin === 'KMD' &&
+              { _coin === 'KMD' &&
                 <img
                   className="kmd-mobile-icon"
-                  src={ `assets/images/cryptologo/${this.props.ActiveCoin.coin.toLowerCase()}.png` } />
+                  src={ `assets/images/cryptologo/btc/${_coin.toLowerCase()}.png` } />
               }
-              <span className={ `margin-left-20 easydex-section-image ${(this.props.ActiveCoin.coin === 'KMD' || this.props.ActiveCoin.coin === 'JUMBLR' || this.props.ActiveCoin.coin === 'MESH' || this.props.ActiveCoin.coin === 'MVP' ? 'hide' : '')}` }>
-                { translate((isKomodoCoin(this.props.ActiveCoin.coin) ? 'ASSETCHAINS.' : 'CRYPTO.') + this.props.ActiveCoin.coin.toUpperCase()) }
-              </span>
+              { _skipCoins.indexOf(_coin) === -1 &&
+                <span className="margin-left-20 easydex-section-image">
+                  { _coin.length <= MAX_LENGTH ?
+                      translate(((this.props.ActiveCoin.mode === 'spv' || 
+                      this.props.ActiveCoin.mode === 'native') && 
+                      isKomodoCoin(_coin) ? 'ASSETCHAINS.' : 'CRYPTO.') + _coin.toUpperCase()) 
+                    :
+                      ((
+                        translate(((this.props.ActiveCoin.mode === 'spv' || 
+                        this.props.ActiveCoin.mode === 'native') && 
+                        isKomodoCoin(_coin) ? 'ASSETCHAINS.' : 'CRYPTO.') + _coin.toUpperCase())).substr(0, MAX_LENGTH) + '...')}
+                </span>
+              }
             </li>
           </ol>
         </div>
         <div className="page-content page-content-native">
-          { this.props.ActiveCoin.mode !== 'spv' &&
+          { this.props.ActiveCoin.mode === 'native' &&
             <WalletsProgress />
           }
           <div className="row">

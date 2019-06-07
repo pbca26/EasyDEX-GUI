@@ -15,6 +15,15 @@ const zcashParamsCheckErrors = (zcashParamsExist) => {
     if (!zcashParamsExist.verifyingKey) {
       _errors.push(translate('KMD_NATIVE.ZCASH_PARAMS_MISSING_VERIFYING_KEY'));
     }
+    if (!zcashParamsExist.outputKey) {
+      _errors.push(translate('KMD_NATIVE.ZCASH_PARAMS_MISSING_OUTPUT_PARAMS'));
+    }
+    if (!zcashParamsExist.spendKey) {
+      _errors.push(translate('KMD_NATIVE.ZCASH_PARAMS_MISSING_SPEND_PARAMS'));
+    }
+    if (!zcashParamsExist.groth16Key) {
+      _errors.push(translate('KMD_NATIVE.ZCASH_PARAMS_MISSING_GROTH16_PARAMS'));
+    }
     if (!zcashParamsExist.provingKeySize &&
         zcashParamsExist.provingKey) {
       _errors.push(translate('KMD_NATIVE.ZCASH_PARAMS_MISSING_PROVING_KEY_SIZE'));
@@ -23,14 +32,17 @@ const zcashParamsCheckErrors = (zcashParamsExist) => {
         zcashParamsExist.verifyingKey) {
       _errors.push(translate('KMD_NATIVE.ZCASH_PARAMS_MISSING_VERIFYING_KEY_SIZE'));
     }
-    if (!zcashParamsExist.spend) {
-    _errors.push(translate('KMD_NATIVE.ZCASH_PARAMS_MISSING_SPEND'));
+    if (!zcashParamsExist.spendKeySize &&
+        zcashParamsExist.spendKey) {
+      _errors.push(translate('KMD_NATIVE.ZCASH_PARAMS_MISSING_SPEND_PARAMS_SIZE'));
     }
-    if (!zcashParamsExist.output) {
-    _errors.push(translate('KMD_NATIVE.ZCASH_PARAMS_MISSING_OUTPUT'));
+    if (!zcashParamsExist.outputKeySize &&
+        zcashParamsExist.outputKey) {
+      _errors.push(translate('KMD_NATIVE.ZCASH_PARAMS_MISSING_OUTPUT_PARAMS_SIZE'));
     }
-    if (!zcashParamsExist.groth16) {
-    _errors.push(translate('KMD_NATIVE.ZCASH_PARAMS_MISSING_GROTH16'));
+    if (!zcashParamsExist.groth16KeySize &&
+        zcashParamsExist.groth16Key) {
+      _errors.push(translate('KMD_NATIVE.ZCASH_PARAMS_MISSING_GROTH16_PARAMS_SIZE'));
     }
   }
 

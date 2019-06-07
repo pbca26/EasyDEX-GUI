@@ -24,7 +24,7 @@ class Support extends React.Component {
                   className="support-box"
                   onClick={ () => this.openExternalWindow('https://discord.gg/rSG82Wb') }>
                   <img
-                    src="assets/images/cryptologo/vrsc.png"
+                    src="assets/images/cryptologo/btc/vrsc.png"
                     alt={ translate('SETTINGS.SUPPORT_TICKETS') } />
                   <div className="support-box-title">{ translate('SETTINGS.SUPPORT_TICKETS') }</div>
                   <div className="support-box-link">https://discord.gg/rSG82Wb</div>

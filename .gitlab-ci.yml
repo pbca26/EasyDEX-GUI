@@ -1,7 +1,7 @@
 stages:
-- build
-- test
-- deploy
+  - build
+  - deploy
+  - test
 
 
 variables:
@@ -10,28 +10,28 @@ variables:
 
 
 build:
-  image: asherd/agama-builder:windows
+  image: asherd/agama-builder
   stage: build
   script:
-  - cd react
-  - npm install && npm install # modules are not building once fetched. Running npm install again to build them while issue is fixed.
-  - npm run build
-  - tar -czf $AGAMA_ARTIFACT build
-  - mv build.tar.gz ..
+    - cd react
+    - yarn install
+    - yarn run build
+    - tar -czf $AGAMA_ARTIFACT build
+    - mv build.tar.gz ..
   artifacts:
     paths:
-    - build.tar.gz
+      - build.tar.gz
     expire_in: 1 week
 
 
-.code_quality:
+code_quality:
   image: docker:stable
   allow_failure: true
   services:
-  - docker:stable-dind
+    - docker:stable-dind
   script:
-  - export SP_VERSION=$(echo "$CI_SERVER_VERSION" | sed 's/^\([0-9]*\)\.\([0-9]*\).*/\1-\2-stable/')
-  - docker run
+    - export SP_VERSION=$(echo "$CI_SERVER_VERSION" | sed 's/^\([0-9]*\)\.\([0-9]*\).*/\1-\2-stable/')
+    - docker run
       --env SOURCE_CODE="$PWD"
       --volume "$PWD":/code
       --volume /var/run/docker.sock:/var/run/docker.sock
@@ -44,10 +44,9 @@ deploy:
   stage: deploy
   image: google/cloud-sdk:alpine
   dependencies:
-  - build
+    - build
   script:
-  - echo "$AUTH_KEY" > AUTH_KEY.json
-  - gcloud auth activate-service-account --key-file AUTH_KEY.json
-  - gsutil cp $AGAMA_ARTIFACT $STAGING/EasyDEX-GUI/$CI_COMMIT_REF_NAME/
-  - curl -X POST -F token=$CI_JOB_TOKEN --form ref=$CI_COMMIT_REF_NAME https://gitlab.com/api/v4/projects/10027007/trigger/pipeline
-
+    - echo "$AUTH_KEY" > AUTH_KEY.json
+    - gcloud auth activate-service-account --key-file AUTH_KEY.json
+    - gsutil cp $AGAMA_ARTIFACT $STAGING/EasyDEX-GUI/$CI_COMMIT_REF_NAME/
+    - curl -X POST -F token=$CI_JOB_TOKEN --form ref=$CI_COMMIT_REF_NAME https://gitlab.com/api/v4/projects/10027007/trigger/pipeline

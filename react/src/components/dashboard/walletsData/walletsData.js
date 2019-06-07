@@ -1,22 +1,24 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import translate from '../../../translate/translate';
-import { sortByDate } from 'agama-wallet-lib/src/utils';
 import { formatValue } from 'agama-wallet-lib/src/utils';
 import Config from '../../../config';
 import {
   toggleDashboardTxInfoModal,
   changeActiveAddress,
   getDashboardUpdate,
-  shepherdElectrumKVTransactionsPromise,
-  shepherdElectrumTransactions,
+  apiElectrumBalance,
+  apiElectrumKVTransactionsPromise,
+  apiElectrumTransactions,
   toggleClaimInterestModal,
-  shepherdElectrumCheckServerConnection,
-  shepherdElectrumSetServer,
+  apiElectrumCheckServerConnection,
+  apiElectrumSetServer,
   electrumServerChanged,
-  shepherdElectrumTransactionsCSV,
-  shepherdNativeTransactionsCSV,
+  apiElectrumTransactionsCSV,
+  apiNativeTransactionsCSV,
   triggerToaster,
+  apiEthereumTransactions,
+  toggleMiningOptions
 } from '../../../actions/actionCreators';
 import Store from '../../../store';
 import {
@@ -32,12 +34,11 @@ import {
   WalletsDataRender,
 } from  './walletsData.render';
 import { secondsToString } from 'agama-wallet-lib/src/time';
-import getRandomElectrumServer from '../../../util/serverRandom';
+import { getRandomElectrumServer } from 'agama-wallet-lib/src/utils';
 import DoubleScrollbar from 'react-double-scrollbar';
-import mainWindow from '../../../util/mainWindow';
+import mainWindow, { staticVar } from '../../../util/mainWindow';
 
-/*import { SocketProvider } from 'socket.io-react';
-import io from 'socket.io-client';
+/*import io from 'socket.io-client';
 
 const socket = io.connect(`http://127.0.0.1:${Config.agamaPort}`);*/
 
@@ -63,13 +64,11 @@ class WalletsData extends React.Component {
       txhistory: null,
       loading: false,
       reconnectInProgress: false,
-      showMiningButton: false,
       kvView: false,
       kvHistory: null,
       txhistoryCopy: null,
       generatingCSV: false,
-      filterSelectorOpen: false,
-      addressFilterType: null,
+      filterMenuOpen: false,
       filterPrivateTx: true,
       filterPublicTx: true,
       filterImmatureTx: true,
@@ -78,11 +77,9 @@ class WalletsData extends React.Component {
       filterSentTx: true,
       filterReceivedTx: true,
       filterSelfTx: true,
-      filterMenuOpen: false
     };
     this.kvHistoryInterval = null;
     this.openDropMenu = this.openDropMenu.bind(this);
-    this.openFilterDropMenu = this.openFilterDropMenu.bind(this);
     this.handleClickOutside = this.handleClickOutside.bind(this);
     this.refreshTxHistory = this.refreshTxHistory.bind(this);
     this.openClaimInterestModal = this.openClaimInterestModal.bind(this);
@@ -119,13 +116,30 @@ class WalletsData extends React.Component {
     );
   }
 
+  isOutValue(tx) {
+    if (this.props.ActiveCoin.mode === 'spv' &&
+        (tx.category === 'send' || tx.category === 'sent') ||
+        (tx.type === 'send' || tx.type === 'sent') &&
+        tx.amount > 0) {
+      tx.amount = tx.amount * -1;
+      return tx;
+    } else {
+      return tx;
+    }
+  }
+
   exportToCSV() {
+    const _coin = this.props.ActiveCoin.coin;
+
     this.setState({
       generatingCSV: true,
     });
 
     if (this.props.ActiveCoin.mode === 'spv') {
-      shepherdElectrumTransactionsCSV(this.props.ActiveCoin.coin, this.props.Dashboard.electrumCoins[this.props.ActiveCoin.coin].pub)
+      apiElectrumTransactionsCSV(
+        _coin,
+        this.props.Dashboard.electrumCoins[_coin].pub
+      )
       .then((res) => {
         this.setState({
           generatingCSV: false,
@@ -136,7 +150,7 @@ class WalletsData extends React.Component {
             triggerToaster(
               `${translate('INDEX.CSV_EXPORT_SAVED')} ${res.result}`,
               translate('INDEX.TX_HISTORY_EXPORT'),
-              'success toastr-wide',
+              'success toastr-wide selectable',
               false
             )
           );
@@ -151,7 +165,7 @@ class WalletsData extends React.Component {
         }
       });
     } else {
-      shepherdNativeTransactionsCSV(this.props.ActiveCoin.coin)
+      apiNativeTransactionsCSV(_coin)
       .then((res) => {
         this.setState({
           generatingCSV: false,
@@ -162,7 +176,7 @@ class WalletsData extends React.Component {
             triggerToaster(
               `${translate('INDEX.CSV_EXPORT_SAVED')} ${res.result}`,
               translate('INDEX.TX_HISTORY_EXPORT'),
-              'success toastr-wide',
+              'success toastr-wide selectable',
               false
             )
           );
@@ -180,14 +194,17 @@ class WalletsData extends React.Component {
   }
 
   toggleKvView() {
+    const _coin = this.props.ActiveCoin.coin;
+    const _pub = this.props.Dashboard.electrumCoins[_coin].pub;
+
     this.setState({
       kvView: !this.state.kvView,
     });
 
     if (!this.state.kvView) {
-      shepherdElectrumKVTransactionsPromise(
-        this.props.ActiveCoin.coin,
-        this.props.Dashboard.electrumCoins[this.props.ActiveCoin.coin].pub
+      apiElectrumKVTransactionsPromise(
+        _coin,
+        _pub
       )
       .then((res) => {
         // console.warn('kvHistory', res);
@@ -205,20 +222,35 @@ class WalletsData extends React.Component {
         }
       });
     } else {
-      Store.dispatch(shepherdElectrumTransactions(this.props.ActiveCoin.coin, this.props.Dashboard.electrumCoins[this.props.ActiveCoin.coin].pub));
+      Store.dispatch(apiElectrumTransactions(
+        _coin,
+        _pub
+      ));
     }
   }
 
+  toggleMiningButton() {
+    Store.dispatch(toggleMiningOptions(this.props.ActiveCoin.coin))
+  }
+
+  toggleFilterMenuOpen() {
+    this.setState({
+      filterMenuOpen: !this.state.filterMenuOpen,
+    });
+  }
+
   displayClaimInterestUI() {
+    const _balance = this.props.ActiveCoin.balance;
+
     if (this.props.ActiveCoin &&
         this.props.ActiveCoin.coin === 'KMD' &&
-        this.props.ActiveCoin.balance) {
-      if (this.props.ActiveCoin.balance.interest &&
-          this.props.ActiveCoin.balance.interest > 0) {
+        _balance) {
+      if (_balance.interest &&
+          _balance.interest > 0) {
         return this.props.ActiveCoin.mode === 'spv' && mainWindow.isWatchOnly() ? -888 : 777;
       } else if (
-        (this.props.ActiveCoin.balance.transparent && this.props.ActiveCoin.balance.transparent >= 10) ||
-        (this.props.ActiveCoin.balance.balance && this.props.ActiveCoin.balance.balance >= 10)
+        (_balance.transparent && _balance.transparent >= 10) ||
+        (_balance.balance && _balance.balance >= 10)
       ) {
         return -777;
       }
@@ -227,86 +259,6 @@ class WalletsData extends React.Component {
 
   openClaimInterestModal() {
     Store.dispatch(toggleClaimInterestModal(true));
-  }
-
-  // https://react-table.js.org/#/custom-sorting
-  tableDateSorting(a, b) { // ugly workaround, override default sort
-    if (Date.parse(a)) { // convert date to timestamp
-      a = Date.parse(a);
-    }
-    if (Date.parse(b)) {
-      b = Date.parse(b);
-    }
-    // force null and undefined to the bottom
-    a = (a === null || a === undefined) ? -Infinity : a;
-    b = (b === null || b === undefined) ? -Infinity : b;
-    // Return either 1 or -1 to indicate a sort priority
-    if (a > b) {
-      return 1;
-    }
-    if (a < b) {
-      return -1;
-    }
-    // returning 0 or undefined will use any subsequent column sorting methods or the row index as a tiebreaker
-    return 0;
-  }
-
-  amountSorting(a, b) {
-    a = a.props.children[0];
-    b = b.props.children[0];
-    // force null and undefined to the bottom
-    a = (a === null || a === undefined) ? -Infinity : a;
-    b = (b === null || b === undefined) ? -Infinity : b;
-    // force any string values to lowercase
-    a = typeof a === 'string' ? a.toLowerCase() : a;
-    b = typeof b === 'string' ? b.toLowerCase() : b;
-    // Return either 1 or -1 to indicate a sort priority
-    if (a > b) {
-      return 1;
-    }
-    if (a < b) {
-      return -1;
-    }
-    // returning 0 or undefined will use any subsequent column sorting methods or the row index as a tiebreaker
-    return 0;
-  }
-
-  defaultSorting(a, b) {
-    // force null and undefined to the bottom
-    a = (a === null || a === undefined) ? -Infinity : a;
-    b = (b === null || b === undefined) ? -Infinity : b;
-    // force any string values to lowercase
-    a = typeof a === 'string' ? a.toLowerCase() : a;
-    b = typeof b === 'string' ? b.toLowerCase() : b;
-    // Return either 1 or -1 to indicate a sort priority
-    if (a > b) {
-      return 1;
-    }
-    if (a < b) {
-      return -1;
-    }
-    // returning 0 or undefined will use any subsequent column sorting methods or the row index as a tiebreaker
-    return 0;
-  }
-
-  confSorting(a, b) {
-    a = a.props.children;
-    b = b.props.children;
-    // force null and undefined to the bottom
-    a = (a === null || a === undefined) ? -Infinity : a;
-    b = (b === null || b === undefined) ? -Infinity : b;
-    // force any string values to lowercase
-    a = typeof a === 'string' ? a.toLowerCase() : a;
-    b = typeof b === 'string' ? b.toLowerCase() : b;
-    // Return either 1 or -1 to indicate a sort priority
-    if (a > b) {
-      return 1;
-    }
-    if (a < b) {
-      return -1;
-    }
-    // returning 0 or undefined will use any subsequent column sorting methods or the row index as a tiebreaker
-    return 0;
   }
 
   typeSorting(a, b) {
@@ -409,6 +361,86 @@ class WalletsData extends React.Component {
     return 0;
   }
 
+  confSorting(a, b) {
+    a = a.props.children[1].props.children;
+    b = b.props.children[1].props.children;
+    // force null and undefined to the bottom
+    a = (a === null || a === undefined) ? -Infinity : a;
+    b = (b === null || b === undefined) ? -Infinity : b;
+    // force any string values to lowercase
+    a = typeof a === 'string' ? a.toLowerCase() : a;
+    b = typeof b === 'string' ? b.toLowerCase() : b;
+    // Return either 1 or -1 to indicate a sort priority
+    if (a > b) {
+      return 1;
+    }
+    if (a < b) {
+      return -1;
+    }
+    // returning 0 or undefined will use any subsequent column sorting methods or the row index as a tiebreaker
+    return 0;
+  }
+
+  // https://react-table.js.org/#/custom-sorting
+  tableDateSorting(a, b) { // ugly workaround, override default sort
+    if (Date.parse(a)) { // convert date to timestamp
+      a = Date.parse(a);
+    }
+    if (Date.parse(b)) {
+      b = Date.parse(b);
+    }
+    // force null and undefined to the bottom
+    a = (a === null || a === undefined) ? -Infinity : a;
+    b = (b === null || b === undefined) ? -Infinity : b;
+    // Return either 1 or -1 to indicate a sort priority
+    if (a > b) {
+      return 1;
+    }
+    if (a < b) {
+      return -1;
+    }
+    // returning 0 or undefined will use any subsequent column sorting methods or the row index as a tiebreaker
+    return 0;
+  }
+
+  amountSorting(a, b) {
+    a = a.props.children[0];
+    b = b.props.children[0];
+    // force null and undefined to the bottom
+    a = (a === null || a === undefined) ? -Infinity : a;
+    b = (b === null || b === undefined) ? -Infinity : b;
+    // force any string values to lowercase
+    a = typeof a === 'string' ? a.toLowerCase() : a;
+    b = typeof b === 'string' ? b.toLowerCase() : b;
+    // Return either 1 or -1 to indicate a sort priority
+    if (a > b) {
+      return 1;
+    }
+    if (a < b) {
+      return -1;
+    }
+    // returning 0 or undefined will use any subsequent column sorting methods or the row index as a tiebreaker
+    return 0;
+  }
+
+  defaultSorting(a, b) {
+    // force null and undefined to the bottom
+    a = (a === null || a === undefined) ? -Infinity : a;
+    b = (b === null || b === undefined) ? -Infinity : b;
+    // force any string values to lowercase
+    a = typeof a === 'string' ? a.toLowerCase() : a;
+    b = typeof b === 'string' ? b.toLowerCase() : b;
+    // Return either 1 or -1 to indicate a sort priority
+    if (a > b) {
+      return 1;
+    }
+    if (a < b) {
+      return -1;
+    }
+    // returning 0 or undefined will use any subsequent column sorting methods or the row index as a tiebreaker
+    return 0;
+  }
+
   generateItemsListColumns(itemsCount) {
     let columns = [];
     let _col;
@@ -450,7 +482,7 @@ class WalletsData extends React.Component {
       footerClassName: 'hidden-xs hidden-sm',
       className: 'hidden-xs hidden-sm',
       sortMethod: this.confSorting,
-      accessor: (tx) => TxConfsRender.call(this, tx.confirmations),
+      accessor: (tx) => TxConfsRender.call(this, tx),
     },
     {
       id: 'amount',
@@ -481,7 +513,7 @@ class WalletsData extends React.Component {
       Header: translate('INDEX.DEST_ADDRESS'),
       Footer: translate('INDEX.DEST_ADDRESS'),
       sortMethod: this.destSorting,
-      accessor: (tx) => AddressRender.call(this, tx),
+      accessor: (tx) => AddressRender.call(this, tx.address),
     };
 
     if (itemsCount <= BOTTOM_BAR_DISPLAY_THRESHOLD) {
@@ -490,7 +522,8 @@ class WalletsData extends React.Component {
 
     columns.push(_col);
 
-    if (this.props.ActiveCoin.mode === 'spv') {
+    if (this.props.ActiveCoin.mode === 'spv' ||
+        this.props.ActiveCoin.mode === 'eth') {
       _col = {
         id: 'tx-detail',
         Header: translate('INDEX.TX_DETAIL'),
@@ -499,6 +532,8 @@ class WalletsData extends React.Component {
         headerClassName: 'colum--txinfo',
         footerClassName: 'colum--txinfo',
         accessor: (tx) => TransactionDetailRender.call(this, tx),
+        sortable: false,
+        filterable: false,
       };
 
       if (itemsCount <= BOTTOM_BAR_DISPLAY_THRESHOLD) {
@@ -515,6 +550,9 @@ class WalletsData extends React.Component {
         headerClassName: 'colum--txinfo',
         footerClassName: 'colum--txinfo',
         Cell: props => TransactionDetailRender.call(this, props.index),
+        maxWidth: '100',
+        sortable: false,
+        filterable: false,
       };
 
       if (itemsCount <= BOTTOM_BAR_DISPLAY_THRESHOLD) {
@@ -524,6 +562,7 @@ class WalletsData extends React.Component {
       columns.push(_col);
     }
 
+    // TODO: kv sorting
     if (this.state &&
         this.state.kvView) {
       columns = [];
@@ -543,13 +582,14 @@ class WalletsData extends React.Component {
         Footer: translate('KV.TAG'),
         headerClassName: 'hidden-xs hidden-sm',
         footerClassName: 'hidden-xs hidden-sm',
-        className: 'hidden-xs hidden-sm',
+        className: 'hidden-xs hidden-sm selectable',
         accessor: (tx) => tx.opreturn.kvDecoded.tag,
       },
       {
         id: 'title',
         Header: translate('KV.TITLE'),
         Footer: translate('KV.TITLE'),
+        className: 'selectable',
         accessor: (tx) => tx.opreturn.kvDecoded.content.title,
       },
       {
@@ -562,7 +602,7 @@ class WalletsData extends React.Component {
         id: 'tx-detail',
         Header: translate('KV.CONTENT'),
         Footer: translate('KV.CONTENT'),
-        className: 'colum--txinfo',
+        className: 'colum--txinfo selectable',
         headerClassName: 'colum--txinfo',
         footerClassName: 'colum--txinfo',
         accessor: (tx) => TransactionDetailRender.call(this, tx),
@@ -583,11 +623,15 @@ class WalletsData extends React.Component {
   }
 
   handleClickOutside(e) {
-    if (e.srcElement.className !== 'btn dropdown-toggle btn-info' &&
-        (e.srcElement.offsetParent && e.srcElement.offsetParent.className !== 'btn dropdown-toggle btn-info') &&
+    const _srcElement = e ? e.srcElement : null;
+
+    if (e &&
+        _srcElement &&
+        _srcElement.className !== 'btn dropdown-toggle btn-info' &&
+        (_srcElement.offsetParent && _srcElement.offsetParent.className !== 'btn dropdown-toggle btn-info') &&
         (e.path && e.path[4] && e.path[4].className.indexOf('showkmdwalletaddrs') === -1) &&
-        (e.srcElement.offsetParent && e.srcElement.offsetParent.className.indexOf('dropdown') === -1) &&
-        e.srcElement.className !== 'dropdown-toggle btn-xs btn-default') {
+        (_srcElement.offsetParent && _srcElement.offsetParent.className.indexOf('dropdown') === -1) &&
+        _srcElement.className !== 'dropdown-toggle btn-xs btn-default') {
       this.setState({
         addressSelectorOpen: false,
       });
@@ -595,6 +639,9 @@ class WalletsData extends React.Component {
   }
 
   refreshTxHistory() {
+    const _coin = this.props.ActiveCoin.coin;
+    const _mode = this.props.ActiveCoin.mode;
+
     this.setState({
       loading: true,
     });
@@ -605,9 +652,11 @@ class WalletsData extends React.Component {
     }, 1000);
 
     if (this.state.kvView) {
-      shepherdElectrumKVTransactionsPromise(
-        this.props.ActiveCoin.coin,
-        this.props.Dashboard.electrumCoins[this.props.ActiveCoin.coin].pub
+      const _pub = this.props.Dashboard.electrumCoins[_coin].pub;
+      
+      apiElectrumKVTransactionsPromise(
+        _coin,
+        _pub
       )
       .then((res) => {
         // console.warn('kvHistory', res);
@@ -625,13 +674,24 @@ class WalletsData extends React.Component {
         }
       });
     } else {
-      if (this.props.ActiveCoin.mode === 'native') {
-        Store.dispatch(getDashboardUpdate(this.props.ActiveCoin.coin));
-      } else if (this.props.ActiveCoin.mode === 'spv') {
+      if (_mode === 'native') {
+        Store.dispatch(getDashboardUpdate(_coin));
+      } else if (_mode === 'spv') {
+        const _pub = this.props.Dashboard.electrumCoins[_coin].pub;
+                
         Store.dispatch(
-          shepherdElectrumTransactions(
-            this.props.ActiveCoin.coin,
-            this.props.Dashboard.electrumCoins[this.props.ActiveCoin.coin].pub
+          apiElectrumTransactions(
+            _coin,
+            _pub
+          )
+        );
+      } else if (_mode === 'eth') {
+        const _pub = this.props.Dashboard.ethereumCoins[_coin].pub;
+                
+        Store.dispatch(
+          apiEthereumTransactions(
+            _coin,
+            _pub
           )
         );
       }
@@ -657,22 +717,10 @@ class WalletsData extends React.Component {
     }
   }
 
-  toggleFilterMenuOpen() {
-    this.setState({
-      filterMenuOpen: !this.state.filterMenuOpen,
-    });
-  }
-
-  toggleMiningButton() {
-    this.setState({
-      showMiningButton: !this.state.showMiningButton,
-    });
-  }
-
   _setTxHistory(oldTxHistory) {
     const _txhistory = this.state.kvView ? this.state.kvHistory : (oldTxHistory ? oldTxHistory : this.props.ActiveCoin.txhistory);
     let _stateChange = {};
-
+        
     // TODO: figure out why changing ActiveCoin props doesn't trigger comp update
     if (_txhistory &&
         _txhistory !== 'loading' &&
@@ -688,8 +736,10 @@ class WalletsData extends React.Component {
         itemsListColumns: this.generateItemsListColumns(_txhistory.length),
         reconnectInProgress: false,
       });
-    } else if ((_txhistory &&
-        _txhistory.length === 0) || _txhistory === 'no data') {
+    }
+
+    if (_txhistory &&
+        _txhistory === 'no data') {
       _stateChange = Object.assign({}, _stateChange, {
         itemsList: 'no data',
         reconnectInProgress: false,
@@ -714,15 +764,9 @@ class WalletsData extends React.Component {
       if (!this.state.reconnectInProgress) {
         this.spvAutoReconnect();
       }
-    } else {
-      _stateChange = Object.assign({}, _stateChange, {
-        itemsList: 'unknown error',
-        reconnectInProgress: false,
-      });
     }
     
-
-    this.setState(Object.assign({}, _stateChange));
+    this.setState(_stateChange);
   }
 
   componentWillReceiveProps(props) {
@@ -738,37 +782,63 @@ class WalletsData extends React.Component {
   }
 
   spvAutoReconnect() {
-    if (this.props.Dashboard.electrumCoins[this.props.ActiveCoin.coin].serverList !== 'none') {
-      let _spvServers = this.props.Dashboard.electrumCoins[this.props.ActiveCoin.coin].serverList;
-      let _server = [
-        this.props.Dashboard.electrumCoins[this.props.ActiveCoin.coin].server.ip,
-        this.props.Dashboard.electrumCoins[this.props.ActiveCoin.coin].server.port,
-        this.props.Dashboard.electrumCoins[this.props.ActiveCoin.coin].server.proto
-      ];
-      const _randomServer = getRandomElectrumServer(_spvServers, _server.join(':'));
+    const _coin = this.props.ActiveCoin.coin;
+    const _electrumCoin = this.props.Dashboard.electrumCoins[_coin];
 
-      shepherdElectrumCheckServerConnection(_randomServer.ip, _randomServer.port, _randomServer.proto)
+    if (_electrumCoin.serverList !== 'none' &&
+        _electrumCoin.serverList.length > 1) {
+      const _spvServers = _electrumCoin.serverList;
+      const _server = [
+        _electrumCoin.server.ip,
+        _electrumCoin.server.port,
+        _electrumCoin.server.proto,
+      ];
+      const _randomServer = getRandomElectrumServer(
+        _spvServers,
+        _server.join(':')
+      );
+
+      apiElectrumCheckServerConnection(
+        _randomServer.ip,
+        _randomServer.port,
+        _randomServer.proto
+      )
       .then((res) => {
+        const _server = `${_randomServer.ip}:${_randomServer.port}:${_randomServer.proto}`;
+        const _coin = this.props.ActiveCoin.coin;
+
         if (res.result) {
-          shepherdElectrumSetServer(
-            this.props.ActiveCoin.coin,
+          apiElectrumSetServer(
+            _coin,
             _randomServer.ip,
-            _randomServer.port
+            _randomServer.port,
+            _randomServer.proto
           )
           .then((serverSetRes) => {
             Store.dispatch(
               triggerToaster(
-                `${this.props.ActiveCoin.coin} SPV ${translate('DASHBOARD.SERVER_SET_TO')} ${_randomServer.ip}:${_randomServer.port}:${_randomServer.proto}`,
+                `${_coin} SPV ${translate('DASHBOARD.SERVER_SET_TO')} ${_server}`,
                 translate('TOASTR.WALLET_NOTIFICATION'),
                 'success'
               )
             );
             Store.dispatch(electrumServerChanged(true));
+
+            setTimeout(() => {
+              this.refreshTxHistory();
+              
+              Store.dispatch(
+                apiElectrumBalance(
+                  _coin,
+                  _electrumCoin.pub
+                )
+              );
+            }, 1000);
           });
         } else {
           Store.dispatch(
             triggerToaster(
-              `${this.props.ActiveCoin.coin} SPV ${translate('DASHBOARD.SERVER_SM')} ${_randomServer.ip}:${_randomServer.port}:${_randomServer.proto} ${translate('DASHBOARD.IS_UNREACHABLE')}!`,
+              `${_coin} SPV ${translate('DASHBOARD.SERVER_SM')} ${_server} ${translate('DASHBOARD.IS_UNREACHABLE')}!`,
               translate('TOASTR.WALLET_NOTIFICATION'),
               'error'
             )
@@ -793,60 +863,57 @@ class WalletsData extends React.Component {
   }
 
   renderTxHistoryList() {
+    const _coin = this.props.ActiveCoin.coin;
+
     if (this.state.itemsList === 'loading') {
       if (this.isFullySynced()) {
         return (
-          <tr className="hover--none">
-            <td
-              colSpan="7"
-              className="table-cell-offset-16">{ translate('INDEX.LOADING_HISTORY') }...</td>
-          </tr>
+          <div className="padding-left-15">{ translate('INDEX.LOADING_HISTORY') }...</div>
         );
       } else {
         return (
-          <tr className="hover--none">
-            <td
-              colSpan="7"
-              className="table-cell-offset-16">{ translate('INDEX.SYNC_IN_PROGRESS') }...</td>
-          </tr>
+          <div className="padding-left-15">{ translate('INDEX.SYNC_IN_PROGRESS') }...</div>
         );
       }
     } else if (this.state.itemsList === 'no data') {
       return (
-        <tr className="hover--none">
-          <td
-            colSpan="7"
-            className="table-cell-offset-16">{ translate('INDEX.NO_DATA') }</td>
-        </tr>
-      );
-    } else if (this.state.itemsList === 'unknown error') {
-      return (
-        <tr className="hover--none">
-          <td
-            colSpan="7"
-            className="table-cell-offset-16">{ translate('INDEX.UNKNOWN_ERROR') }</td>
-        </tr>
+        <div className="padding-left-15">{ translate('INDEX.NO_DATA') }</div>
       );
     } else if (this.state.itemsList === 'connection error') {
       return (
-        <tr className="hover--none">
-          <td
-            colSpan="7"
-            className="table-cell-offset-16">
-            <div className="color-warning">
-              { translate('DASHBOARD.SPV_CONN_ERROR') }
-            </div>
-            <div className={ this.props.Dashboard.electrumCoins[this.props.ActiveCoin.coin].serverList !== 'none' ? '' : 'hide' }>
-              <div className="color-warning">{ translate('DASHBOARD.SPV_AUTO_SWITCH') }...</div>
-              <br />
-              <strong>{ translate('DASHBOARD.HOW_TO_SWITCH_MANUALLY') }:</strong>
-              <br/>{ translate('DASHBOARD.SPV_CONN_ERROR_P1') }
-            </div>
-          </td>
-        </tr>
+        <div className="padding-left-15">
+          <div className="color-warning">
+            { translate('DASHBOARD.SPV_CONN_ERROR') }
+          </div>
+          <div className={ this.props.Dashboard.electrumCoins[_coin].serverList !== 'none' ? '' : 'hide' }>
+            <div className="color-warning padding-bottom-20">{ translate('DASHBOARD.SPV_AUTO_SWITCH') }...</div>
+            <strong>{ translate('DASHBOARD.HOW_TO_SWITCH_MANUALLY') }:</strong>
+            <div className="padding-top-10">{ translate('DASHBOARD.SPV_CONN_ERROR_P1') }</div>
+          </div>
+        </div>
       );
-    } else if (this.state.itemsList && this.state.itemsList.length) {
-      return TxHistoryListRender.call(this);
+    } else if (
+      this.state.itemsList &&
+      this.state.itemsList.length
+    ) {
+      const _isAcPrivate = _coin !== 'KMD' && staticVar.chainParams && staticVar.chainParams[_coin] && !staticVar.chainParams[_coin].ac_private;
+      
+      return (
+        <DoubleScrollbar>
+          { TxHistoryListRender.call(this) }
+          { !this.state.kvView &&
+            (this.props.ActiveCoin.mode === 'spv' ||
+             (this.props.ActiveCoin.mode === 'native' && (_coin === 'KMD' || _isAcPrivate))) &&
+            <div className="margin-left-5 margin-top-30">
+              <span
+                className="pointer"
+                onClick={ this.exportToCSV }>
+                <i className="icon fa-file-excel-o margin-right-10"></i>{ translate('INDEX.' + (this.state.generatingCSV ? 'GENERATING_CSV' : 'EXPORT_TO_CSV')) }
+              </span>
+            </div>
+          }
+        </DoubleScrollbar>
+      );
     }
 
     return null;
@@ -869,7 +936,6 @@ class WalletsData extends React.Component {
   }
 
   updateAddressTypeSelection(filter) {
-
     this.setState({
       addressFilterType: filter,
       filteredItemsList: this.filterTransactions(this.state.itemsList, this.state.searchTerm),
@@ -949,12 +1015,6 @@ class WalletsData extends React.Component {
     }));
   }
 
-  openFilterDropMenu() {
-    this.setState(Object.assign({}, this.state, {
-      filterSelectorOpen: !this.state.filterSelectorOpen,
-    }));
-  }
-
   renderAddressByType(type) {
     const _addresses = this.props.ActiveCoin.addresses;
     const _coin = this.props.ActiveCoin.coin;
@@ -973,7 +1033,13 @@ class WalletsData extends React.Component {
         }
 
         items.push(
-          AddressItemRender.call(this, address, type, _amount, _coin)
+          AddressItemRender.call(
+            this,
+            address,
+            type,
+            _amount,
+            _coin
+          )
         );
       }
 
@@ -983,29 +1049,12 @@ class WalletsData extends React.Component {
     return null;
   }
 
-  renderFilterListItems() {
-    const addressTypeList = ['All', 'Private', 'Public'];
-    let _list = [];
-    for (let i = 0; i < addressTypeList.length; i++) {
-      _list.push(
-      <li
-        key={ addressTypeList[i] }
-        className={ addressTypeList[i] === this.state.addressFilterType ? 'selected' : '' }>
-        <a onClick={ () => this.updateAddressTypeSelection(addressTypeList[i]) }>
-          <i className={ 'icon fa-eye' + (addressTypeList[i] === 'Private' ? '-slash' : '') }></i>&nbsp;&nbsp;
-          <span className="text">{addressTypeList[i]}</span>
-          <span className="glyphicon glyphicon-ok check-mark"></span>
-        </a>
-      </li>
-      );
-    }
-    return _list;
-  }
-
   hasPublicAddresses() {
-    return this.props.ActiveCoin.addresses &&
-      this.props.ActiveCoin.addresses.public &&
-      this.props.ActiveCoin.addresses.public.length;
+    const _addresses = this.props.ActiveCoin.addresses;
+
+    return _addresses &&
+      _addresses &&
+      _addresses.public.length;
   }
 
   renderAddressAmount() {
@@ -1050,32 +1099,13 @@ class WalletsData extends React.Component {
           <i className={ 'icon fa-eye' + (this.state.addressType === 'public' ? '' : '-slash') }></i>&nbsp;&nbsp;
           <span className="text">
             [ { this.renderAddressAmount() } { this.props.ActiveCoin.coin } ]&nbsp;&nbsp;
-            { _currentAddress }
+            <span className="selectable">{ _currentAddress }</span>
           </span>
         </span>
       );
     } else {
       return (
         <span>{ translate('INDEX.FILTER_BY_ADDRESS') }</span>
-      );
-    }
-  }
-
-  renderSelectorCurrentFilterLabel() {
-    const _currentSelection = this.state.addressFilterType;
-
-    if (_currentSelection) {
-      return (
-        <span>
-          <i className={ 'icon fa-eye' + (_currentSelection === 'private' ? '-slash' : '') }></i>&nbsp;&nbsp;
-          <span className="text">
-            {_currentSelection}
-          </span>
-        </span>
-      );
-    } else {
-      return (
-        <span>{ translate('INDEX.FILTER_BY_ADDRESS_TYPE') }</span>
       );
     }
   }
@@ -1087,70 +1117,64 @@ class WalletsData extends React.Component {
     }));
   }
 
-  refreshFilterItemsList() {
-    this.setState(Object.assign({}, this.state, {
-      filteredItemsList: this.filterTransactions(this.state.itemsList, this.state.searchTerm),
-    }));
-  }
-
   filterTransactions(txList, searchTerm) {
     return txList.filter(tx => this.filterTransaction(tx, searchTerm));
   }
 
   filterTransaction(tx, term) {
-      if (!this.state.filterPrivateTx){
-        if (this.isPrivate(tx)){
-          return false;
-        }
+    if (!this.state.filterPrivateTx){
+      if (this.isPrivate(tx)){
+        return false;
       }
-      if (!this.state.filterPublicTx){
-        if (this.isPublic(tx)){
-          return false;
-        }
+    }
+    if (!this.state.filterPublicTx){
+      if (this.isPublic(tx)){
+        return false;
       }
-      if (!this.state.filterImmatureTx){
-        if (this.isImmature(tx)){
-          return false;
-        }
+    }
+    if (!this.state.filterImmatureTx){
+      if (this.isImmature(tx)){
+        return false;
       }
-      if (!this.state.filterMatureTx){
-        if (this.isMature(tx)){
-          return false;
-        }
+    }
+    if (!this.state.filterMatureTx){
+      if (this.isMature(tx)){
+        return false;
       }
-      if (!this.state.filterStakeTx){
-        if (this.isStake(tx)){
-          return false;
-        }
+    }
+    if (!this.state.filterStakeTx){
+      if (this.isStake(tx)){
+        return false;
       }
-      if (!this.state.filterSentTx){
-        if (this.isSent(tx)){
-          return false;
-        }
+    }
+    if (!this.state.filterSentTx){
+      if (this.isSent(tx)){
+        return false;
       }
-      if (!this.state.filterReceivedTx){
-        if (this.isReceived(tx)){
-          return false;
-        }
+    }
+    if (!this.state.filterReceivedTx){
+      if (this.isReceived(tx)){
+        return false;
       }
-      if (!this.state.filterSelfTx){
-        if (this.isSelf(tx)){
-          return false;
-        }
+    }
+    if (!this.state.filterSelfTx){
+      if (this.isSelf(tx)){
+        return false;
       }
-      if (!term)
-      {
-        return true;
-      }
-      else if (
-        (this.contains(tx.address, term) ||
-        this.contains(tx.confirmations, term) ||
-        this.contains(tx.amount, term) ||
-        this.contains(tx.type, term) ||
-        this.contains(secondsToString(tx.blocktime || tx.timestamp || tx.time), term))) 
-      {
-        return true;
-      }
+    }
+    if (!term)
+    {
+      return true;
+    }
+    else if (
+      (this.contains(tx.address, term) ||
+      this.contains(tx.confirmations, term) ||
+      this.contains(tx.amount, term) ||
+      this.contains(tx.type, term) ||
+      this.contains(secondsToString(tx.blocktime || tx.timestamp || tx.time), term))) 
+    {
+      return true;
+    }
   }
 
   isPrivate(tx){
@@ -1165,7 +1189,6 @@ class WalletsData extends React.Component {
     else {
       return false;
     }
-
   }
 
   isPublic(tx){
@@ -1219,6 +1242,7 @@ class WalletsData extends React.Component {
 const mapStateToProps = (state) => {
   return {
     ActiveCoin: {
+      coins: state.ActiveCoin.coins,
       coin: state.ActiveCoin.coin,
       mode: state.ActiveCoin.mode,
       send: state.ActiveCoin.send,
@@ -1233,8 +1257,10 @@ const mapStateToProps = (state) => {
       showTransactionInfo: state.ActiveCoin.showTransactionInfo,
       progress: state.ActiveCoin.progress,
     },
+    AddressBook: state.Settings.addressBook,
     Main: state.Main,
     Dashboard: state.Dashboard,
+    Mining: state.Mining
   };
 };
 

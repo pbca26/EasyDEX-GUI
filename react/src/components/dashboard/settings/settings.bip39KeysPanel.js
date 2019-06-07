@@ -2,7 +2,7 @@ import React from 'react';
 import translate from '../../../translate/translate';
 import { connect } from 'react-redux';
 import {
-  shepherdElectrumBip39Keys,
+  apiElectrumBip39Keys,
   copyCoinAddress,
   triggerToaster,
 } from '../../../actions/actionCreators';
@@ -35,7 +35,6 @@ class Bip39KeysPanel extends React.Component {
         props.Dashboard.activeSection !== 'settings') {
       // reset input vals
       this.refs.passphrase.value = '';
-      this.refs.passphraseTextarea.value = '';
 
       this.setState(Object.assign({}, this.state, {
         passphrase: '',
@@ -72,24 +71,10 @@ class Bip39KeysPanel extends React.Component {
       }
     }, SEED_TRIM_TIMEOUT);
 
-    if (e.target.name === 'passphrase') {
-      this.resizeLoginTextarea();
-    }
-
     this.setState({
       trimPassphraseTimer: _trimPassphraseTimer,
-      [e.target.name === 'passphraseTextarea' ? 'passphrase' : e.target.name]: newValue,
+      [e.target.name]: newValue,
     });
-  }
-
-  resizeLoginTextarea() {
-    // auto-size textarea
-    setTimeout(() => {
-      if (this.state.seedInputVisibility) {
-        document.querySelector('#passphraseTextarea').style.height = '1px';
-        document.querySelector('#passphraseTextarea').style.height = `${(15 + document.querySelector('#passphraseTextarea').scrollHeight)}px`;
-      }
-    }, 100);
   }
 
   _copyCoinAddress(address) {
@@ -97,7 +82,7 @@ class Bip39KeysPanel extends React.Component {
   }
 
   _getBip39Keys() {
-    shepherdElectrumBip39Keys(
+    apiElectrumBip39Keys(
       this.state.passphrase,
       this.state.match,
       this.state.addressdepth,
@@ -132,30 +117,28 @@ class Bip39KeysPanel extends React.Component {
                     id="passphrase"
                     onChange={ this.updateInput }
                     value={ this.state.passphrase } />
-                  <textarea
-                    className={ this.state.seedInputVisibility ? 'form-control blur' : 'hide' }
-                    autoComplete="off"
-                    id="passphraseTextarea"
-                    ref="passphraseTextarea"
-                    name="passphraseTextarea"
-                    onChange={ this.updateInput }
-                    value={ this.state.passphrase }></textarea>
+                  <div className={ this.state.seedInputVisibility ? 'form-control seed-reveal selectable blur' : 'hide' }>
+                    { this.state.passphrase || '' }
+                  </div>
                   <i
                     className={ 'seed-toggle fa fa-eye' + (!this.state.seedInputVisibility ? '-slash' : '') }
                     onClick={ this.toggleSeedInputVisibility }></i>
                   <label
                     className="floating-label"
-                    htmlFor="passphrase">{ translate('INDEX.PASSPHRASE') }</label>
+                    htmlFor="passphrase">
+                    { translate('INDEX.PASSPHRASE') }
+                  </label>
                   { this.state.seedExtraSpaces &&
-                    <span>
-                      <i className="icon fa-warning seed-extra-spaces-warning"
-                        data-tip={ translate('LOGIN.SEED_TRAILING_CHARS') }
-                        data-html={ true }></i>
-                      <ReactTooltip
-                        effect="solid"
-                        className="text-left" />
-                    </span>
+                    <i
+                      className="icon fa-warning seed-extra-spaces-warning"
+                      data-tip={ translate('LOGIN.SEED_TRAILING_CHARS') }
+                      data-html={ true }
+                      data-for="bip39"></i>
                   }
+                  <ReactTooltip
+                    id="bip39"
+                    effect="solid"
+                    className="text-left" />
                 </div>
               </div>
               <div className="col-sm-5 no-padding-left">
@@ -222,7 +205,8 @@ class Bip39KeysPanel extends React.Component {
             <div className="col-sm-12 margin-top-30 margin-bottom-20">
               { this.state.keys !== 'empty' &&
                 <div>
-                  <strong>WIF:</strong> <span className="blur">{ this.state.keys.priv }</span>
+                  <strong>Pub:</strong> <span className="blur selectable">{ this.state.keys.pub }</span>
+                  <strong>WIF:</strong> <span className="blur selectable">{ this.state.keys.priv }</span>
                   <button
                     className="btn btn-default btn-xs clipboard-edexaddr margin-left-10"
                     title={ translate('INDEX.COPY_TO_CLIPBOARD') }

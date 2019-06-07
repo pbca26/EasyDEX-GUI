@@ -1,0 +1,49 @@
+.form-control.pbaas-connect-form {
+  margin-bottom: 10px;
+}
+
+.visible-bounds {
+  border-color: red;
+  border-width: 2px;
+}
+
+.panel.connect-panel {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.panel.info-panel {
+  margin-top: 15px;
+  padding-bottom: 10px;
+}
+
+.chain-options {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 10px;
+}
+
+.chain-info-description {
+  margin-bottom: 10px;
+}
+
+.era-capsule-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+
+.chain-info-era-capsule {
+  flex: 1;
+}
+
+.capsule-title {
+  font-weight: 600;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+

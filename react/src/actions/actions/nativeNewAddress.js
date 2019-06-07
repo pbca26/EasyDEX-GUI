@@ -3,32 +3,33 @@ import {
   triggerToaster,
   getDashboardUpdate,
 } from '../actionCreators';
-import Config from '../../config';
+import Config, {
+  token,
+  agamaPort,
+  rpc2cli,
+} from '../../config';
 import fetchType from '../../util/fetchType';
 
-export const getNewKMDAddresses = (coin, type, mode) => {
+export const getNewKMDAddresses = (coin, pubpriv, mode) => {
   return dispatch => {
     const payload = {
       mode: null,
       chain: coin,
-      cmd: type === 'public' ? 'getnewaddress' : 'z_getnewaddress',
-      params: [
-        type === 'sprout' ? 'sprout' : (type === 'sapling' ? 'sapling' : '')
-      ],
-      rpc2cli: Config.rpc2cli,
-      token: Config.token,
+      cmd: pubpriv === 'public' ? 'getnewaddress' : 'z_getnewaddress',
+      rpc2cli,
+      token,
     };
 
     return fetch(
-      `http://127.0.0.1:${Config.agamaPort}/shepherd/cli`,
+      `http://127.0.0.1:${agamaPort}/api/cli`,
       fetchType(JSON.stringify({ payload: payload })).post
     )
     .catch((error) => {
       console.log(error);
       dispatch(
         triggerToaster(
-          'getNewKMDAddresses',
-          'Error',
+          translate('API.getNewAddress') + ' (code: getNewKMDAddresses)',
+          translate('TOASTR.ERROR'),
           'error'
         )
       );
@@ -40,7 +41,7 @@ export const getNewKMDAddresses = (coin, type, mode) => {
         triggerToaster(
           json.result ? json.result : json,
           translate('KMD_NATIVE.NEW_ADDR_GENERATED'),
-          'info',
+          'info selectable',
           false
         )
       );

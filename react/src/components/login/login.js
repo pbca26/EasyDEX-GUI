@@ -2,8 +2,10 @@ import React from 'react';
 import { connect } from 'react-redux';
 import {
   toggleAddcoinModal,
-  shepherdElectrumAuth,
-  shepherdElectrumCoins,
+  apiElectrumAuth,
+  apiElectrumCoins,
+  apiEthereumAuth,
+  apiEthereumCoins,
   startInterval,
   getDexCoins,
   triggerToaster,
@@ -16,8 +18,11 @@ import {
   encryptPassphrase,
   loadPinList,
   loginWithPin,
-  shepherdElectrumLogout,
+  apiElectrumLogout,
   dashboardRemoveCoin,
+  dashboardChangeSectionState,
+  toggleDashboardActiveSection,
+  copyString,
 } from '../../actions/actionCreators';
 import Config from '../../config';
 import Store from '../../store';
@@ -25,12 +30,12 @@ import zcashParamsCheckErrors from '../../util/zcashParams';
 import SwallModalRender from './swall-modal.render';
 import LoginRender from './login.render';
 import translate from '../../translate/translate';
-import mainWindow from '../../util/mainWindow';
+import mainWindow, { staticVar } from '../../util/mainWindow';
 import passphraseGenerator from 'agama-wallet-lib/src/crypto/passphrasegenerator';
 import md5 from 'agama-wallet-lib/src/crypto/md5';
+import { msigPubAddress } from 'agama-wallet-lib/src/keys';
+import networks from 'agama-wallet-lib/src/bitcoinjs-networks';
 
-const IGUNA_ACTIVE_HANDLE_TIMEOUT = 3000;
-const IGUNA_ACTIVE_COINS_TIMEOUT = 10000;
 const SEED_TRIM_TIMEOUT = 5000;
 
 class Login extends React.Component {
@@ -76,7 +81,6 @@ class Login extends React.Component {
     this.toggleSeedBackupModal = this.toggleSeedBackupModal.bind(this);
     this.copyPassPhraseToClipboard = this.copyPassPhraseToClipboard.bind(this);
     this.execWalletCreate = this.execWalletCreate.bind(this);
-    this.resizeLoginTextarea = this.resizeLoginTextarea.bind(this);
     this.toggleLoginSettingsDropdown = this.toggleLoginSettingsDropdown.bind(this);
     this.updateInput = this.updateInput.bind(this);
     this.loadPinList = this.loadPinList.bind(this);
@@ -111,14 +115,19 @@ class Login extends React.Component {
       displayLoginSettingsDropdown: false,
     });
 
-    shepherdElectrumLogout()
+    apiElectrumLogout()
     .then((res) => {
       const _spvCoins = this.props.Main.coins.spv;
 
       mainWindow.pinAccess = false;
+      mainWindow.multisig = null;
 
       if (!this.props.Main.coins.native.length) {
-        Store.dispatch(dashboardChangeActiveCoin(null, null, true));
+        Store.dispatch(dashboardChangeActiveCoin(
+          null,
+          null,
+          true
+        ));
       }
 
       setTimeout(() => {
@@ -126,12 +135,27 @@ class Login extends React.Component {
           Store.dispatch(dashboardRemoveCoin(_spvCoins[i]));
         }
         if (!this.props.Main.coins.native.length) {
-          Store.dispatch(dashboardChangeActiveCoin(null, null, true));
+          Store.dispatch(dashboardChangeActiveCoin(
+            null,
+            null,
+            true
+          ));
+        }
+
+        Store.dispatch(getDexCoins());
+        Store.dispatch(activeHandle());
+
+        if (this.props.Main.coins.native.length) {
+          Store.dispatch(dashboardChangeActiveCoin(
+            this.props.Main.coins.native[0],
+            'native'
+          ));    
         }
       }, 500);
 
       Store.dispatch(getDexCoins());
       Store.dispatch(activeHandle());
+      Store.dispatch(dashboardChangeActiveCoin());
     });
   }
 
@@ -141,9 +165,6 @@ class Login extends React.Component {
     });
     Store.dispatch(toggleNotaryElectionsModal(true));
   }
-
-  // the setInterval handler for 'activeCoins'
-  _iguanaActiveCoins = null;
 
   toggleLoginSettingsDropdownSection(sectionName) {
     Store.dispatch(toggleLoginSettingsModal(true));
@@ -219,29 +240,6 @@ class Login extends React.Component {
   }
 
   componentDidMount() {
-    if(Config.autoStartVRSC) {
-      
-    console.log('Mounted');
-    mainWindow.startKMDNative('VRSC');
-
-    setTimeout(() => {
-      Store.dispatch(activeHandle());
-      Store.dispatch(shepherdElectrumCoins());
-      Store.dispatch(getDexCoins());
-    }, 5500);
-    setTimeout(() => {
-      Store.dispatch(activeHandle());
-      Store.dispatch(shepherdElectrumCoins());
-      Store.dispatch(getDexCoins());
-    }, 6000);
-    setTimeout(() => {
-      Store.dispatch(activeHandle());
-      Store.dispatch(shepherdElectrumCoins());
-      Store.dispatch(getDexCoins());
-    }, 10000);
-    
-  }
-
     this.setState({
       isExperimentalOn: mainWindow.experimentalFeatures,
     });
@@ -253,8 +251,6 @@ class Login extends React.Component {
     this.setState({
       seedInputVisibility: !this.state.seedInputVisibility,
     });
-
-    this.resizeLoginTextarea();
   }
 
   generateNewSeed(bits) {
@@ -373,16 +369,6 @@ class Login extends React.Component {
     Store.dispatch(toggleAddcoinModal(true, false));
   }
 
-  resizeLoginTextarea() {
-    // auto-size textarea
-    setTimeout(() => {
-      if (this.state.seedInputVisibility) {
-        document.querySelector('#loginPassphrase').style.height = '1px';
-        document.querySelector('#loginPassphrase').style.height = `${(15 + document.querySelector('#loginPassphrase').scrollHeight)}px`;
-      }
-    }, 100);
-  }
-
   updateLoginPassPhraseInput(e) {
     const newValue = e.target.value;
 
@@ -401,11 +387,10 @@ class Login extends React.Component {
       }
     }, SEED_TRIM_TIMEOUT);
 
-    this.resizeLoginTextarea();
-
     this.setState({
+      seedExtraSpaces: false,
       trimPassphraseTimer: _trimPassphraseTimer,
-      [e.target.name === 'loginPassphraseTextarea' ? 'loginPassphrase' : e.target.name]: newValue,
+      [e.target.name]: newValue,
       loginPassPhraseSeedType: this.getLoginPassPhraseSeedType(newValue),
     });
   }
@@ -432,6 +417,7 @@ class Login extends React.Component {
       const stringEntropy = mainWindow.checkStringEntropy(this.state.loginPassphrase);
 
       mainWindow.pinAccess = false;
+      mainWindow.multisig = null;
 
       if (!stringEntropy) {
         Store.dispatch(
@@ -455,28 +441,68 @@ class Login extends React.Component {
 
       // reset login input vals
       this.refs.loginPassphrase.value = '';
-      this.refs.loginPassphraseTextarea.value = '';
 
       this.setState(this.defaultState);
 
-      Store.dispatch(shepherdElectrumAuth(this.state.loginPassphrase));
-      Store.dispatch(shepherdElectrumCoins());
+      // TODO: trigger based on ETH/electrum
+      Store.dispatch(dashboardChangeSectionState('wallets'));
+      Store.dispatch(toggleDashboardActiveSection('default'));
+      Store.dispatch(apiEthereumAuth(this.state.loginPassphrase));
+      Store.dispatch(apiElectrumAuth(this.state.loginPassphrase));
+      Store.dispatch(apiElectrumCoins());
+      Store.dispatch(apiEthereumCoins());
     } else {
       mainWindow.pinAccess = this.state.selectedPin;
 
       loginWithPin(this.state.decryptKey, this.state.selectedPin)
       .then((res) => {
         if (res.msg === 'success') {
+          if (res.result.indexOf('msig:') > -1) {
+            const _data = res.result.split('msig:');
+
+            try {
+              mainWindow.multisig = JSON.parse(_data[1]);
+              
+              const _coins = this.props.Main.coins.spv;
+
+              if (_coins.length) {
+                let _addressSet = false;
+                mainWindow.multisig.addresses = {};
+
+                if (_coins.indexOf('KMD') > -1) {
+                  res.result = msigPubAddress(mainWindow.multisig.scriptPubKey, networks.kmd);
+                  _addressSet = true;
+                }
+
+                for (let i = 0; i < _coins.length; i++) {
+                  mainWindow.multisig.addresses[_coins[i]] = msigPubAddress(mainWindow.multisig.scriptPubKey, networks[_coins[i].toLowerCase()] || networks.kmd);
+                  
+                  if (!_addressSet &&
+                      i === 0) {
+                    res.result = mainWindow.multisig.addresses[_coins[i]];
+                    _addressSet = true;
+                  }
+                }
+
+                res.result = msigPubAddress(mainWindow.multisig.scriptPubKey, networks.kmd);
+              }
+            } catch (e) {
+              console.warn('unable to parse multisig data from pin');
+            }
+          }
           // reset login input vals
           this.refs.loginPassphrase.value = '';
-          this.refs.loginPassphraseTextarea.value = '';
           this.refs.decryptKey.value = '';
           this.refs.selectedPin.value = '';
 
           this.setState(this.defaultState);
 
-          Store.dispatch(shepherdElectrumAuth(res.result));
-          Store.dispatch(shepherdElectrumCoins());
+          Store.dispatch(dashboardChangeSectionState('wallets'));
+          Store.dispatch(toggleDashboardActiveSection('default'));
+          Store.dispatch(apiElectrumAuth(res.result));
+          Store.dispatch(apiElectrumCoins());
+          Store.dispatch(apiEthereumAuth(res.result));
+          Store.dispatch(apiEthereumCoins());
         }
       });
     }
@@ -541,10 +567,10 @@ class Login extends React.Component {
     mainWindow.createSeed.firstLoginPH = md5(this.state.randomSeed);
 
     Store.dispatch(
-      shepherdElectrumAuth(this.state.randomSeedConfirm)
+      apiElectrumAuth(this.state.randomSeedConfirm)
     );
     Store.dispatch(
-      shepherdElectrumCoins()
+      apiElectrumCoins()
     );
 
     this.setState({
@@ -557,7 +583,7 @@ class Login extends React.Component {
   handleRegisterWallet() {
     const enteredSeedsMatch = this.state.randomSeed === this.state.randomSeedConfirm;
     const isSeedBlank = this.isBlank(this.state.randomSeed);
-    const stringEntropy = mainWindow.checkStringEntropy(this.state.customWalletSeed);
+    const stringEntropy = mainWindow.checkStringEntropy(this.state.randomSeed);
     const _customSeed = this.state.customWalletSeed;
 
     if (!stringEntropy &&
@@ -708,22 +734,7 @@ class Login extends React.Component {
   }
 
   copyPassPhraseToClipboard() {
-    const passPhrase = this.state.randomSeed;
-    const textField = document.createElement('textarea');
-
-    textField.innerText = passPhrase;
-    document.body.appendChild(textField);
-    textField.select();
-    document.execCommand('copy');
-    textField.remove();
-
-    Store.dispatch(
-      triggerToaster(
-        translate('LOGIN.SEED_SUCCESSFULLY_COPIED'),
-        translate('LOGIN.SEED_COPIED'),
-        'success'
-      )
-    );
+    Store.dispatch(copyString(this.state.randomSeed, translate('LOGIN.SEED_SUCCESSFULLY_COPIED')));
   }
 
   updateSelectedShortcut(e, type) {
@@ -770,25 +781,43 @@ class Login extends React.Component {
 
     setTimeout(() => {
       Store.dispatch(activeHandle());
-      if (type === 'native') {
-        Store.dispatch(shepherdElectrumCoins());
+      if (type !== 'native') {
+        Store.dispatch(apiElectrumCoins());
       }
       Store.dispatch(getDexCoins());
     }, 500);
     setTimeout(() => {
       Store.dispatch(activeHandle());
-      if (type === 'native') {
-        Store.dispatch(shepherdElectrumCoins());
+      if (type !== 'native') {
+        Store.dispatch(apiElectrumCoins());
       }
       Store.dispatch(getDexCoins());
     }, 1000);
     setTimeout(() => {
       Store.dispatch(activeHandle());
-      if (type === 'native') {
-        Store.dispatch(shepherdElectrumCoins());
+      if (type !== 'native') {
+        Store.dispatch(apiElectrumCoins());
       }
       Store.dispatch(getDexCoins());
     }, type === 'native' ? 5000 : 2000);
+  }
+
+  renderPinsList() {
+    const _pins = this.props.Login.pinList;
+    let _items = [];
+
+    for (let i = 0; i < _pins.length; i++) {
+      _items.push(
+        <option
+          className="login-option"
+          value={ _pins[i] }
+          key={ _pins[i] }>
+          { _pins[i] }
+        </option>
+      );
+    }
+
+    return _items;
   }
 
   renderSwallModal() {
@@ -808,13 +837,13 @@ class Login extends React.Component {
         _items.push(
           <span key={ `addcoin-shortcut-icons-${i}` }>
             <img
-              src={ `assets/images/cryptologo/${_comps[i].toLowerCase()}.png` }
+              src={ `assets/images/cryptologo/btc/${_comps[i].toLowerCase()}.png` }
               alt={ _comps[i].toUpperCase() }
               width="30px"
               height="30px" />
-              { i !== _comps.length - 1 &&
-                <span className="margin-left-10 margin-right-10">+</span>
-              }
+            { i !== _comps.length - 1 &&
+              <span className="margin-left-10 margin-right-10">+</span>
+            }
           </span>
         );
       }
@@ -824,11 +853,11 @@ class Login extends React.Component {
       return (
         <div>
           <img
-            src={ `assets/images/cryptologo/${option.value.toLowerCase()}.png` }
+            src={ `assets/images/cryptologo/btc/${option.value.toLowerCase()}.png` }
             alt={ option.value.toUpperCase() }
             width="30px"
             height="30px" />
-            <span className="margin-left-10">{ option.value.toUpperCase() }</span>
+          <span className="margin-left-10">{ option.value.toUpperCase() }</span>
         </div>
       );
     }

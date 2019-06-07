@@ -1,5 +1,6 @@
 import 'whatwg-fetch';
 import 'bluebird';
+import mainWindow from '../util/mainWindow';
 
 import translate from '../translate/translate';
 import {
@@ -32,6 +33,15 @@ import {
   DASHBOARD_REMOVE_COIN,
   DISPLAY_NOTARY_ELECTIONS_MODAL,
   BLUR_SENSITIVE_DATA,
+  DASHBOARD_ACTIVE_EXCHANGES_ORDER_MODAL,
+  DASHBOARD_EXCHANGES_TOS_MODAL,
+  DASHBOARD_EXCHANGES_SUPPORTED_COINS_MODAL,
+  CHANGE_PBAAS_ACTIVE_SECTION,
+  UPDATE_PBAAS_FORM_STATE,
+  UPDATE_DEFINED_CHAINS,
+  PBAAS_ACTIVE_CHAININFO_MODAL,
+  UPDATE_MINING_INFO,
+  TOGGLE_MINING_OPTIONS
 } from './storeType';
 
 export * from './actions/nativeSyncInfo';
@@ -49,12 +59,6 @@ export * from './actions/jumblr';
 export * from './actions/interest';
 export * from './actions/nativeDashboardUpdate';
 export * from './actions/getTxDetails';
-export * from './actions/getPrivateTxList';
-export * from './actions/getWalletInfo';
-export * from './actions/getTransaction';
-export * from './actions/getMiningInfo';
-export * from './actions/setGenerate';
-export * from './actions/getBlock';
 export * from './actions/electrum';
 export * from './actions/mm';
 export * from './actions/nativeNetwork';
@@ -63,6 +67,12 @@ export * from './actions/prices';
 export * from './actions/elections';
 export * from './actions/pin';
 export * from './actions/csv';
+export * from './actions/addressBook';
+export * from './actions/dice';
+export * from './actions/eth';
+export * from './actions/exchanges';
+export * from './actions/nativeMining';
+export * from './actions/nativePbaas';
 
 export const changeActiveAddress = (address) => {
   return {
@@ -82,7 +92,7 @@ export const toggleDashboardTxInfoModal = (display, txIndex) => {
   return {
     type: DASHBOARD_ACTIVE_TXINFO_MODAL,
     showTransactionInfo: display,
-    showTransactionInfoTxIndex: txIndex,
+    showTransactionInfoTxIndex: !display ? null : txIndex,
   }
 }
 
@@ -199,6 +209,8 @@ export const dashboardChangeActiveCoinState = (coin, mode, skipCoinsArrayUpdate)
 }
 
 export const dashboardChangeActiveCoin = (coin, mode, skipCoinsArrayUpdate) => {
+  mainWindow.activeCoin = coin;
+
   return dispatch => {
     dispatch(dashboardChangeActiveCoinState(coin, mode, skipCoinsArrayUpdate));
   }
@@ -220,9 +232,16 @@ export const getNativeTxHistoryState = (json) => {
   if (json &&
       json.error) {
     json = null;
-  } else if (json && json.result && json.result.length) {
+  } else if (
+    json &&
+    json.result &&
+    json.result.length
+  ) {
     json = json.result;
-  } else if (!json || (!json.result || !json.result.length)) {
+  } else if (
+    !json ||
+    (!json.result || !json.result.length)
+  ) {
     json = 'no data';
   }
 
@@ -273,7 +292,7 @@ export const toggleClaimInterestModal = (display) => {
 export const getPinList = (pinList) => {
   return {
     type: GET_PIN_LIST,
-    pinList: pinList,
+    pinList,
   }
 }
 
@@ -323,5 +342,70 @@ export const toggleBlurSensitiveData = (display) => {
   return {
     type: BLUR_SENSITIVE_DATA,
     blurSensitiveData: display,
+  }
+}
+
+export const toggleExchangesOrderInfoModal = (orderId) => {
+  return {
+    type: DASHBOARD_ACTIVE_EXCHANGES_ORDER_MODAL,
+    showExchangesOrderInfoId: orderId,
+  }
+}
+
+export const toggleExchangesTOSModal = (display) => {
+  return {
+    type: DASHBOARD_EXCHANGES_TOS_MODAL,
+    display,
+  }
+}
+
+export const toggleExchangesSupportedCoinsModal = (display) => {
+  return {
+    type: DASHBOARD_EXCHANGES_SUPPORTED_COINS_MODAL,
+    display,
+  }
+};
+
+export const pbaasChangeSectionState = (sectionName) => {
+  return {
+    type: CHANGE_PBAAS_ACTIVE_SECTION,
+    activeSectionPbaas: sectionName,
+  }
+}
+
+export const updatePbaasFormState = (state) => {
+  return {
+    type: UPDATE_PBAAS_FORM_STATE,
+    formState: state
+  }
+}
+
+export const updatePbaasDefinedChains = (definedChains) => {
+  return {
+    type: UPDATE_DEFINED_CHAINS,
+    definedChains: definedChains
+  }
+}
+
+export const updateMiningInfo = (coin, miningInfo) => {
+  return {
+    type: UPDATE_MINING_INFO,
+    coin: coin,
+    miningInfo: miningInfo
+  }
+}
+
+export const toggleMiningOptions = (coin) => {
+  return {
+    type: TOGGLE_MINING_OPTIONS,
+    coin: coin,
+  }
+}
+
+export const togglePbaasChainInfoModal = (display, txIndex) => {
+  return {
+    type: PBAAS_ACTIVE_CHAININFO_MODAL,
+    showChainInfo: display,
+    showChainInfoChainIndex: !display ? null : txIndex,
   }
 }

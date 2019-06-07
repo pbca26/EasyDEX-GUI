@@ -16,6 +16,8 @@ import {
   _ReceiveCoinTableRender,
 } from './receiveCoin.render';
 import translate from '../../../translate/translate';
+import mainWindow, { staticVar } from '../../../util/mainWindow';
+import Config from '../../../config';
 
 // TODO: implement balance/interest sorting
 
@@ -36,6 +38,7 @@ class ReceiveCoin extends React.Component {
     this.toggleAddressMenu = this.toggleAddressMenu.bind(this);
     this.toggleIsMine = this.toggleIsMine.bind(this);
     this.validateCoinAddress = this.validateCoinAddress.bind(this);
+    this.copyPubkeyNative = this.copyPubkeyNative.bind(this);
   }
 
   toggleAddressMenu(address) {
@@ -64,9 +67,37 @@ class ReceiveCoin extends React.Component {
     );
   }
 
+  copyPubkeyNative(address) {
+    this.toggleAddressMenu(null);
+
+    validateAddress(
+      this.props.coin,
+      address
+    )
+    .then((json) => {
+      if (json &&
+          json.pubkey) {
+        Store.dispatch(copyString(json.pubkey, translate('INDEX.PUBKEY_COPIED')));
+      } else {
+        Store.dispatch(
+          triggerToaster(
+            translate('TOASTR.UNABLE_TO_COPY_PUBKEY'),
+            translate('TOASTR.COIN_NOTIFICATION'),
+            'error',
+          )
+        );
+      }
+    });
+  }
+
   validateCoinAddress(address, isZaddr) {
     this.toggleAddressMenu(address);
-    validateAddress(this.props.coin, address, isZaddr)
+
+    validateAddress(
+      this.props.coin,
+      address,
+      isZaddr
+    )
     .then((json) => {
       let _items = [];
 
@@ -88,7 +119,12 @@ class ReceiveCoin extends React.Component {
 
   dumpPrivKey(address, isZaddr) {
     this.toggleAddressMenu(address);
-    dumpPrivKey(this.props.coin, address, isZaddr)
+
+    dumpPrivKey(
+      this.props.coin,
+      address,
+      isZaddr
+    )
     .then((json) => {
       if (json.length &&
           json.length > 10) {
@@ -98,18 +134,22 @@ class ReceiveCoin extends React.Component {
   }
 
   handleClickOutside(e) {
+    const _srcElement = e ? e.srcElement : null;
+
     if (e &&
-        e.srcElement &&
-        e.srcElement.offsetParent &&
-        e.srcElement.offsetParent.className.indexOf('dropdown') === -1 &&
-        (e.srcElement.offsetParent && e.srcElement.offsetParent.className.indexOf('dropdown') === -1)) {
+        _srcElement &&
+        _srcElement.offsetParent &&
+        _srcElement.offsetParent.className.indexOf('dropdown') === -1 &&
+        (_srcElement.offsetParent && _srcElement.offsetParent.className.indexOf('dropdown') === -1)) {
       this.setState({
         openDropMenu: false,
         toggledAddressMenu:
-          e.srcElement.className.indexOf('receive-address-context-menu-trigger') === -1 &&
-          e.srcElement.className.indexOf('fa-qrcode') === -1 &&
-          e.srcElement.className.indexOf('receive-address-context-menu-get-qr') === -1 &&
-          e.srcElement.className.indexOf('qrcode-modal') === -1 ? null : this.state.toggledAddressMenu,
+          _srcElement.className.indexOf('receive-address-context-menu-trigger') === -1 &&
+          _srcElement.className.indexOf('fa-qrcode') === -1 &&
+          _srcElement.className.indexOf('receive-address-context-menu-get-qr') === -1 &&
+          _srcElement.className.indexOf('qrcode-modal') === -1 &&
+          _srcElement.offsetParent.className.indexOf('modal') &&
+          _srcElement.offsetParent.className.indexOf('close') ? null : this.state.toggledAddressMenu,
       });
     }
   }
@@ -118,6 +158,11 @@ class ReceiveCoin extends React.Component {
     this.setState(Object.assign({}, this.state, {
       openDropMenu: !this.state.openDropMenu,
     }));
+  }
+
+  copyPubkeySpv(pubkey) {
+    this.toggleAddressMenu(null);
+    Store.dispatch(copyString(pubkey, translate('INDEX.PUBKEY_COPIED')));
   }
 
   _copyCoinAddress(address) {
@@ -158,12 +203,7 @@ class ReceiveCoin extends React.Component {
 
     if (this.props.balance &&
         this.props.balance.total) {
-      if (this.props.balance.immature) {
-        _balance = this.props.balance.total - this.props.balance.immature;
-      }
-      else {
-        _balance = this.props.balance.total;
-      }
+      _balance = this.props.balance.total;
     }
 
     return _balance;
@@ -189,17 +229,27 @@ class ReceiveCoin extends React.Component {
 
           if (!this.state.toggleIsMine &&
               !address.canspend &&
-              (address.address.substring(0, 2) !== 'zc') && (address.address.substring(0, 2) !== 'zs')) {
+              address.address.substring(0, 2) !== 'zc' &&
+              address.address.substring(0, 2) !== 'zs') {
             items.pop();
           }
         } else {
-          items.push(
-            AddressItemRender.call(this, address, type)
-          );
+          if (type === 'private' ||
+              (type === 'public' &&
+               (this.props.coin === 'KMD' ||
+                Config.reservedChains.indexOf(this.props.coin) === -1 ||
+                (staticVar.chainParams &&
+                 staticVar.chainParams[this.props.coin] &&
+                 !staticVar.chainParams[this.props.coin].ac_private)))) {
+            items.push(
+              AddressItemRender.call(this, address, type)
+            );
+          }
 
           if (!this.state.toggleIsMine &&
-            !address.canspend &&
-            (address.address.substring(0, 2) !== 'zc' && address.address.substring(0, 2) !== 'zs')) {
+              !address.canspend &&
+              address.address.substring(0, 2) !== 'zc' &&
+              address.address.substring(0, 2) !== 'zs') {
             items.pop();
           }
         }
@@ -207,15 +257,50 @@ class ReceiveCoin extends React.Component {
 
       return items;
     } else {
-      if (this.props.electrumCoins && this.props.mode === 'spv' &&
+      if (this.props.electrumCoins &&
+          this.props.mode === 'spv' &&
           type === 'public') {
+        let items = [];
+
+        if (mainWindow.multisig &&
+            mainWindow.multisig.addresses &&
+            mainWindow.multisig.addresses[this.props.coin.toUpperCase()]) {
+          items.push(
+            AddressItemRender.call(
+              this,
+              {
+                address: mainWindow.multisig.addresses[this.props.coin.toUpperCase()],
+                amount: this.props.balance.balance
+              },
+              'public'
+            )
+          );
+        } else {
+          items.push(
+            AddressItemRender.call(
+              this,
+              {
+                address: this.props.electrumCoins[this.props.coin].pub,
+                amount: this.props.balance.balance
+              },
+              'public'
+            )
+          );
+        }
+
+        return items;
+      } else if (
+        this.props.ethereumCoins &&
+        this.props.mode === 'eth' &&
+        type === 'public'
+      ) {
         let items = [];
 
         items.push(
           AddressItemRender.call(
             this,
             {
-              address: this.props.electrumCoins[this.props.coin].pub,
+              address: this.props.ethereumCoins[this.props.coin].pub,
               amount: this.props.balance.balance
             },
             'public'
@@ -250,6 +335,7 @@ const mapStateToProps = (state, props) => {
     activeAddress: state.ActiveCoin.activeAddress,
     addresses: state.ActiveCoin.addresses,
     electrumCoins: state.Dashboard.electrumCoins,
+    ethereumCoins: state.Dashboard.ethereumCoins,
   };
 
   if (props &&

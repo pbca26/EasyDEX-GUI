@@ -231,38 +231,6 @@ export const getCoinTitle = (coin) => {
       coinlogo = 'HRK';
       coinname = 'Croatian Kuna';
       break;
-    case 'VRSC':
-      coinlogo = 'VRSC';
-      coinname = 'Verus';
-    break;
-    case 'PIRATE':
-      coinlogo = 'PIRATE';
-      coinname = 'Pirate';
-    break;
-    case 'CCL':
-      coinlogo = 'CCL';
-      coinname = 'CoinCollect';
-    break;
-    case 'DION':
-      coinlogo = 'DION';
-      coinname = 'DionPay';
-    break;
-    case 'MGNX':
-      coinlogo = 'MGNX';
-      coinname = 'MagnaX';
-    break;
-    case 'ZEX':
-      coinlogo = 'ZEX';
-      coinname = 'Zaddex';
-    break;
-    case 'KMDICE':
-      coinlogo = 'KMDICE';
-      coinname = 'KMDICE';
-    break;
-    case 'PTX':
-      coinlogo = 'PTX';
-      coinname = 'PatentTX';
-    break;
   }
 
   return {
@@ -315,9 +283,11 @@ export const getModeInfo = (mode) => {
 
 export const coindList = () => {
   const _coins = [
+    'VRSCTEST',
     'KMD',
     'CHIPS',
-  ].concat(kmdAssetChains);
+  ]
+  .concat(kmdAssetChains);
 
   return _coins;
 }
@@ -329,12 +299,7 @@ export const isKomodoCoin = (coin) => {
 }
 
 export const cryptoCoins = [
-  'VRSC',
   'KMD',
-  'BTC',
-  'ZEC',
-  'LTC',
-  'DASH',
   'CHIPS',
   'STRAT',
   'TOA',
@@ -386,13 +351,16 @@ export const cryptoCoins = [
   'XZC',
   'FJC',
   'GAME',
-  'BCBC',
+  //'BCBC',
   'BTG',
   'BCH',
+  'BTC',
+  'DASH',
   'DNR',
   'DGB',
   'FAIR',
-  'ARG',
+  //'ARG',
+  'LTC',
   'MONA',
   'NMC',
   'VTC',
@@ -400,6 +368,7 @@ export const cryptoCoins = [
   'SIB',
   'BLK',
   'DOGE',
+  'ZEC',
   'HUSH',
   'SNG',
   'ZCL',
@@ -451,5 +420,7 @@ export const cryptoCoins = [
   'SLM',
   'AXE',
   'PPC',
-  'SDC'
+  'SDC',
+  'SUQA',
+  'BZC',
 ];
