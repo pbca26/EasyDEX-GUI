@@ -309,8 +309,16 @@ const LoginRender = function() {
                         label: 'vrsc',
                       },
                       {
+                        value: 'btc',
+                        label: 'btc',
+                      },
+                      {
                         value: 'kmd',
                         label: 'kmd',
+                      },
+                      {
+                        value: 'zec',
+                        label: 'zec',
                       },
                       {
                         value: 'k64',
