@@ -1,6 +1,6 @@
 {
   "name": "AgamaGUI",
-  "version": "0.3.7",
+  "version": "0.3.8",
   "description": "Agama Wallet GUI",
   "main": "src/index.js",
   "scripts": {
@@ -44,7 +44,6 @@
     "bluebird": "^3.5.0",
     "bufferutil": "^4.0.1",
     "create-hash": "git+https://github.com/pbca26/createHash.git#electron-v4",
-    "electron-native-notify": "^1.2.0",
     "ethers": "git+https://github.com/pbca26/ethers.js.git",
     "express": "^4.14.0",
     "qrcode.react": "^0.7.1",
@@ -73,7 +72,7 @@
   },
   "devDependencies": {
     "autoprefixer": "^6.5.3",
-    "babel-core": "^7.1.5",
+    "babel-core": "^6.14.0",
     "babel-eslint": "^7.1.0",
     "babel-jest": "^19.0.0",
     "babel-loader": "^7.1.5",
