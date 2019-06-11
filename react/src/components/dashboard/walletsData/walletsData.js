@@ -64,6 +64,7 @@ class WalletsData extends React.Component {
       kvHistory: null,
       txhistoryCopy: null,
       generatingCSV: false,
+      proposalsView: false,
     };
     this.kvHistoryInterval = null;
     this.openDropMenu = this.openDropMenu.bind(this);
@@ -76,6 +77,7 @@ class WalletsData extends React.Component {
     this._setTxHistory = this._setTxHistory.bind(this);
     this.exportToCSV = this.exportToCSV.bind(this);
     this._regtestGenBlock = this._regtestGenBlock.bind(this);
+    this.toggleProposalView = this.toggleProposalView.bind(this);
   }
 
   componentWillMount() {
@@ -92,6 +94,12 @@ class WalletsData extends React.Component {
       this.handleClickOutside,
       false
     );
+  }
+
+  toggleProposalView() {
+    this.setState({
+      proposalsView: !this.state.proposalsView,
+    })
   }
 
   _regtestGenBlock() {

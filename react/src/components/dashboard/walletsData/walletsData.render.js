@@ -9,6 +9,7 @@ import Spinner from '../spinner/spinner';
 import mainWindow, { staticVar } from '../../../util/mainWindow';
 import { tableSorting } from '../pagination/utils';
 import dpowCoins from 'agama-wallet-lib/src/electrum-servers-dpow';
+import MultisigProposals from './multisigProposals';
 
 const kvCoins = {
   'KV': true,
@@ -350,120 +351,134 @@ export const WalletsDataRender = function() {
   const _txhistory = this.props.ActiveCoin.txhistory;
   const _coindStartParamsString = this.props.Main.coins.params && this.props.Main.coins.params[this.props.ActiveCoin.coin] ? this.props.Main.coins.params[this.props.ActiveCoin.coin].join(' ') : '';
   
-  return (
-    <span>
-      <div id="edexcoin_dashboardinfo">
-        { (this.displayClaimInterestUI() === 777 || this.displayClaimInterestUI() === -777) &&
-          <div className="col-xs-12 margin-top-20 backround-gray">
-            <div className="panel no-margin">
-              <div>
-                <div className="col-xlg-12 col-lg-12 col-sm-12 col-xs-12">
-                  <div className="panel no-margin padding-top-10 padding-bottom-10 center">
-                    { this.displayClaimInterestUI() === 777 &&
-                      <div>
-                        { translate('DASHBOARD.CLAIM_INTEREST_HELPER_BAR_P1') } <strong>{ _balance.interest }</strong> KMD { translate('DASHBOARD.CLAIM_INTEREST_HELPER_BAR_P2') }.
-                        <button
-                          type="button"
-                          className="btn btn-success waves-effect waves-light dashboard-claim-interest-btn"
-                          onClick={ this.openClaimInterestModal }>
-                          <i className="icon fa-dollar"></i> { translate('DASHBOARD.CLAIM_INTEREST_HELPER_BAR_P3') }
-                        </button>
-                        { this.props.ActiveCoin &&
-                          _balance &&
-                          _balance.utxoIssues &&
-                          <i
-                            data-tip={ translate('DASHBOARD.KMD_UTXO_ISSUES') }
-                            data-html={ true }
-                            data-for="txHistory8"
-                            className="fa-exclamation-circle red dashboard-utxo-issues-icon"></i>
-                        }
-                        <ReactTooltip
-                          id="txHistory8"
-                          effect="solid"
-                          className="text-left" />
-                      </div>
-                    }
-                    { this.displayClaimInterestUI() === -777 &&
-                      <div>
-                        { translate('DASHBOARD.CLAIM_INTEREST_HELPER_BAR_ALT_P1') }.
-                        <button
-                          type="button"
-                          className="btn btn-success waves-effect waves-light dashboard-claim-interest-btn"
-                          onClick={ this.openClaimInterestModal }>
-                          <i className="icon fa-search"></i> { translate('DASHBOARD.CLAIM_INTEREST_HELPER_BAR_ALT_P2') }
-                        </button>
-                      </div>
-                    }
+  if (!this.state.proposalsView) {
+    return (
+      <span>
+        <div id="edexcoin_dashboardinfo">
+          { (this.displayClaimInterestUI() === 777 || this.displayClaimInterestUI() === -777) &&
+            <div className="col-xs-12 margin-top-20 backround-gray">
+              <div className="panel no-margin">
+                <div>
+                  <div className="col-xlg-12 col-lg-12 col-sm-12 col-xs-12">
+                    <div className="panel no-margin padding-top-10 padding-bottom-10 center">
+                      { this.displayClaimInterestUI() === 777 &&
+                        <div>
+                          { translate('DASHBOARD.CLAIM_INTEREST_HELPER_BAR_P1') } <strong>{ _balance.interest }</strong> KMD { translate('DASHBOARD.CLAIM_INTEREST_HELPER_BAR_P2') }.
+                          <button
+                            type="button"
+                            className="btn btn-success waves-effect waves-light dashboard-claim-interest-btn"
+                            onClick={ this.openClaimInterestModal }>
+                            <i className="icon fa-dollar"></i> { translate('DASHBOARD.CLAIM_INTEREST_HELPER_BAR_P3') }
+                          </button>
+                          { this.props.ActiveCoin &&
+                            _balance &&
+                            _balance.utxoIssues &&
+                            <i
+                              data-tip={ translate('DASHBOARD.KMD_UTXO_ISSUES') }
+                              data-html={ true }
+                              data-for="txHistory8"
+                              className="fa-exclamation-circle red dashboard-utxo-issues-icon"></i>
+                          }
+                          <ReactTooltip
+                            id="txHistory8"
+                            effect="solid"
+                            className="text-left" />
+                        </div>
+                      }
+                      { this.displayClaimInterestUI() === -777 &&
+                        <div>
+                          { translate('DASHBOARD.CLAIM_INTEREST_HELPER_BAR_ALT_P1') }.
+                          <button
+                            type="button"
+                            className="btn btn-success waves-effect waves-light dashboard-claim-interest-btn"
+                            onClick={ this.openClaimInterestModal }>
+                            <i className="icon fa-search"></i> { translate('DASHBOARD.CLAIM_INTEREST_HELPER_BAR_ALT_P2') }
+                          </button>
+                        </div>
+                      }
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        }
-        <div className="col-xs-12 margin-top-20 backround-gray">
-          <div className="panel nav-tabs-horizontal">
-            <div>
-              <div className="col-xlg-12 col-lg-12 col-sm-12 col-xs-12">
-                <div className="panel">
-                  <header className="panel-heading z-index-10">
-                    { this.state.loading &&
-                      <span className="spinner--small">
-                        <Spinner />
-                      </span>
-                    }
-                    { !this.state.loading &&
-                      <i
-                        className="icon fa-refresh manual-txhistory-refresh pointer"
-                        onClick={ this.refreshTxHistory }></i>
-                    }
-                    <h4 className="panel-title">
-                      { !this.state.kvView ? translate('INDEX.TRANSACTION_HISTORY') : translate('KV.KV_HISTORY') }
-                      { this.props.ActiveCoin.mode === 'spv' &&
-                        Config.userAgreement &&
-                        kvCoins[this.props.ActiveCoin.coin] &&
-                        this.state.itemsList !== 'loading' &&
-                        this.state.itemsList !== 'response too large' &&
-                        this.state.itemsList !== 'connection error' &&
-                        this.state.itemsList !== 'connection error or incomplete data' &&
-                        this.state.itemsList !== 'cant get current height' &&
+          }
+          <div className="col-xs-12 margin-top-20 backround-gray">
+            <div className="panel nav-tabs-horizontal">
+              <div>
+                <div className="col-xlg-12 col-lg-12 col-sm-12 col-xs-12">
+                  <div className="panel">
+                    <header className="panel-heading z-index-10">
+                      { this.state.loading &&
+                        <span className="spinner--small">
+                          <Spinner />
+                        </span>
+                      }
+                      { !this.state.loading &&
+                        <i
+                          className="icon fa-refresh manual-txhistory-refresh pointer"
+                          onClick={ this.refreshTxHistory }></i>
+                      }
+                      <h4 className="panel-title">
+                        { !this.state.kvView ? translate('INDEX.TRANSACTION_HISTORY') : translate('KV.KV_HISTORY') }
+                        { this.props.ActiveCoin.mode === 'spv' &&
+                          Config.userAgreement &&
+                          kvCoins[this.props.ActiveCoin.coin] &&
+                          this.props.Main.walletType !== 'multisig' &&
+                          this.state.itemsList !== 'loading' &&
+                          this.state.itemsList !== 'response too large' &&
+                          this.state.itemsList !== 'connection error' &&
+                          this.state.itemsList !== 'connection error or incomplete data' &&
+                          this.state.itemsList !== 'cant get current height' &&
+                          <button
+                            type="button"
+                            className="btn btn-default btn-switch-kv"
+                            onClick={ this.toggleKvView }>
+                            { translate('KV.' + (!this.state.kvView ? 'KV_VIEW' : 'TX_VIEW')) }
+                          </button>
+                        }
+                        { this.props.ActiveCoin.mode === 'spv' &&
+                          Config.userAgreement &&
+                          this.props.Main.walletType === 'multisig' &&
+                          Config.multisigMediator &&
+                          <button
+                            type="button"
+                            className="btn btn-default btn-switch-kv"
+                            onClick={ this.toggleProposalView }>
+                            Proposals
+                          </button>
+                        }
+                      </h4>
+                      { _coindStartParamsString &&
+                        _coindStartParamsString.indexOf('-regtest') > -1 &&
                         <button
                           type="button"
-                          className="btn btn-default btn-switch-kv"
-                          onClick={ this.toggleKvView }>
-                          { translate('KV.' + (!this.state.kvView ? 'KV_VIEW' : 'TX_VIEW')) }
+                          className="btn btn-default btn-gen-block"
+                          onClick={ this._regtestGenBlock }>
+                          { translate('INDEX.REGTEST_GEN_BLOCK') }
                         </button>
                       }
-                    </h4>
-                    { _coindStartParamsString &&
-                      _coindStartParamsString.indexOf('-regtest') > -1 &&
-                      <button
-                        type="button"
-                        className="btn btn-default btn-gen-block"
-                        onClick={ this._regtestGenBlock }>
-                        { translate('INDEX.REGTEST_GEN_BLOCK') }
-                      </button>
-                    }
-                  </header>
-                  <div className="panel-body">
-                    { _txhistory !== 'loading' &&
-                      _txhistory !== 'no data' &&
-                      _txhistory !== 'connection error' &&
-                      _txhistory !== 'connection error or incomplete data' &&
-                      _txhistory !== 'cant get current height' &&
-                      _txhistory !== 'response too large' &&
-                      <div className="row padding-bottom-30 padding-top-10">
-                        { !this.state.kvView &&
-                          <div className="col-sm-4 search-box">
-                            <input
-                              className="form-control"
-                              onChange={ e => this.onSearchTermChange(e.target.value) }
-                              placeholder={ translate('DASHBOARD.SEARCH') } />
-                          </div>
-                        }
+                    </header>
+                    <div className="panel-body">
+                      { _txhistory !== 'loading' &&
+                        _txhistory !== 'no data' &&
+                        _txhistory !== 'connection error' &&
+                        _txhistory !== 'connection error or incomplete data' &&
+                        _txhistory !== 'cant get current height' &&
+                        _txhistory !== 'response too large' &&
+                        <div className="row padding-bottom-30 padding-top-10">
+                          { !this.state.kvView &&
+                            <div className="col-sm-4 search-box">
+                              <input
+                                className="form-control"
+                                onChange={ e => this.onSearchTermChange(e.target.value) }
+                                placeholder={ translate('DASHBOARD.SEARCH') } />
+                            </div>
+                          }
+                        </div>
+                      }
+                      <div className="row txhistory-table">
+                        { this.renderTxHistoryList() }
                       </div>
-                    }
-                    <div className="row txhistory-table">
-                      { this.renderTxHistoryList() }
                     </div>
                   </div>
                 </div>
@@ -471,7 +486,11 @@ export const WalletsDataRender = function() {
             </div>
           </div>
         </div>
-      </div>
-    </span>
-  );
+      </span>
+    );
+  } else {
+    return (
+      <MultisigProposals toggleProposalView={ this.toggleProposalView } />
+    );
+  }
 };
