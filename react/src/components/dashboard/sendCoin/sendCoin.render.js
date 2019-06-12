@@ -199,7 +199,7 @@ export const _SendFormRender = function() {
           <div className="col-xlg-12 form-group form-material">
             { ((_mode === 'spv' && this.renderAddressBookDropdown(true) < 1) ||
                 _mode === 'eth') &&
-                !this.props.initState &&
+                (!this.props.initState || (this.props.initState && this.props.initState.hasOwnProperty('multisigProposal'))) &&
               <button
                 type="button"
                 className="btn btn-default btn-send-self"
@@ -237,14 +237,14 @@ export const _SendFormRender = function() {
               name="sendTo"
               onChange={ this.updateInput }
               value={ this.state.sendTo }
-              disabled={ this.props.initState }
+              disabled={ this.props.initState && !this.props.initState.hasOwnProperty('multisigProposal') }
               id="kmdWalletSendTo"
               placeholder={ translate('SEND.' + (_mode === 'spv' || _mode === 'eth' || (_mode === 'native' && _coin === 'KMD') ? 'ENTER_ADDRESS' : (_mode === 'native' && _coin !== 'KMD' && _isAcPrivate) ? 'ENTER_Z_ADDR' : 'ENTER_T_OR_Z_ADDR')) }
               autoComplete="off"
               required />
           </div>
           <div className="col-lg-12 form-group form-material">
-            { !this.props.initState &&
+            { (!this.props.initState || (this.props.initState && this.props.initState.hasOwnProperty('multisigProposal'))) &&
               <button
                 type="button"
                 className="btn btn-default btn-send-self"
@@ -263,7 +263,7 @@ export const _SendFormRender = function() {
               name="amount"
               value={ this.state.amount !== 0 ? this.state.amount : '' }
               onChange={ this.updateInput }
-              disabled={ this.props.initState }
+              disabled={ this.props.initState && !this.props.initState.hasOwnProperty('multisigProposal') }
               id="kmdWalletAmount"
               placeholder="0.000"
               autoComplete="off" />
@@ -553,6 +553,7 @@ export const SendRender = function() {
                 }
                 { ((_mode === 'spv' && Config.userAgreement && kvCoins[_coin]) ||
                   (_mode === 'spv' && Config.coinControl)) &&
+                  (!this.props.initState || (this.props.initState && !this.props.initState.hasOwnProperty('multisigProposal'))) &&
                   <div className="kv-select-block">
                     { _mode === 'spv' &&
                       Config.userAgreement &&
@@ -585,7 +586,7 @@ export const SendRender = function() {
                 }
               </div>
               <div className="qr-modal-send-block">
-                { !this.props.initState &&
+                { (!this.props.initState || (this.props.initState && this.props.initState.hasOwnProperty('multisigProposal'))) &&
                   <QRModal
                     mode="scan"
                     setRecieverFromScan={ this.setRecieverFromScan } />

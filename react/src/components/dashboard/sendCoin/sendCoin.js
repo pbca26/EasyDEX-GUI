@@ -547,11 +547,18 @@ class SendCoin extends React.Component {
       });
     }
 
-    if (this.props.initState) {
+    if (this.props.initState &&
+        !this.props.initState.hasOwnProperty('multisigProposal')) {
       this.setState({
         amount: this.props.initState.exchangeOrder.expectedDepositCoinAmount === this.props.ActiveCoin.balance.balance ? Number(this.props.initState.exchangeOrder.expectedDepositCoinAmount - fromSats(staticVar.spvFees[_coin])) : Number(this.props.initState.exchangeOrder.expectedDepositCoinAmount), //Number(this.props.initState.exchangeOrder.expectedDepositCoinAmount * 1.0005).toFixed(8),
         sendTo: this.props.initState.exchangeOrder.exchangeAddress.address,
       });
+
+      console.warn('send coin', this.props.initState);
+    } else if (
+      this.props.initState &&
+      this.props.initState.hasOwnProperty('multisigProposal')
+    ) {
       console.warn('send coin', this.props.initState);
     }
   }
