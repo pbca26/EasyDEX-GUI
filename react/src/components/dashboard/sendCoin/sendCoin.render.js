@@ -128,6 +128,8 @@ export const _SendFormRender = function() {
     <div className="extcoin-send-form">
       { this.props.Main.walletType === 'multisig' &&
         !this.state.kvSend &&
+        this.props.Main.multisig &&
+        this.props.Main.multisig.redeemScriptDecoded.m >= this.props.Main.multisig.redeemScriptDecoded.pubKeys.length &&
         <div className="row">
           <div className={ 'col-xlg-12 form-group' + (this.state.multisigType === 'create' ? ' padding-bottom-20' : '') }>
             <label className="control-label padding-bottom-10">
@@ -142,6 +144,40 @@ export const _SendFormRender = function() {
               <option value="create">Create new transaction</option>
             </select>
           </div>
+        </div>
+      }
+      { this.state.multisigType === 'cosign' &&
+        <div className="row">
+          <div className="col-xlg-6 form-group form-material">
+            <Dropzone onDrop={ acceptedFiles => this.processMultisigRawtx(acceptedFiles) }>
+              {({ getRootProps, getInputProps }) => (
+                <section>
+                  <div
+                    { ...getRootProps() }
+                    className="multisig-dnd-block text-center">
+                    <input { ...getInputProps() } />
+                    <span>Drag 'n' drop multi signature raw transaction file here, or click to select from file browser</span>
+                  </div>
+                </section>
+              )}
+            </Dropzone>
+          </div>
+          { (this.state.multisigCosignError || this.state.multisigCosignWrongRedeemScript) &&
+            <div className="padding-top-10 padding-left-15">
+              <div>
+                <strong>Multi signature error</strong>
+              </div>
+              { this.state.multisigCosignError &&
+                <div className="padding-top-10 padding-bottom-10">You already signed this transaction!</div>
+              }
+              { this.state.multisigCosignWrongRedeemScript &&
+                <div className="padding-top-10 padding-bottom-10">
+                  You cannot sign this transaction!<br/>
+                  Local redeem script is not matching transaction.
+                </div>
+              }
+            </div>
+          }
         </div>
       }
       { ((this.state.renderAddressDropdown && _mode !== 'native') ||
@@ -707,6 +743,9 @@ export const SendRender = function() {
                     { translate('SEND.NO_VALID_UTXO_ERR_P3') }
                   </div>
                 }
+                { this.state.multisigWrongKey &&
+                  <div className="padding-top-20">{ translate('SEND.MULTISIG_WRONG_KEY') }</div>
+                }
                 { this.state.responseTooLarge &&
                   <div className="padding-top-20">
                     { translate('INDEX.RESPONSE_TOO_LARGE_P1') }
@@ -817,6 +856,7 @@ export const SendRender = function() {
                         ((this.state.ethPreflightRes.msg && this.state.ethPreflightRes.msg === 'error') || (!this.state.ethPreflightRes.msg && this.state.ethPreflightRes.notEnoughBalance))) ||
                         this.state.noUtxo ||
                         this.state.responseTooLarge ||
+                        this.state.multisigWrongKey ||
                         (this.state.spvPreflightSendInProgress || (erc20ContractId[_coin] && this.state.ethPreflightSendInProgress))
                       }
                       onClick={ Config.requirePinToConfirmTx && mainWindow.pinAccess ? this.verifyPin : () => this.changeSendCoinStep(2) }>
@@ -1037,54 +1077,59 @@ export const SendRender = function() {
                   <h4 className="panel-title">
                     Multi signature transaction result
                   </h4>
-                  <div>
-                    <div className="row">
-                      <div className="col-lg-12 col-sm-12 col-xs-12 padding-top-20 padding-left-45">
-                        <strong>Signatures required</strong>: { this.state.spvPreflightRes.multisig.data.signatures.required }
+                  { this.state.spvPreflightRes.multisig.data.signatures.required === this.state.spvPreflightRes.multisig.data.signatures.verified &&
+                    <div className="padding-left-30 padding-top-10 padding-bottom-30">Processing multi signature transaction...</div>
+                  }
+                  { this.state.spvPreflightRes.multisig.data.signatures.required > this.state.spvPreflightRes.multisig.data.signatures.verified &&
+                    <div>
+                      <div className="row">
+                        <div className="col-lg-12 col-sm-12 col-xs-12 padding-top-20 padding-left-45">
+                          <strong>Signatures required</strong>: { this.state.spvPreflightRes.multisig.data.signatures.required }
+                        </div>
                       </div>
-                    </div>
-                    <div className="row">
-                      <div className="col-lg-12 col-sm-12 col-xs-12 padding-top-20 padding-left-45">
-                        <strong>Signatures verified</strong>: { this.state.spvPreflightRes.multisig.data.signatures.verified }
+                      <div className="row">
+                        <div className="col-lg-12 col-sm-12 col-xs-12 padding-top-20 padding-left-45">
+                          <strong>Signatures verified</strong>: { this.state.spvPreflightRes.multisig.data.signatures.verified }
+                        </div>
                       </div>
-                    </div>
-                    <div className="row">
-                      <div className="col-lg-12 col-sm-12 col-xs-12 padding-top-20 padding-left-45 padding-bottom-20">
-                        <strong>Raw transaction</strong>
-                        <button
-                          className="btn btn-default btn-xs clipboard-edexaddr margin-left-10"
-                          title={ translate('INDEX.COPY_TO_CLIPBOARD') }
-                          onClick={ this.copyMultisigRawtx }>
-                          <i className="icon wb-copy"></i> { translate('INDEX.COPY') }
-                        </button>
-                        <a
-                          id="multisig-rawtx-link"
-                          onClick={ this.dumpMultisigRawtx }>
+                      <div className="row">
+                        <div className="col-lg-12 col-sm-12 col-xs-12 padding-top-20 padding-left-45 padding-bottom-20">
+                          <strong>Raw transaction</strong>
                           <button
                             className="btn btn-default btn-xs clipboard-edexaddr margin-left-10"
-                            title="Download as a file">
-                            <i className="icon fa-download"></i>
+                            title={ translate('INDEX.COPY_TO_CLIPBOARD') }
+                            onClick={ this.copyMultisigRawtx }>
+                            <i className="icon wb-copy"></i> { translate('INDEX.COPY') }
                           </button>
-                        </a>
-                        {/*<div className="selectable word-break--all padding-top-15">{ this.state.spvPreflightRes.multisig.rawtx }</div>*/}
+                          <a
+                            id="multisig-rawtx-link"
+                            onClick={ this.dumpMultisigRawtx }>
+                            <button
+                              className="btn btn-default btn-xs clipboard-edexaddr margin-left-10"
+                              title="Download as a file">
+                              <i className="icon fa-download"></i>
+                            </button>
+                          </a>
+                          {/*<div className="selectable word-break--all padding-top-15">{ this.state.spvPreflightRes.multisig.rawtx }</div>*/}
+                        </div>
+                      </div>
+                      <div className="row">
+                        <div className="col-lg-12 col-sm-12 col-xs-12 padding-left-45 padding-bottom-20">
+                          Pass raw transaction to other co-signers in order to finalize it.
+                        </div>
+                      </div>
+                      <div className="widget-body-footer">
+                        <div className="widget-actions margin-bottom-15 margin-right-15">
+                          <button
+                            type="button"
+                            className="btn btn-primary"
+                            onClick={ () => this.changeSendCoinStep(0) }>
+                            { translate('INDEX.MAKE_ANOTHER_TX') }
+                          </button>
+                        </div>
                       </div>
                     </div>
-                    <div className="row">
-                      <div className="col-lg-12 col-sm-12 col-xs-12 padding-left-45 padding-bottom-20">
-                        Pass raw transaction to other co-signers in order to finalize it.
-                      </div>
-                    </div>
-                    <div className="widget-body-footer">
-                      <div className="widget-actions margin-bottom-15 margin-right-15">
-                        <button
-                          type="button"
-                          className="btn btn-primary"
-                          onClick={ () => this.changeSendCoinStep(0) }>
-                          { translate('INDEX.MAKE_ANOTHER_TX') }
-                        </button>
-                      </div>
-                    </div>
-                  </div>
+                  }
                 </div>
               }
             </div>

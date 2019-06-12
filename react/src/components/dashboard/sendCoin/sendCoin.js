@@ -134,7 +134,7 @@ class SendCoin extends React.Component {
       ztxSelectorOpen: false,
       ztxFee: DEFAULT_ZTX_FEE,
       // multisig
-      multisigType: 'cosign',
+      multisigType: this.props.Main.multisig && this.props.Main.multisig.redeemScriptDecoded.m >= this.props.Main.multisig.redeemScriptDecoded.pubKeys.length ? 'cosign' : 'create',
       multisigWrongKey: false,
       multisigCosignWrongRedeemScript: false,
       multisigCosignError: false,
@@ -175,7 +175,85 @@ class SendCoin extends React.Component {
     this.updateMultisigInput = this.updateMultisigInput.bind(this);
     this.copyMultisigRawtx = this.copyMultisigRawtx.bind(this);
     this.dumpMultisigRawtx = this.dumpMultisigRawtx.bind(this);
+    this.processMultisigRawtx = this.processMultisigRawtx.bind(this);
     //this.loadTestData = this.loadTestData.bind(this);
+  }
+
+  processMultisigRawtx(acceptedFiles) {
+    const reader = new FileReader();
+
+    reader.onabort = () => console.log('file reading was aborted');
+    reader.onerror = () => console.log('file reading has failed');
+    reader.onload = () => {
+      const binaryStr = reader.result;
+      const coin = this.props.ActiveCoin.coin;
+      console.log(binaryStr);
+      
+      apiElectrumDecodeRawTx(coin, binaryStr)
+      .then((rawTxDecodeRes) => {
+        if (rawTxDecodeRes.msg === 'success') {
+          const address = this.props.Dashboard.electrumCoins[coin].pub;
+          let toAddress;
+          rawTxDecodeRes = rawTxDecodeRes.result;
+
+          console.warn('rawTxDecodeRes', rawTxDecodeRes);
+          
+          if (rawTxDecodeRes.multisig.signaturesData === 'wrong redeem script') {
+            this.setState({
+              multisigCosignWrongRedeemScript: true,
+            })
+          } else {
+            for (let key in rawTxDecodeRes.amounts.outputs) {
+              if (key !== address) {
+                toAddress = key;
+              }
+            }
+
+            let multisigCosignError = rawTxDecodeRes.multisig.signaturesData.pubKeys.indexOf(rawTxDecodeRes.multisig.signingPubHex) > -1 ? true : false;
+            let multisigCosignTxData = {
+              amount: rawTxDecodeRes.amounts.outputs[toAddress ? toAddress : address], 
+              change: rawTxDecodeRes.amounts.outputs[address] ? rawTxDecodeRes.amounts.outputs[address] : 0,
+              to: !toAddress ? address : toAddress,
+              fee: toSats(Number(rawTxDecodeRes.formattedTx.fee)),
+              rawtx: rawTxDecodeRes.hex,
+            };
+
+            if (coin === 'KMD' &&
+                Number(rawTxDecodeRes.formattedTx.fee) > fromSats(staticVar.spvFees[coin.toUpperCase()])) {
+              multisigCosignTxData.fee = staticVar.spvFees[coin.toUpperCase()];
+              multisigCosignTxData.interest = Number(formattedTx.fee);
+            }
+
+            console.warn('multisigCosignTxData', multisigCosignTxData);
+            console.warn(multisigCosignTxData.change > 0 ? toSats(multisigCosignTxData.change - fromSats(Number(multisigCosignTxData.fee))) : toSats(multisigCosignTxData.change))
+      
+            this.setState({
+              currentStep: multisigCosignError ? 0 : 1,
+              multisigCosignError,
+              multisigCosignTxData,
+              sendFrom: address,
+              sendTo: multisigCosignTxData.to,
+              amount: multisigCosignTxData.amount,
+              spvPreflightRes: {
+                value: toSats(multisigCosignTxData.amount) - multisigCosignTxData.fee,
+                fee: multisigCosignTxData.fee,
+                totalInterest: multisigCosignTxData.interest,
+                change: multisigCosignTxData.change,
+                multisig: {
+                  data: rawTxDecodeRes.multisig.signaturesData,
+                },
+              },
+              multisigCosignWrongRedeemScript: false,
+            });
+          }
+        } else {
+          // error
+        }
+      });
+    };
+
+    // throw error if multiple files uploaded
+    acceptedFiles.forEach(file => reader.readAsBinaryString(file));
   }
 
   copyMultisigRawtx() {
@@ -888,6 +966,12 @@ class SendCoin extends React.Component {
     const _mode = this.props.ActiveCoin.mode;
     const _coin = this.props.ActiveCoin.coin;
 
+    if (this.props.Main.walletType === 'multisig' &&
+        this.state.multisigType === 'cosign' &&
+        step === 2) {
+      step = 1;
+    }
+
     if (_mode === 'spv' &&
         _coin === 'KMD') {
       this._checkCurrentTimestamp();
@@ -983,6 +1067,14 @@ class SendCoin extends React.Component {
             }
           }
 
+          if (this.props.Main.walletType === 'multisig' &&
+              this.state.multisigType === 'cosign') {
+            options.multisig = {
+              rawtx: this.state.multisigCosignTxData.rawtx,
+              incomplete: true,
+            }
+          }
+
           apiElectrumSendPreflight(
             this.props.ActiveCoin.coin,
             toSats(this.state.amount),
@@ -993,19 +1085,50 @@ class SendCoin extends React.Component {
           .then((sendPreflight) => {
             if (sendPreflight &&
                 sendPreflight.msg === 'success') {
-              this.setState(Object.assign({}, this.state, {
-                spvVerificationWarning: !sendPreflight.result.utxoVerified,
-                spvDpowVerificationWarning: sendPreflight.result.dpowSecured,
-                spvPreflightSendInProgress: false,
-                spvPreflightRes: {
-                  fee: sendPreflight.result.fee,
-                  value: sendPreflight.result.value,
-                  change: sendPreflight.result.change,
-                  estimatedFee: sendPreflight.result.estimatedFee,
-                  totalInterest: sendPreflight.result.totalInterest,
-                  multisig: sendPreflight.result.multisigData ? { data: sendPreflight.result.multisigData.signaturesData, rawtx: typeof sendPreflight.result.rawtx === 'object' && sendPreflight.result.rawtx.hasOwnProperty('incomplete') ? sendPreflight.result.rawtx.incomplete : sendPreflight.result.rawtx, rawTxComplete: typeof sendPreflight.result.rawtx === 'object' && sendPreflight.result.rawtx.hasOwnProperty('complete') ? sendPreflight.result.rawtx.complete : null } : null,
-                },
-              }));
+              if (this.props.Main.walletType === 'multisig' &&
+                  this.state.multisigType === 'cosign' &&
+                  typeof sendPreflight.result.rawtx === 'object' &&
+                  sendPreflight.result.rawtx.hasOwnProperty('complete')) {
+                apiToolsPushTx(
+                  this.props.ActiveCoin.coin.toLowerCase(),
+                  sendPreflight.result.rawtx.complete,
+                  true
+                )
+                .then((pushTxRes) => {
+                  console.warn('pushTxRes', pushTxRes);
+
+                  if (pushTxRes.msg === 'error') {
+                    Store.dispatch(sendToAddressState({
+                      msg: 'error',
+                      raw: {
+                        txid: '',
+                      },
+                      result: pushTxRes.result,
+                    }));
+                  } else {
+                    Store.dispatch(sendToAddressState({ txid: pushTxRes.result }));
+                  }
+
+                  this.setState(Object.assign({}, this.state, {
+                    currentStep: 2,
+                  }));
+                });
+              } else {
+                this.setState(Object.assign({}, this.state, {
+                  spvVerificationWarning: !sendPreflight.result.utxoVerified,
+                  spvDpowVerificationWarning: sendPreflight.result.dpowSecured,
+                  spvPreflightSendInProgress: false,
+                  spvPreflightRes: {
+                    fee: sendPreflight.result.fee,
+                    value: sendPreflight.result.value,
+                    change: sendPreflight.result.change,
+                    estimatedFee: sendPreflight.result.estimatedFee,
+                    totalInterest: sendPreflight.result.totalInterest,
+                    multisig: sendPreflight.result.multisigData ? { data: sendPreflight.result.multisigData.signaturesData, rawtx: typeof sendPreflight.result.rawtx === 'object' && sendPreflight.result.rawtx.hasOwnProperty('incomplete') ? sendPreflight.result.rawtx.incomplete : sendPreflight.result.rawtx, rawTxComplete: typeof sendPreflight.result.rawtx === 'object' && sendPreflight.result.rawtx.hasOwnProperty('complete') ? sendPreflight.result.rawtx.complete : null } : null,
+                  },
+                  currentStep: this.state.multisigType === 'cosign' ? 2 : this.state.currentStep,
+                }));
+              }
               
               if (this.props.cb) {
                 setTimeout(() => {
@@ -1018,6 +1141,7 @@ class SendCoin extends React.Component {
                 spvDpowVerificationWarning: 'n/a',
                 noUtxo: sendPreflight.result === 'no valid utxo' || typeof sendPreflight.result === 'string' && sendPreflight.result.indexOf('Spend value is too large') > -1 ? true : false,
                 responseTooLarge: sendPreflight.result && sendPreflight.result.result && sendPreflight.result.result.message && sendPreflight.result.result.message.indexOf('response too large') > -1 ? true : false,
+                multisigWrongKey: typeof sendPreflight.result === 'string' && sendPreflight.result.indexOf('Multisig: you can\'t sign this transaction') > -1 ? true : false,
               }));
 
               if (this.props.cb) {
