@@ -843,9 +843,11 @@ export const SendRender = function() {
                   </div>
                 }
                 <div className="widget-body-footer">
-                  <a
-                    className="btn btn-default waves-effect waves-light"
-                    onClick={ () => this.changeSendCoinStep(0, true) }>{ translate('INDEX.BACK') }</a>
+                  { (!this.props.initState || (this.props.initState && !this.props.initState.hasOwnProperty('multisigProposal'))) &&
+                    <a
+                      className="btn btn-default waves-effect waves-light"
+                      onClick={ () => this.changeSendCoinStep(0, true) }>{ translate('INDEX.BACK') }</a>
+                  }
                   <div className="widget-actions pull-right">
                     <button
                       type="button"

@@ -179,17 +179,11 @@ class SendCoin extends React.Component {
     //this.loadTestData = this.loadTestData.bind(this);
   }
 
-  processMultisigRawtx(acceptedFiles) {
-    const reader = new FileReader();
-
-    reader.onabort = () => console.log('file reading was aborted');
-    reader.onerror = () => console.log('file reading has failed');
-    reader.onload = () => {
-      const binaryStr = reader.result;
-      const coin = this.props.ActiveCoin.coin;
-      console.log(binaryStr);
-      
-      apiElectrumDecodeRawTx(coin, binaryStr)
+  processMultisigRawtx(acceptedFiles, isRawTx) {
+    const coin = this.props.ActiveCoin.coin;
+    
+    const _processMultisigRawtx = (_rawtx) => {
+      apiElectrumDecodeRawTx(coin, _rawtx)
       .then((rawTxDecodeRes) => {
         if (rawTxDecodeRes.msg === 'success') {
           const address = this.props.Dashboard.electrumCoins[coin].pub;
@@ -252,8 +246,23 @@ class SendCoin extends React.Component {
       });
     };
 
-    // throw error if multiple files uploaded
-    acceptedFiles.forEach(file => reader.readAsBinaryString(file));
+    if (!isRawTx) {
+      const reader = new FileReader();
+
+      reader.onabort = () => console.log('file reading was aborted');
+      reader.onerror = () => console.log('file reading has failed');
+      reader.onload = () => {
+        const binaryStr = reader.result;
+        console.log(binaryStr);
+        
+        _processMultisigRawtx(binaryStr);
+      };
+
+      // throw error if multiple files uploaded
+      acceptedFiles.forEach(file => reader.readAsBinaryString(file));
+    } else {
+      _processMultisigRawtx(acceptedFiles);
+    }
   }
 
   copyMultisigRawtx() {
@@ -546,20 +555,25 @@ class SendCoin extends React.Component {
         fee: fromSats(staticVar.spvFees[_coin]),
       });
     }
-
+    console.warn('send coin', this.props.initState);
+    
     if (this.props.initState &&
         !this.props.initState.hasOwnProperty('multisigProposal')) {
       this.setState({
         amount: this.props.initState.exchangeOrder.expectedDepositCoinAmount === this.props.ActiveCoin.balance.balance ? Number(this.props.initState.exchangeOrder.expectedDepositCoinAmount - fromSats(staticVar.spvFees[_coin])) : Number(this.props.initState.exchangeOrder.expectedDepositCoinAmount), //Number(this.props.initState.exchangeOrder.expectedDepositCoinAmount * 1.0005).toFixed(8),
         sendTo: this.props.initState.exchangeOrder.exchangeAddress.address,
       });
-
-      console.warn('send coin', this.props.initState);
     } else if (
       this.props.initState &&
       this.props.initState.hasOwnProperty('multisigProposal')
     ) {
-      console.warn('send coin', this.props.initState);
+      console.warn('this.state.multisigCosignTxData', this.state.multisigCosignTxData);
+      
+      if (this.props.initState.proposalDetails &&
+          !Object.keys(this.state.multisigCosignTxData).length) {
+        console.warn('process proposal');
+        this.processMultisigRawtx(this.props.initState.proposalDetails.multisigCosignTxData.rawtx, true);
+      }
     }
   }
 
