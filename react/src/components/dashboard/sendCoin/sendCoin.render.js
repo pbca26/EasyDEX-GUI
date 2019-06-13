@@ -1121,16 +1121,18 @@ export const SendRender = function() {
                           Pass raw transaction to other co-signers in order to finalize it.
                         </div>
                       </div>
-                      <div className="widget-body-footer">
-                        <div className="widget-actions margin-bottom-15 margin-right-15">
-                          <button
-                            type="button"
-                            className="btn btn-primary"
-                            onClick={ () => this.changeSendCoinStep(0) }>
-                            { translate('INDEX.MAKE_ANOTHER_TX') }
-                          </button>
+                      { (!this.props.initState || (this.props.initState && !this.props.initState.hasOwnProperty('multisigProposal'))) &&
+                        <div className="widget-body-footer">
+                          <div className="widget-actions margin-bottom-15 margin-right-15">
+                            <button
+                              type="button"
+                              className="btn btn-primary"
+                              onClick={ () => this.changeSendCoinStep(0) }>
+                              { translate('INDEX.MAKE_ANOTHER_TX') }
+                            </button>
+                          </div>
                         </div>
-                      </div>
+                      }
                     </div>
                   }
                 </div>
