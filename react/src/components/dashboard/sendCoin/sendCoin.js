@@ -567,8 +567,14 @@ class SendCoin extends React.Component {
       this.props.initState &&
       this.props.initState.hasOwnProperty('multisigProposal')
     ) {
+      if (!this.props.initState.proposalDetails) {
+        this.setState({
+          multisigType: 'create',
+        });
+      }
+
       console.warn('this.state.multisigCosignTxData', this.state.multisigCosignTxData);
-      
+
       if (this.props.initState.proposalDetails &&
           !Object.keys(this.state.multisigCosignTxData).length) {
         console.warn('process proposal');

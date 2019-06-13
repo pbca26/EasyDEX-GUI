@@ -130,6 +130,7 @@ export const _SendFormRender = function() {
         !this.state.kvSend &&
         this.props.Main.multisig &&
         this.props.Main.multisig.redeemScriptDecoded.m >= this.props.Main.multisig.redeemScriptDecoded.pubKeys.length &&
+        (!this.props.initState || (this.props.initState && !this.props.initState.multisigProposal)) &&
         <div className="row">
           <div className={ 'col-xlg-12 form-group' + (this.state.multisigType === 'create' ? ' padding-bottom-20' : '') }>
             <label className="control-label padding-bottom-10">
