@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import translate from '../../../translate/translate';
-import { formatValue } from 'agama-wallet-lib/src/utils';
 import Config from '../../../config';
 import {
   toggleDashboardTxInfoModal,
@@ -34,7 +33,10 @@ import {
   WalletsDataRender,
 } from  './walletsData.render';
 import { secondsToString } from 'agama-wallet-lib/src/time';
-import { getRandomElectrumServer } from 'agama-wallet-lib/src/utils';
+import {
+  formatValue,
+  getRandomElectrumServer,
+} from 'agama-wallet-lib/src/utils';
 import DoubleScrollbar from 'react-double-scrollbar';
 import mainWindow, { staticVar } from '../../../util/mainWindow';
 

@@ -13,6 +13,7 @@ export const Main = (state = {
   isLoggedIn: false,
   isPin: false,
   walletType: null,
+  multisig: null,
   displayLoginSettingsModal: false,
   displayNotaryElectionsModal: false,
   displayUserAgreementModal: false,
@@ -42,6 +43,7 @@ export const Main = (state = {
         isPin: action.isPin,
         activeHandle: action.handle,
         walletType: action.walletType,
+        multisig: action.multisig,
       };
     case DISPLAY_LOGIN_SETTINGS_MODAL:
       return {

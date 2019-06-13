@@ -66,6 +66,7 @@ export * from './actions/addressBook';
 export * from './actions/eth';
 export * from './actions/exchanges';
 export * from './actions/userAgreement';
+export * from './actions/multisigMediator';
 
 export const changeActiveAddress = (address) => {
   return {

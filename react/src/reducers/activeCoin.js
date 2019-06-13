@@ -24,6 +24,7 @@ import {
   DASHBOARD_ETHEREUM_BALANCE,
   DASHBOARD_ETHEREUM_TRANSACTIONS,
   DASHBOARD_CLEAR_ACTIVECOIN,
+  DASHBOARD_MULTISIG_PROPOSALS,
 } from '../actions/storeType';
 
 // TODO: refactor current coin props copy on change
@@ -62,6 +63,7 @@ const defaults = {
     showTransactionInfoTxIndex: null,
     txhistory: [],
     lastSendToResponse: null,
+    multisigProposals: [],
   },
   eth: {
     coin: null,
@@ -433,6 +435,11 @@ export const ActiveCoin = (state = {
           totals: null,
         },
         getinfoFetchFailures: 0,
+      };
+    case DASHBOARD_MULTISIG_PROPOSALS:
+      return {
+        ...state,
+        multisigProposals: action.multisigProposals,
       };
     default:
       return state;
