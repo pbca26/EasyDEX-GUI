@@ -1151,7 +1151,7 @@ class SendCoin extends React.Component {
                     change: sendPreflight.result.change,
                     estimatedFee: sendPreflight.result.estimatedFee,
                     totalInterest: sendPreflight.result.totalInterest,
-                    multisig: sendPreflight.result.multisigData ? { data: sendPreflight.result.multisigData.signaturesData, rawtx: typeof sendPreflight.result.rawtx === 'object' && sendPreflight.result.rawtx.hasOwnProperty('incomplete') ? sendPreflight.result.rawtx.incomplete : sendPreflight.result.rawtx, rawTxComplete: typeof sendPreflight.result.rawtx === 'object' && sendPreflight.result.rawtx.hasOwnProperty('complete') ? sendPreflight.result.rawtx.complete : null } : null,
+                    multisig: sendPreflight.result.multisigData ? { signingPubHex: sendPreflight.result.multisigData.signingPubHex, data: sendPreflight.result.multisigData.signaturesData, rawtx: typeof sendPreflight.result.rawtx === 'object' && sendPreflight.result.rawtx.hasOwnProperty('incomplete') ? sendPreflight.result.rawtx.incomplete : sendPreflight.result.rawtx, rawTxComplete: typeof sendPreflight.result.rawtx === 'object' && sendPreflight.result.rawtx.hasOwnProperty('complete') ? sendPreflight.result.rawtx.complete : null } : null,
                   },
                   currentStep: this.state.multisigType === 'cosign' ? 2 : this.state.currentStep,
                 }));
