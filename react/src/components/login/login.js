@@ -1297,7 +1297,7 @@ class Login extends React.Component {
   }
 
   renderPubkeysList() {
-    const nOfN = this.state.activeLoginSection === 'create' ? this.state.multisigCreateNofN.split('-')[1] : this.state.multisigRestoreNofN.split('-')[1];
+    const nOfN = this.state.activeLoginSection === 'signup' ? this.state.multisigCreateNofN.split('-')[1] : this.state.multisigRestoreNofN.split('-')[1];
     let items = [];
     
     for (let i = 0; i < nOfN; i++) {
@@ -1305,7 +1305,7 @@ class Login extends React.Component {
         <div
           key={ `multisig-pubkeys-${i}-step3` } 
           className="pubkeys-list-item selectable">
-          [{ i + 1 }] { this.state.activeLoginSection === 'create' ? this.state.multisigCreatePubkeys[i] : this.state.multisigRestorePubkeys[i] }
+          [{ i + 1 }] { this.state.activeLoginSection === 'signup' ? this.state.multisigCreatePubkeys[i] : this.state.multisigRestorePubkeys[i] }
         </div>
       );
     }
