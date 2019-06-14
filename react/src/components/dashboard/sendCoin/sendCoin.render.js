@@ -149,20 +149,22 @@ export const _SendFormRender = function() {
       }
       { this.state.multisigType === 'cosign' &&
         <div className="row">
-          <div className="col-xlg-6 form-group form-material">
-            <Dropzone onDrop={ acceptedFiles => this.processMultisigRawtx(acceptedFiles) }>
-              {({ getRootProps, getInputProps }) => (
-                <section>
-                  <div
-                    { ...getRootProps() }
-                    className="multisig-dnd-block text-center">
-                    <input { ...getInputProps() } />
-                    <span>Drag 'n' drop multi signature raw transaction file here, or click to select from file browser</span>
-                  </div>
-                </section>
-              )}
-            </Dropzone>
-          </div>
+          { (!this.props.initState || (this.props.initState && !this.props.initState.multisigProposal)) &&
+            <div className="col-xlg-6 form-group form-material">
+              <Dropzone onDrop={ acceptedFiles => this.processMultisigRawtx(acceptedFiles) }>
+                {({ getRootProps, getInputProps }) => (
+                  <section>
+                    <div
+                      { ...getRootProps() }
+                      className="multisig-dnd-block text-center">
+                      <input { ...getInputProps() } />
+                      <span>Drag 'n' drop multi signature raw transaction file here, or click to select from file browser</span>
+                    </div>
+                  </section>
+                )}
+              </Dropzone>
+            </div>
+          }
           { (this.state.multisigCosignError || this.state.multisigCosignWrongRedeemScript) &&
             <div className="padding-top-10 padding-left-15">
               <div>
