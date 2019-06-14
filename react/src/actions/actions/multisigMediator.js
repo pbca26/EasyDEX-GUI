@@ -114,7 +114,42 @@ export const apiProposalCreate = (coin, pubkey, redeemscript, sig, message, iszc
     .then(json => {
       console.warn('apiProposalCreate', json);
       Store.dispatch(apiProposalsList());
-      resolve();
+      resolve(true);
+    });
+  });
+}
+
+export const apiProposalUpdate = (coin, pubkey, redeemscript, sig, message, iszcash = false, content, broadcast) => {
+  return new Promise((resolve, reject) => {
+    const _urlParams = {
+      //token,
+      coin,
+      pubkey,
+      redeemscript,
+      sig,
+      message,
+      iszcash,
+      content: broadcast ? 'broadcast' : JSON.stringify(content),
+    };
+    fetch(
+      `${endPointUrl}/api/multisig/storage/new${urlParams(_urlParams)}`,
+      fetchType.get
+    )
+    .catch((error) => {
+      console.log(error);
+      dispatch(
+        triggerToaster(
+          translate('API.apiProposalUpdate') + ' (code: apiProposalUpdate)',
+          translate('TOASTR.ERROR'),
+          'error'
+        )
+      );
+    })
+    .then(response => response.json())
+    .then(json => {
+      console.warn('apiProposalUpdate', json);
+      Store.dispatch(apiProposalsList());
+      resolve(true);
     });
   });
 }
