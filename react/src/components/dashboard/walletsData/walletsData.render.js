@@ -440,6 +440,7 @@ export const WalletsDataRender = function() {
                           Config.userAgreement &&
                           this.props.Main.walletType === 'multisig' &&
                           Config.multisigMediator &&
+                          this.props.Main.multisig.redeemScriptDecoded.m > 1 &&
                           <button
                             type="button"
                             className="btn btn-default btn-switch-kv"
