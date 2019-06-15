@@ -98,7 +98,6 @@ export const testConfig = {
   "KOIN",
   "DION",
   "PTX",
-  "ZEX",
   "VRSC",
   "VRSCTEST",
   "SPLTEST",

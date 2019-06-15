@@ -50,7 +50,7 @@ const coins = {
     KOIN: 'Koinon Coin',
     DION: 'DionPay',
     PTX: 'PatentTX',
-    ZEX: 'Zaddex',
+    ZEXO: 'Zaddex',
     SPLTEST: 'Sapling Test Chain',
     LUMBER: 'Lumberscout',
     K64: 'Komodore64'
