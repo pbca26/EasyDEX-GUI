@@ -370,4 +370,4 @@ const coins = {
   },
 };
 
-export default coins;
+module.exports = coins;

@@ -496,7 +496,9 @@ export const WalletsDataRender = function() {
                         this.props.ActiveCoin.txhistory !== 'connection error or incomplete data' &&
                         this.props.ActiveCoin.txhistory !== 'cant get current height' &&
                         _showMiningButton &&
-                        this.props.ActiveCoin.mode !== 'spv' &&
+                        (this.props.ActiveCoin.coin === 'VRSC' || 
+                        this.props.ActiveCoin.coin === 'VRSCTEST' ||
+                        Config.reservedChains.indexOf(this.props.ActiveCoin.coin) === -1) &&
                         <MiningButton />
                       }
                       { this.props.ActiveCoin.txhistory !== 'loading' &&
