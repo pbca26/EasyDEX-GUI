@@ -168,18 +168,18 @@ export const acHerdData = {
 		addnode: '142.11.199.63',
 		genproclimit: true,
 	},
-	ZEX: {
+	/*ZEX: {
 		ac_reward: 13000000000,
 		ac_halving: 525600,
 		ac_pubkey: '039d4a50cc70d1184e462a22edb3b66385da97cc8059196f8305c184a3e21440af',
 		ac_cc: 2,
 		ac_founders: 1,
 		addnode: '5.9.102.210',
-  },
-  K64: {
-    ac_supply: 64000777,
-    ac_reward: 0,
-    ac_staked: 10,
-    addnode: '18.197.20.211'
-  }
+	},*/
+	K64: {
+	ac_supply: 64000777,
+	ac_reward: 0,
+	ac_staked: 10,
+	addnode: '18.197.20.211'
+	}
 };

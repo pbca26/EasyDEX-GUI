@@ -15,7 +15,6 @@ const _disabledAC = {
     'dsec',
     'pirate',
     'koin',
-    'zex',
   ],
   native: [
     'spltest',
