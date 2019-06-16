@@ -256,7 +256,7 @@ class AppSettingsPanel extends React.Component {
           );
 
           for (let _key in _appConfig[key]) {
-            if (_configSchema[key][_key]) {
+            if (_configSchema[key][_key] && _configSchema[key][_key].display) {
               items.push(
                 <tr key={ `app-settings-${key}-${_key}` }>
                   <td className="padding-15 padding-left-30">
