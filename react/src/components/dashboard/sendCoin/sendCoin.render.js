@@ -1017,13 +1017,21 @@ export const SendRender = function() {
                         <div>
                           <strong className="text-capitalize">{ translate('API.ERROR_SM') }</strong>
                         </div>
-                        { (this.state.lastSendToResponse.result.toLowerCase().indexOf('decode error') > -1) &&
+                        { typeof this.state.lastSendToResponse.result === 'object' &&
+                          <div>
+                            <div className="padding-top-10 padding-bottom-10">{ translate('SEND.DEBUG_INFO') }</div>
+                            <div className="word-break--all">{ JSON.stringify(this.state.lastSendToResponse.result) }</div>
+                          </div>
+                        }
+                        { typeof this.state.lastSendToResponse.result === 'string' &&
+                          this.state.lastSendToResponse.result.toLowerCase().indexOf('decode error') > -1 &&
                           <div>
                             { translate('SEND.YOUR_TXHISTORY_CONTAINS_ZTX_P1') }<br />
                             { translate('SEND.YOUR_TXHISTORY_CONTAINS_ZTX_P2') }
                           </div>
                         }
-                        { this.state.lastSendToResponse.result.toLowerCase().indexOf('decode error') === -1 &&
+                        { typeof this.state.lastSendToResponse.result === 'string' &&
+                          this.state.lastSendToResponse.result.toLowerCase().indexOf('decode error') === -1 &&
                           <div>
                             <div>{ this.state.lastSendToResponse.result }</div>
                             { typeof this.state.lastSendToResponse.raw.txid === 'object' &&

@@ -1133,6 +1133,27 @@ class SendCoin extends React.Component {
                       result: pushTxRes.result,
                     }));
                   } else {
+                    if (pushTxRes.result &&
+                        pushTxRes.result.length === 64 &&
+                        this.props.initState &&
+                        this.props.initState.multisigProposal) {
+                      this.props.cb({
+                        spvVerificationWarning: !sendPreflight.result.utxoVerified,
+                        spvDpowVerificationWarning: sendPreflight.result.dpowSecured,
+                        spvPreflightSendInProgress: false,
+                        spvPreflightRes: {
+                          fee: sendPreflight.result.fee,
+                          value: sendPreflight.result.value,
+                          change: sendPreflight.result.change,
+                          estimatedFee: sendPreflight.result.estimatedFee,
+                          totalInterest: sendPreflight.result.totalInterest,
+                          multisig: sendPreflight.result.multisigData ? { signingPubHex: sendPreflight.result.multisigData.signingPubHex, data: sendPreflight.result.multisigData.signaturesData, rawtx: typeof sendPreflight.result.rawtx === 'object' && sendPreflight.result.rawtx.hasOwnProperty('incomplete') ? sendPreflight.result.rawtx.incomplete : sendPreflight.result.rawtx, rawTxComplete: typeof sendPreflight.result.rawtx === 'object' && sendPreflight.result.rawtx.hasOwnProperty('complete') ? sendPreflight.result.rawtx.complete : null } : null,
+                          txid: pushTxRes.result,
+                        },
+                        currentStep: this.state.multisigType === 'cosign' ? 2 : this.state.currentStep,
+                      });
+                    }
+
                     Store.dispatch(sendToAddressState({ txid: pushTxRes.result }));
                   }
 
