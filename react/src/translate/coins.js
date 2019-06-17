@@ -53,11 +53,14 @@ const coins = {
     ZEXO: 'Zaddex',
     SPLTEST: 'Sapling Test Chain',
     LUMBER: 'Lumberscout',
-    K64: 'Komodore64'
+    K64: 'Komodore64',
+    RFOX: 'Redfox Labs'
   },
   CRYPTO: {
     VRSC: 'Verus',
     VRSCTEST: 'Verus Testnet',
+    MTST3: 'MTST3',
+    LABS: 'LABS',
     CLF: 'CryptoLeaf',
     KEA: 'KEA',
     OVAL: 'OVAL',
@@ -370,4 +373,4 @@ const coins = {
   },
 };
 
-export default coins;
+module.exports = coins;

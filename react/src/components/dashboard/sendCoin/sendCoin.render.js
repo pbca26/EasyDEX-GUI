@@ -490,7 +490,7 @@ export const SendRender = function() {
                     { translate('SEND.SHIELD_COINBASE') } { _coin }
                   </h3>
                 }
-                { Config.native.zshieldcoinbase &&
+                { this.props.ActiveCoin.coin === 'VRSC' &&
                   this.props.ActiveCoin.mode === 'native' &&
                   this.props.ActiveCoin.addresses.private &&
                   this.props.ActiveCoin.addresses.private.length > 0 &&
