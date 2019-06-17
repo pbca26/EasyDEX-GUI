@@ -613,7 +613,7 @@ const LoginRender = function() {
                     <h4 className="hint color-white margin-bottom-60">
                       { translate('LOGIN.PROVIDE_YOUR_PRIV_OR_SEED') }
                     </h4>
-                    <button onClick={ this.multisigTest }>test</button>
+                    {/*<button onClick={ this.multisigTest }>test</button>*/}
                     <div className="form-group form-material floating col-sm-12 horizontal-padding-0 margin-top-20">
                       <input
                         type="password"
@@ -864,7 +864,7 @@ const LoginRender = function() {
                   <h4 className="hint color-white margin-bottom-40">
                     Choose a wallet type and provide a seed or a priv key.
                   </h4>
-                  <button onClick={ this.multisigTest }>test</button>
+                  {/*<button onClick={ this.multisigTest }>test</button>*/}
                   <select
                     className="form-control form-material margin-bottom-60"
                     name="walletType"

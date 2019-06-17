@@ -153,6 +153,7 @@ class Login extends React.Component {
       const binaryStr = reader.result;
       let contents;
       console.log(binaryStr);
+
       try {
         contents = JSON.parse(new Buffer.from(binaryStr, 'hex').toString());
       } catch (e) {
@@ -162,6 +163,10 @@ class Login extends React.Component {
 
       const redeemScriptDecoded = multisig.decodeRedeemScript(contents.redeemScript, { toHex: true });
 
+      console.log(contents.redeemScript);
+      
+      console.log(redeemScriptDecoded);
+      
       this.setState({
         multisigRestoreNofN: `${redeemScriptDecoded.m}-${redeemScriptDecoded.pubKeys.length}`,
         multisigRestorePubkeys: redeemScriptDecoded.pubKeys,
@@ -174,8 +179,6 @@ class Login extends React.Component {
         },
         step: 3,
       });
-
-      console.log(redeemScriptDecoded);
     };
 
     // throw error if multiple files uploaded
@@ -888,14 +891,14 @@ class Login extends React.Component {
       if (this.state.walletType === 'multisig' &&
           this.state.step === 3) {
         let multisigData = multisig.generate(
-          Number(this.state.multisigCreateNofN.split('-')[0]),
-          this.state.multisigCreatePubkeys,
+          Number(this.state.activeLoginSection === 'signup' ? this.state.multisigCreateNofN.split('-')[0] : this.state.multisigRestoreNofN.split('-')[0]),
+          this.state.activeLoginSection === 'signup' ? this.state.multisigCreatePubkeys : this.state.multisigRestorePubkeys,
           networks.kmd
         );
         multisigData.decoded = multisig.decodeRedeemScript(multisigData.redeemScript, { toHex: true });
         multisigData.backup = JSON.stringify({
           redeemScript: multisigData.redeemScript,
-          secretKey: this.state.multisigCreateSecret,
+          secretKey: this.state.activeLoginSection === 'signup' ? this.state.multisigCreateSecret : this.state.multisigRestoreSecret,
         });
 
         let buf = Buffer.alloc(multisigData.backup.length);
@@ -1002,7 +1005,7 @@ class Login extends React.Component {
                 let multisig;
 
                 if (walletType === 'multisig' &&
-                    this.state.activeLoginSection === 'create') {
+                    this.state.activeLoginSection === 'signup') {
                   multisig = {
                     redeemScript: this.state.multisigCreateData.redeemScript,
                     secretKey: this.state.multisigCreateSecret,
