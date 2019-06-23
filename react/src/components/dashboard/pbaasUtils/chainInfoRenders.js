@@ -1,6 +1,6 @@
 import React from 'react';
 import translate from '../../../translate/translate';
-import { satsToCoins } from '../../../util/satMath';
+import { fromSats } from 'agama-wallet-lib/src/utils';
 import { estimateReward } from './chainData';
 
 const EXPONENTIAL = 'exponential'
@@ -38,13 +38,13 @@ export const chainInfoTableRender = function(chain) {
             <tr>
               <td>{ translate('PBAAS.PREMINE_AMOUNT') }</td>
               <td>
-                { satsToCoins(Number(_chain.premine)) }
+                { fromSats(Number(_chain.premine)) }
               </td>
             </tr>
             <tr>
               <td>{ translate('PBAAS.NOTARIZATION_REWARD') }</td>
               <td>
-                { satsToCoins(Number(_chain.notarizationreward)) }
+                { fromSats(Number(_chain.notarizationreward)) }
               </td>
             </tr>
             <tr>
@@ -64,7 +64,7 @@ export const chainInfoTableRender = function(chain) {
             <tr>
               <td>{ translate('PBAAS.CONVERTIBLE_AMOUNT') }</td>
               <td>
-                { satsToCoins(Number(_chain.conversion)) }
+                { fromSats(Number(_chain.conversion)) }
               </td>
             </tr>
             <tr>
@@ -116,7 +116,7 @@ export const erasRender = function(chain) {
           <div className="capsule-title">{ translate('PBAAS.ERA') + ' ' + (index + 1)}</div>
           <div>
             { translate('PBAAS.INITIAL_REWARD') + ': ' }
-            { satsToCoins(Number(rewardEra.reward)) }
+            { fromSats(Number(rewardEra.reward)) }
           </div>
           <div>
             { translate('PBAAS.REWARD_DECAY_TYPE') + ': ' + decayType }
