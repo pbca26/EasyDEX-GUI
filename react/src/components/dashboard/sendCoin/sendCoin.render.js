@@ -442,6 +442,10 @@ export const _SendFormRender = function() {
 export const SendRender = function() {
   const _coin = this.props.ActiveCoin.coin;
   const _mode = this.props.ActiveCoin.mode;
+  const amountChanged = 
+    (this.state.spvPreflightRes && 
+    this.state.spvPreflightRes.value && 
+    fromSats(this.state.spvPreflightRes.value) !== Number(this.state.amount))
 
   if (this.props.renderFormOnly) {
     return (
@@ -579,9 +583,39 @@ export const SendRender = function() {
                     <strong>{ translate('INDEX.TO') }</strong>
                   </div>
                   <div className="col-lg-6 col-sm-6 col-xs-12 word-break--all">{ this.state.sendTo }</div>
-                  <div className="col-lg-6 col-sm-6 col-xs-6">
-                    { this.state.amount } { _coin }
+                  <div
+                    className={"col-lg-6 col-sm-6 col-xs-6" + 
+                    (amountChanged ? " color-warning bold" : "")}>
+                    <span
+                      data-tip={ amountChanged ? translate('DASHBOARD.AMOUNT_CHANGED_DESC') : null }
+                      data-html={ amountChanged ? true : false}
+                      data-for={ amountChanged ? "sendAmountChanged": null }>
+                    { amountChanged ?
+                      fromSats(this.state.spvPreflightRes.value) : this.state.amount } { _coin }
+                    </span>
                   </div>
+                  <ReactTooltip
+                    id="sendAmountChangedValue"
+                    effect="solid"
+                    className="text-left" />
+                  { amountChanged &&
+                    <div>
+                      <div className="col-lg-6 col-sm-6 col-xs-12 padding-top-10 bold">
+                        <span 
+                        className="color-warning"
+                        data-tip={ translate('DASHBOARD.AMOUNT_CHANGED_DESC') }
+                        data-html={ true }
+                        data-for="sendAmountChanged">
+                          <i className="icon fa-warning color-warning"/>
+                          { ' ' + translate('DASHBOARD.AMOUNT_CHANGED', this.state.amount, fromSats(this.state.spvPreflightRes.value)) }
+                        </span>
+                      </div>
+                      <ReactTooltip
+                      id="sendAmountChanged"
+                      effect="solid"
+                      className="text-left" />
+                    </div>
+                  }
                   { this.state.subtractFee &&
                     <div className="col-lg-6 col-sm-6 col-xs-12 padding-top-10 bold">
                       { translate('DASHBOARD.SUBTRACT_FEE') }
@@ -706,6 +740,12 @@ export const SendRender = function() {
                     <div className="word-break--all">{ JSON.stringify(this.state.ethPreflightRes.result) }</div>
                   </div>
                 }
+                { this.state.preflightError &&
+                  <div className="padding-top-10 bold color-error">
+                    <i className="icon fa-warning"/>
+                    { ' ' + this.state.preflightError }
+                  </div>
+                }
                 { _mode === 'eth' &&
                   ((erc20ContractId[_coin] && this.state.ethPreflightRes && !this.state.ethPreflightRes.msg) || !erc20ContractId[_coin]) &&
                   <div className="row">
@@ -769,10 +809,11 @@ export const SendRender = function() {
                       type="button"
                       className="btn btn-primary"
                       disabled={
-                        _mode === 'eth' &&
+                        (_mode === 'eth' &&
                         erc20ContractId[_coin] &&
                         this.state.ethPreflightRes &&
-                        ((this.state.ethPreflightRes.msg && this.state.ethPreflightRes.msg === 'error') || (!this.state.ethPreflightRes.msg && this.state.ethPreflightRes.notEnoughBalance))
+                        ((this.state.ethPreflightRes.msg && this.state.ethPreflightRes.msg === 'error') || (!this.state.ethPreflightRes.msg && this.state.ethPreflightRes.notEnoughBalance)))
+                        || this.state.preflightError || (_mode === 'spv' && !this.state.preflightError && !this.state.spvPreflightRes)
                       }
                       onClick={ Config.requirePinToConfirmTx && mainWindow.pinAccess ? this.verifyPin : () => this.changeSendCoinStep(2) }>
                       { translate('INDEX.CONFIRM') }

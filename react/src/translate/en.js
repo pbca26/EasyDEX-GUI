@@ -707,6 +707,8 @@ const LANG_EN = {
     SEND_TOTAL_REQ: 'Make sure you have both amount and fee entered to calculate final total.',
     SEND_TX_PROGRESS: 'The transaction submitted is processing. Once processed the transaction details will be displayed here.',
     SUBTRACT_FEE: 'Subtract fee from amount',
+    AMOUNT_CHANGED: 'Amount changed from @template@, see new highlighted amount above',
+    AMOUNT_CHANGED_DESC: 'This wallet has insufficient funds to cover the send amount + the current fee, so the transaction amount has been changed.',
     UNKNOWN: 'Unknown',
     IN: 'IN',
     OUT: 'OUT',
