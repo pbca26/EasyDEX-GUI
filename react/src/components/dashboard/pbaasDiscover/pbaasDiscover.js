@@ -26,7 +26,6 @@ import {
 } from '../../../actions/actionCreators'
 import translate from '../../../translate/translate';
 import DoubleScrollbar from 'react-double-scrollbar';
-import { coinsToSats } from '../../../util/satMath';
 import { estimateReward } from '../pbaasUtils/chainData';
 
 const BOTTOM_BAR_DISPLAY_THRESHOLD = 15;

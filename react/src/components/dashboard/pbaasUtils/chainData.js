@@ -1,4 +1,4 @@
-import { satsToCoins } from '../../../util/satMath';
+import { fromSats } from 'agama-wallet-lib/src/utils';
 const LINEAR_DECAY = 100000000
 
 export const estimateReward = (chainDefinition, latestHeight) => {
@@ -20,7 +20,7 @@ export const estimateReward = (chainDefinition, latestHeight) => {
     //If decay is linear, create y=mx+b line function to estimate reward
     let yChange = ((eraIndex < eras.length - 1) ? Number(eras[eraIndex + 1].reward) : 0) - Number(currentEra.reward)
     let xChange = Number(currentEra.eraend) - (eraIndex === 0 ? 0 : Number(eras[eraIndex - 1].eraend))
-    reward = satsToCoins((yChange/xChange)*(lastHeight) + Number(currentEra.reward))
+    reward = fromSats((yChange/xChange)*(lastHeight) + Number(currentEra.reward))
   } else {
     //If decay is halving, calculate how many halvings there have been
     let xChange = lastHeight - (eraIndex === 0 ? 0 : Number(eras[eraIndex - 1].eraend))
@@ -30,7 +30,7 @@ export const estimateReward = (chainDefinition, latestHeight) => {
     : 
       Number(currentEra.decay)
     
-    reward = satsToCoins((Number(currentEra.reward))/
+    reward = fromSats((Number(currentEra.reward))/
             (Math.pow(LINEAR_DECAY/(decay), Math.floor(xChange/Number(currentEra.halving)))))
   }
 

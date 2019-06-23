@@ -21,9 +21,9 @@ import {
 } from './pbaasCreate.renderCreateForm';
 import translate from '../../../translate/translate';
 import { addressVersionCheck } from 'agama-wallet-lib/src/keys';
+import { toSats } from 'agama-wallet-lib/src/utils';
 import networks from 'agama-wallet-lib/src/bitcoinjs-networks';
 import { updatePbaasFormState, defineAndCreateChain, triggerToaster } from '../../../actions/actionCreators';
-import { coinsToSats } from '../../../util/satMath';
 
 const { shell } = window.require('electron');
 
@@ -488,17 +488,17 @@ class PBaaSCreate extends React.Component {
 
     if (this.state.includePremine) {
       payload.address = this.state.premineAddr
-      payload.premine = coinsToSats(Number(this.state.premineAmount))
+      payload.premine = toSats(Number(this.state.premineAmount))
 
       if (this.state.publicPremine) {
-        payload.convertible = coinsToSats(Number(this.state.convertible))
+        payload.convertible = toSats(Number(this.state.convertible))
         payload.launchfee = Number(this.state.launchfee)
       }
     }
 
     payload.eras = this.state.rewardEras.map((rewardEra, index) => {
       let returnObj = {
-        reward: coinsToSats(Number(rewardEra.initReward)),
+        reward: toSats(Number(rewardEra.initReward)),
 
         decay: rewardEra.decay.type === LINEAR ? 
           LINEAR_DECAY 
@@ -514,7 +514,7 @@ class PBaaSCreate extends React.Component {
       return returnObj
     })
 
-    payload.notarizationreward = coinsToSats(Number(this.state.initCost))
+    payload.notarizationreward = toSats(Number(this.state.initCost))
     payload.billingperiod = Number(this.state.billingPeriod)
 
     payload.nodes = this.state.nodes.map((node, index) => {

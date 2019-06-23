@@ -107,6 +107,7 @@ class SendCoin extends React.Component {
       pin: '',
       noUtxo: false,
       addressBookSelectorOpen: false,
+      preflightError: null,
       // kv
       kvSend: false,
       kvSendTag: '',
@@ -883,6 +884,7 @@ class SendCoin extends React.Component {
           ethPreflightSendInProgress: false,
           pin: '',
           noUtxo: false,
+          preflightError: null
         });
         if (this.props.cb) {
           setTimeout(() => {
@@ -929,6 +931,7 @@ class SendCoin extends React.Component {
           kvHex,
           spvPreflightRes: null,
           ethPreflightRes: null,
+          preflightError: null
         }));
 
         if (this.props.cb) {
@@ -972,7 +975,8 @@ class SendCoin extends React.Component {
               this.setState(Object.assign({}, this.state, {
                 spvPreflightSendInProgress: false,
                 spvDpowVerificationWarning: 'n/a',
-                noUtxo: sendPreflight.result === 'no valid utxo' ? true : false,
+                noUtxo: (sendPreflight && sendPreflight.result === 'no valid utxo') ? true : false,
+                preflightError: sendPreflight && sendPreflight.msg === 'error' ? sendPreflight.result : null
               }));
               if (this.props.cb) {
                 setTimeout(() => {
@@ -1182,17 +1186,17 @@ class SendCoin extends React.Component {
           )
         );
         valid = false;
-      } else if (
-        (Number(_amountSats) + (_customFee || _fees[_coin]) === _balanceSats) || 
-        Number(_amountSats) === _fees[_coin]) {
+      } /*else if (
+        ((Number(_amountSats) + (_customFee || _fees[_coin]) === _balanceSats) || 
+        Number(_amountSats) === _fees[_coin]) && _coin !== 'BTC') {
           Store.dispatch(
             triggerToaster(
-              `${translate('SEND.BALANCE_LESS_THAN_FEE', (_customFee || _fees[_coin]))}`,
+              `${translate('SEND.BALANCE_LESS_THAN_FEE', fromSats(_customFee || _fees[_coin]))}`,
               translate('TOASTR.WALLET_NOTIFICATION'),
               'error'
             )
           );
-        }
+        }*/
 
       if (this.state.fee &&
           !isPositiveNumber(this.state.fee)) {
@@ -1301,32 +1305,6 @@ class SendCoin extends React.Component {
 
     if (_mode === 'native') {
       const _balance = this.props.ActiveCoin.balance;
-
-      /*if (((!this.state.sendFrom && this.state.addressType === 'public') &&
-          this.state.sendTo &&
-          this.state.sendTo.length === 34 &&
-          _balance &&
-          _balance.transparent &&
-          Number(Number(this.state.amount) + (this.state.subtractFee ? 0 : 0.0001)) > Number(_balance.transparent)) ||
-          (this.state.addressType === 'public' &&
-          this.state.sendTo &&
-          this.state.sendTo.length >= 34 &&
-          this.state.sendFrom &&
-          Number(Number(this.state.amount) + 0.0001) > Number(this.state.sendFromAmount)) ||
-          (this.state.addressType === 'private' &&
-          this.state.sendTo &&
-          this.state.sendTo.length >= 34 &&
-          this.state.sendFrom &&
-          Number(Number(this.state.amount) + 0.0001) > Number(this.state.sendFromAmount))) {
-        Store.dispatch(
-          triggerToaster(
-            Number(this.state.sendFromAmount || _balance.transparent) > 0 ? `${translate('SEND.INSUFFICIENT_FUNDS')} ${translate('SEND.MAX_AVAIL_BALANCE')} ${Number(this.state.sendFromAmount || _balance.transparent)} ${_coin}` : translate('SEND.INSUFFICIENT_FUNDS'),
-            translate('TOASTR.WALLET_NOTIFICATION'),
-            'error'
-          )
-        );
-        valid = false;
-      }*/
 
       if (this.state.addressType === 'public') {
         if (this.state.sendFrom && this.state.sendTo) {

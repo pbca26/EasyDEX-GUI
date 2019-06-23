@@ -7,7 +7,7 @@ import Spinner from '../spinner/spinner';
 import ReactTable from 'react-table';
 import mainWindow, { staticVar } from '../../../util/mainWindow';
 import { tableSorting } from '../pagination/utils';
-import { satsToCoins } from '../../../util/satMath';
+import { fromSats } from 'agama-wallet-lib/src/utils';
 import { estimateReward } from '../pbaasUtils/chainData';
 
 const VRSC_LOGO_DIR = `assets/images/cryptologo/btc/vrsc.png`
@@ -125,7 +125,7 @@ export const lastRewardRender = function(chain) {
 export const notaryRewardRender = function(chain) {
   const reward = chain.chaindefinition.notarizationreward
 
-  return (<span>{ satsToCoins(Number(reward)) }</span>)
+  return (<span>{ fromSats(Number(reward)) }</span>)
 }
 
 export const lastHeightHeaderRender = function() {
