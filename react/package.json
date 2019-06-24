@@ -39,7 +39,7 @@
   "dependencies": {
     "@babel/core": "^7.0.0",
     "agama-wallet-lib": "https://github.com/VerusCoin/agama-wallet-lib#dev",
-    "bitcoinjs-lib": "https://github.com/SuperNETorg/bitcoinjs-lib.git",
+    "bitcoinjs-lib": "https://github.com/SuperNETorg/bitcoinjs-lib#2325ac228f03efcd5b39aad8a672e79c407dcf00",
     "bitgo-utxo-lib": "git://github.com/VerusCoin/bitgo-utxo-lib",
     "bluebird": "^3.5.0",
     "ethers": "git://github.com/VerusCoin/ethers.js",
