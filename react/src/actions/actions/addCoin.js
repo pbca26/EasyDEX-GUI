@@ -277,12 +277,6 @@ export const apiHerd = (coin, mode, path, startupParams, genproclimit, pubkey, c
       mode
     );
   } else {
-    const supply = startAssetChain(
-      path.result,
-      coin,
-      mode,
-      true
-    );
     acData = startAssetChain(
       path.result,
       coin,

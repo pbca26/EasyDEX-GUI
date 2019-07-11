@@ -16,8 +16,7 @@ export const startCurrencyAssetChain = (confpath, coin, mode) => {
 
 export const startAssetChain = (confpath, coin, mode, getSuppyOnly) => {
 	const assetChainPorts = staticVar.assetChainPorts;
-
-	if (mode === '-1') {
+	if (Number(mode) === -1) {
 		if (getSuppyOnly) {
 			return staticVar.chainParams[coin].supply;
 		} else {

@@ -762,7 +762,7 @@ const LANG_EN = {
     JUMBLR_PAUSED: 'Jumblr paused',
     DATADIR_UNABLE_TO_CLEAR: 'Unable to clear',
     DATADIR_CLEARED: 'data folder is cleared',
-    PORT_IS_TAKEN: 'Port @template@ is already taken!',
+    PORT_IS_TAKEN: 'Port @template@ is already taken! Check if you have another daemon instance running.',
     ERROR_STARTING_DAEMON: 'Error starting @template@ daemon.',
     KOMODO_DATADIR_INVALID: 'Komodo datadir path is invalid.<br>' +
                             'It must be an absolute path to an existing folder that doesn\'t contain spaces and/or any special characters.',
