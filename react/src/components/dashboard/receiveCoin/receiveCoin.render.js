@@ -233,7 +233,7 @@ export const ReceiveCoinRender = function() {
                                 </a>
                               </li>
                             }
-                            { this.props.coin !== 'CHIPS' &&
+                            { this.props.coin !== 'CHIPS' && this.props.coin !== 'KMD' &&
                               <li>
                                 <a onClick={ () => this.getNewAddress('private') }>
                                   <i className="icon fa-eye-slash"></i> { translate('INDEX.PRIVATE_Z_ADDRESS') }
