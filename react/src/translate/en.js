@@ -1196,6 +1196,8 @@ const LANG_EN = {
     QR_COIN_MISMATCH_MESSAGE_END: ' active in your wallet. Please, check that you have same coin active that you try to import!',
     QR_COIN_MISMATCH_TITLE: 'Coin Mismatch',
     SEND_NATIVE_SYNC_WARNING: 'Your wallet is not fully synced! Please wait until it reached 100% to avoid possible transaction send implications.',
+    NONZERO_INTEREST_WARNING: 'Your @template@ interest balance is above 0, sending before claiming your rewards will donate them to miners/notaries. If you woud like to claim them, return the to transaction screen.',
+    NONZERO_INTEREST_CONFIRM: 'I aknowledge that by sending this transaction, my interest rewards may be donated.',
     WARNING_FEE_EXCEEDS_DEFAULT_THRESHOLD: 'Provided fee exceeds default fee @template@ times!',
     PRIVATE_MESSAGE: 'Private Message',
     PRIVATE_MESSAGE_DESC: 'Attach a secret message to your transaction',
