@@ -38,7 +38,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/core": "^7.0.0",
-    "agama-wallet-lib": "https://github.com/VerusCoin/agama-wallet-lib#dev",
+    "agama-wallet-lib": "https://github.com/VerusCoin/agama-wallet-lib.git#dev",
     "bitcoinjs-lib": "https://github.com/SuperNETorg/bitcoinjs-lib.git",
     "bitgo-utxo-lib": "git://github.com/VerusCoin/bitgo-utxo-lib",
     "bluebird": "^3.5.0",
