@@ -132,6 +132,7 @@ class SendCoin extends React.Component {
       // ztx fee
       ztxSelectorOpen: false,
       ztxFee: DEFAULT_ZTX_FEE,
+      donateInterest: false
     };
     this.defaultState = JSON.parse(JSON.stringify(this.state));
     this.updateInput = this.updateInput.bind(this);
@@ -296,6 +297,12 @@ class SendCoin extends React.Component {
       kvSendContent: 'test test test test',
     });
   }*/
+
+  toggleDonateInterest() {
+    this.setState({
+      donateInterest: !this.state.donateInterest
+    });
+  }
 
   toggleKvSend() {
     this.setState({

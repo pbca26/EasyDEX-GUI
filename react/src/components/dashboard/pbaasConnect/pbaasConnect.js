@@ -59,7 +59,7 @@ class PBaaSConnect extends React.Component {
           }, () => {
             Store.dispatch(
               triggerToaster(
-                _chain + ' ' + translate('PBAAS.CHAIN_FOUND'),
+                translate('PBAAS.CHAIN_FOUND', _chain),
                 translate('TOASTR.SUCCESS'),
                 'success'
               )

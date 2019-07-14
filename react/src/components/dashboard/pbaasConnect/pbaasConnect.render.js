@@ -43,11 +43,11 @@ export const PBaaSConnectRender = function() {
         {this.state.resultsShown && 
           <div className="panel info-panel">
             <div className="panel-heading">
-              <h3 className="panel-title">{ translate('PBAAS.CHAIN_PARAMS') }</h3>
+              <h3 className="panel-title">{ translate('PBAAS.CHAIN_FOUND', this.state.chainInfo.name) }</h3>
             </div>
             <div className="panel-body container-fluid">
               <div className="font-weight-600">{ translate('PBAAS.CONFIRM_DATA') }</div>
-              <div className="chain-info-description">{ translate('PBAAS.CONFIRM_DATA_DESC') }</div>
+              <div className="chain-info-description">{ translate('PBAAS.CHAIN_FOUND_DESC') }</div>
               { chainInfoTableRender.call(this, this.state.chainInfo) }
               <div className="chain-options">
                 <button

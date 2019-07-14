@@ -322,6 +322,32 @@ export const _SendFormRender = function() {
               <span className="desc">{ translate('SEND.SEND_NATIVE_SYNC_WARNING') }</span>
             </div>
           }
+          { this.props.ActiveCoin &&
+            this.props.ActiveCoin.balance &&
+            this.props.ActiveCoin.balance.interest > 0 &&
+            <div>
+              <div className="col-lg-12 padding-top-20 padding-bottom-20 send-coin-sync-warning">
+                <i className="icon fa-warning color-warning margin-right-5"></i>&nbsp;
+                <span className="desc">{ translate('SEND.NONZERO_INTEREST_WARNING', this.props.ActiveCoin.coin) }</span>
+              </div>
+              <div className="col-lg-12 padding-top-20 padding-bottom-20 send-coin-sync-warning">
+                <label className="switch">
+                  <input
+                    type="checkbox"
+                    checked={ this.state.donateInterest }
+                    readOnly />
+                  <div
+                    className="slider"
+                    onClick={ this.toggleDonateInterest.bind(this) }></div>
+                </label>
+                <div
+                  className="toggle-label"
+                  onClick={ this.toggleDonateInterest.bind(this) }>
+                  { translate('SEND.NONZERO_INTEREST_CONFIRM') }
+                </div>
+              </div>
+            </div>
+          }
           <div className="col-lg-12">
             <button
               type="button"
@@ -331,7 +357,9 @@ export const _SendFormRender = function() {
                 !this.state.sendTo ||
                 !this.state.amount ||
                 (_coin === 'BTC' && !Number(this.state.btcFeesSize)) ||
-                (_mode === 'eth' && !this.state.ethFees)
+                (_mode === 'eth' && !this.state.ethFees) ||
+                (this.props.ActiveCoin && this.props.ActiveCoin.balance && 
+                  this.props.ActiveCoin.balance.interest > 0 && !this.state.donateInterest)
               }>
               { translate('INDEX.SEND') } { this.state.amount } { _coin }
             </button>
