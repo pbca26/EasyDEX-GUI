@@ -751,7 +751,7 @@ const LANG_EN = {
     UNABLE_TO_COPY_PUBKEY: 'Unable to copy pubkey',
     INVALID_PUBKEY: 'Invalid pubkey',
     YOUR_PUBKEY: 'Your pubkey ',
-    CORRESPONDS_TO_T_ADDR: ' corresponds to ',    
+    CORRESPONDS_TO_T_ADDR: ' corresponds to ',
     INCORRECT_WIF: 'Incorrect WIF key format',
     ERROR: 'Error',
     FAILED_TO_VERIFY_ADDR: 'Failed to verify address',
@@ -1101,7 +1101,7 @@ const LANG_EN = {
   },
   SEND: {
     INCLUDE_NON_STANDARD_FEE: 'Include fee',
-    INCLUDE_NON_STANDARD_FEE_DEFAULT: 'default (0.0001)',  
+    INCLUDE_NON_STANDARD_FEE_DEFAULT: 'default (0.0001)',
     SHIELD_COINBASE: 'Shield coinbase',
     COINBASE_SHIELD_SUCCESS: 'Coinbase shield is in progress. Check OPID section for status after a few minutes.',
     COINBASE_SHIELD_ERROR: 'Unable to shield coinbase.',
@@ -1196,7 +1196,7 @@ const LANG_EN = {
     QR_COIN_MISMATCH_MESSAGE_END: ' active in your wallet. Please, check that you have same coin active that you try to import!',
     QR_COIN_MISMATCH_TITLE: 'Coin Mismatch',
     SEND_NATIVE_SYNC_WARNING: 'Your wallet is not fully synced! Please wait until it reached 100% to avoid possible transaction send implications.',
-    NONZERO_INTEREST_WARNING: 'Your @template@ interest balance is above 0, sending before claiming your rewards will donate them to miners/notaries. If you woud like to claim them, return the to transaction screen.',
+    NONZERO_INTEREST_WARNING: 'Your @template@ interest balance is above 0. Sending before claiming your rewards will donate the interest to miners/notaries. If you would like to claim them instead of donating, return the to transaction screen.',
     NONZERO_INTEREST_CONFIRM: 'I acknowledge that by sending this transaction, my interest rewards may be donated.',
     WARNING_FEE_EXCEEDS_DEFAULT_THRESHOLD: 'Provided fee exceeds default fee @template@ times!',
     PRIVATE_MESSAGE: 'Private Message',
@@ -1434,10 +1434,10 @@ const LANG_EN = {
     LAUNCH_OPTIONS_DESC: 'Here you can configure your chain launch details',
     ERA: 'Era',
     REWARD_ERAS: 'Reward Eras',
-    REWARD_ERAS_DESC: 'Here is the place to configure your block reward strucure for miners and stakers. To do this, you can create up to three reward eras, '+
-    'each of which has an initial block reward, a method through which the block reward can decrease over time, and a specified ending block (unless it is the last era, in which case, it does not end until the chain ends).' + 
-    ' To choose how your block reward decreases over time, you can either select the more traditional halving style, in which case you specify how frequently (every how many blocks) your block rewards decreases, and the magnitude' + 
-    ' of that decrease, or, if you are editing a non-final era, you can select a linear block reward decay, in which the block reward will linearly change until ' + 
+    REWARD_ERAS_DESC: 'Here is the place to configure your block reward structure for miners and stakers. To do this, you can create up to three reward eras, '+
+    'each of which has an initial block reward, a method through which the block reward can decrease over time, and a specified ending block (unless it is the last era, in which case, it does not end until the chain ends).' +
+    ' To choose how your block reward decreases over time, you can either select the more traditional halving style, in which case you specify how frequently (every how many blocks) your block rewards decreases, and the magnitude' +
+    ' of that decrease, or, if you are editing a non-final era, you can select a linear block reward decay, in which the block reward will linearly change until ' +
     ' it reaches the next era\'s initial block reward. Add an era to begin.',
     INITIAL_REWARD: 'Initial Reward',
     INITIAL_REWARD_HOLDER: 'This era\'s initial reward',
@@ -1503,8 +1503,8 @@ const LANG_EN = {
     MERGE_MINING_MAIN_CHAIN: 'Merge mining with main chain',
     NOT_MERGE_MINING: 'Not merge mining',
     CREATE_CHAIN: 'Chain Creator Form',
-    CREATE_CHAIN_DESC: 'This form will allow you to create your own Public Blockchain as a Service, a secure, decentralized blockchain with cutting edge zero knowledge proof technology. Once it is created, ' + 
-    'you will be able to mine it with up to fourteen other chains. All you will need is the currency of the main chain, either VRSCTEST or VRSC, depending on what you\'re using, and two nodes with public ' + 
+    CREATE_CHAIN_DESC: 'This form will allow you to create your own Public Blockchain as a Service, a secure, decentralized blockchain with cutting edge zero-knowledge proof technology. Once it is created, ' +
+    'you will be able to mine it with up to fourteen other chains. All you will need is the currency of the main chain, either VRSCTEST or VRSC, depending on what you\'re using, and two nodes with public ' +
     ' IP addresses (in the very near future they will be optional, and you will be able to automatically use other people\'s nodes at a cost, but for now, on the testnet, please enter two working nodes and their ports).',
     FORM_COIN_WARNING: 'ALL amount values in this form are coin values, NOT satoshis, unless specifically stated otherwise.',
     LAST_NOTARY_HEIGHT: 'Last Notarized Height',
