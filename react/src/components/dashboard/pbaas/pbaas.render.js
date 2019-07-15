@@ -8,6 +8,7 @@ import PBaaSConnect from '../pbaasConnect/pbaasConnect';
 import PBaaSCreate from '../pbaasCreate/pbaasCreate';
 import PBaaSDiscover from '../pbaasDiscover/pbaasDiscover';
 import PBaaSHelp from '../pbaasHelp/pbaasHelp';
+import PBaaSConvert from '../pbaasConvert/pbaasConvert';
 
 const PBaaSRender = function() {
   return (
@@ -32,6 +33,11 @@ const PBaaSRender = function() {
         { this.isSectionActive('help') &&
           <div>
             <PBaaSHelp />
+          </div>
+        }
+        { this.isSectionActive('convert') &&
+          <div>
+            <PBaaSConvert />
           </div>
         }
       </div>

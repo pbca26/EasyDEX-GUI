@@ -10,9 +10,6 @@ const { shell } = window.require('electron');
 class PBaaSNav extends React.Component {
   constructor() {
     super();
-    this.state = {
-      coin: 'VRSC',
-    };
   }
 
   isSectionActive(section) {

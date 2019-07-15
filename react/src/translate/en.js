@@ -1396,6 +1396,7 @@ const LANG_EN = {
     CANCEL: 'Cancel',
     DISCOVER: 'Discover',
     CREATE: 'Create',
+    CONVERT: 'Convert',
     HELP: 'Help',
     NAME: 'Name',
     PREMINE: 'Premine',

@@ -8,6 +8,7 @@ const CONNECT = 'connect'
 const CREATE = 'create'
 const DISCOVER = 'discover'
 const HELP = 'help'
+const CONVERT = 'convert'
 
 const PBaaSNavRender = function() {
   return (
@@ -40,6 +41,12 @@ const PBaaSNavRender = function() {
               <a onClick={ () => this.changeActiveSection(CREATE) }>
                 <span className="glyphicon glyphicon-wrench" aria-hidden="true"/>
                 { ' ' + translate('PBAAS.CREATE') }
+              </a>
+            </li>
+            <li className={ this.isSectionActive(CONVERT) ? "active" : "" }>
+              <a onClick={ () => this.changeActiveSection(CONVERT) }>
+                <span className="glyphicon glyphicon-transfer" aria-hidden="true"/>
+                { ' ' + translate('PBAAS.CONVERT') }
               </a>
             </li>
             {/*<li className={ this.isSectionActive(HELP) ? "active" : "" }>
