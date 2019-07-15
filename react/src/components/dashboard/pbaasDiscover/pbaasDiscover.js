@@ -61,7 +61,7 @@ class PBaaSDiscover extends React.Component {
   }
 
   onSearchTermChange(newSearchTerm) {
-    let _chains = this.props.PBaaS.definedChains
+    let _chains = this.props.PBaaSMain.definedChains
     let _searchTerm = newSearchTerm
     
     if (!isNaN(_searchTerm)) {
@@ -82,7 +82,7 @@ class PBaaSDiscover extends React.Component {
   }
 
   _setChains() {
-    let _chains = this.props.PBaaS.definedChains
+    let _chains = this.props.PBaaSMain.definedChains
     let _stateChange = {}
     
     if (_chains &&
@@ -211,7 +211,7 @@ class PBaaSDiscover extends React.Component {
   }
 
   renderChainsList() {  
-    let _chains = this.props.PBaaS.definedChains
+    let _chains = this.props.PBaaSMain.definedChains
 
     if (_chains.length) {
       return (
@@ -231,7 +231,7 @@ class PBaaSDiscover extends React.Component {
   }
 
   toggleChainInfoModal(display, chainIndex) {
-    const _chains = this.props.PBaaS.definedChains
+    const _chains = this.props.PBaaSMain.definedChains
 
     if (this.state.searchTerm || 
         !this.state.includePremine || 
@@ -287,7 +287,7 @@ class PBaaSDiscover extends React.Component {
   }
 
   generateItemsListColumns() {
-    const _chains = this.props.PBaaS.definedChains
+    const _chains = this.props.PBaaSMain.definedChains
 
     let columns = [{
       id: 'name',
@@ -356,11 +356,11 @@ class PBaaSDiscover extends React.Component {
 const mapStateToProps = (state) => {
   return {
     Main: state.Main,
-    PBaaS: {
-      activeSectionPbaas: state.PBaaS.activeSectionPbaas,
-      showChainInfo: state.PBaaS.showChainInfo,
-      showChainInfoChainIndex: state.PBaaS.showChainInfoChainIndex,
-      definedChains: state.PBaaS.definedChains
+    PBaaSMain: {
+      activeSectionPbaas: state.PBaaSMain.activeSectionPbaas,
+      showChainInfo: state.PBaaSMain.showChainInfo,
+      showChainInfoChainIndex: state.PBaaSMain.showChainInfoChainIndex,
+      definedChains: state.PBaaSMain.definedChains
     }
   };
 };

@@ -3,12 +3,12 @@ import translate from '../../../translate/translate';
 import mainWindow from '../../../util/mainWindow';
 import ReactTooltip from 'react-tooltip';
 import Config from '../../../config';
-
-const CONNECT = 'connect'
-const CREATE = 'create'
-const DISCOVER = 'discover'
-const HELP = 'help'
-const CONVERT = 'convert'
+import {
+  CONNECT,
+  CREATE,
+  DISCOVER,
+  CONVERT
+} from '../../../util/constants'
 
 const PBaaSNavRender = function() {
   return (

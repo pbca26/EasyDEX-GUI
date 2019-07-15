@@ -1522,7 +1522,9 @@ const LANG_EN = {
     PBAAS_QUESTION_HOW_CREATE: 'How do I create a chain?',
     PBAAS_QUESTION_HOW_CONNECT: 'How do I connect to a chain?',
     NO_CHAINS: 'No chains found',
-    FAILED_LOAD_CHAIN: 'Failed to load chain'
+    FAILED_LOAD_CHAIN: 'Failed to load chain',
+    QUICK_CONVERT: 'Direct (Quick & Easy)',
+    CONTROL_CENTER: 'Control Center (Advanced)'
   }
 };
 

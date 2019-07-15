@@ -5,9 +5,10 @@ import ReactTooltip from 'react-tooltip';
 import Config from '../../../config';
 import Plot from 'react-plotly.js';
 import Select from 'react-select';
-
-const EXPONENTIAL = 'exponential'
-const LINEAR = 'linear'
+import {
+  EXPONENTIAL,
+  LINEAR
+} from '../../../util/constants';
 
 export const _nameFormRender = function() {
   return (

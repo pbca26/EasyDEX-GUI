@@ -9,6 +9,7 @@ import PBaaSCreate from '../pbaasCreate/pbaasCreate';
 import PBaaSDiscover from '../pbaasDiscover/pbaasDiscover';
 import PBaaSHelp from '../pbaasHelp/pbaasHelp';
 import PBaaSConvert from '../pbaasConvert/pbaasConvert';
+import { CONNECT } from '../../../util/constants'
 
 const PBaaSRender = function() {
   return (
@@ -17,7 +18,7 @@ const PBaaSRender = function() {
         //className={ 'page-main page-main-pbaas navbar-collapse' }
         id="pbaas-dashboard">
         <PBaaSNav/>
-        <div className={ this.isSectionActive('connect') ? '' : 'hide' }>
+        <div className={ this.isSectionActive(CONNECT) ? '' : 'hide' }>
           <PBaaSConnect/>
         </div>
         { this.isSectionActive('discover') &&

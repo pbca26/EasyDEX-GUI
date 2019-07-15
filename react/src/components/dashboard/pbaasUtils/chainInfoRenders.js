@@ -2,10 +2,11 @@ import React from 'react';
 import translate from '../../../translate/translate';
 import { fromSats } from 'agama-wallet-lib/src/utils';
 import { estimateReward } from './chainData';
-
-const EXPONENTIAL = 'exponential'
-const LINEAR = 'linear'
-const LINEAR_DECAY = 100000000
+import {
+  EXPONENTIAL,
+  LINEAR,
+  LINEAR_DECAY
+} from '../../../util/constants';
 
 export const chainInfoTableRender = function(chain) {
   let _chain

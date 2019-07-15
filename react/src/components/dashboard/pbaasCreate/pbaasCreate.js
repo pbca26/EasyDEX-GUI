@@ -24,23 +24,23 @@ import { addressVersionCheck } from 'agama-wallet-lib/src/keys';
 import { toSats } from 'agama-wallet-lib/src/utils';
 import networks from 'agama-wallet-lib/src/bitcoinjs-networks';
 import { updatePbaasFormState, defineAndCreateChain, triggerToaster } from '../../../actions/actionCreators';
-
+import { 
+  EXPONENTIAL,
+  LINEAR,
+  END,
+  FREQUENCY,
+  MAGNITUDE,
+  LINEAR_DECAY,
+  MIN_BILLING_PERIOD
+} from '../../../util/constants';
 const { shell } = window.require('electron');
-
-const EXPONENTIAL = 'exponential'
-const LINEAR = 'linear'
-const END = 'END'
-const FREQUENCY = 'FREQUENCY'
-const MAGNITUDE = 'MAGNITUDE'
-const LINEAR_DECAY = 100000000
-const MIN_BILLING_PERIOD = 480
 
 class PBaaSCreate extends React.Component {
   constructor(props) {
     super(props);
 
-    if (this.props.PBaaS.formState.currentStep > -1) {
-      this.state = this.props.PBaaS.formState
+    if (this.props.PBaaSMain.formState.currentStep > -1) {
+      this.state = this.props.PBaaSMain.formState
     } else {
       this.state = {
         currentStep: 0,
@@ -628,9 +628,9 @@ class PBaaSCreate extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    PBaaS: {
-      activeSectionPbaas: state.PBaaS.activeSectionPbaas,
-      formState: state.PBaaS.formState
+    PBaaSMain: {
+      activeSectionPbaas: state.PBaaSMain.activeSectionPbaas,
+      formState: state.PBaaSMain.formState
     }
   };
 };

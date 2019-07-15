@@ -66,7 +66,7 @@ class PbaasChainInfo extends React.Component {
       const _chainInfo = _PBaaS.definedChains[_PBaaS.showChainInfoChainIndex];
 
       if (_chainInfo &&
-          this.props.PBaaS.showChainInfoChainIndex !== _PBaaS.showChainInfoChainIndex) {
+          this.props.PBaaSMain.showChainInfoChainIndex !== _PBaaS.showChainInfoChainIndex) {
         this.setState({
           className: _PBaaS.showChainInfo ? 'show fade' : 'show out',
           chainInfo: _chainInfo
@@ -230,11 +230,11 @@ const mapStateToProps = (state) => {
     Main: {
       coins: state.Main.coins
     },
-    PBaaS: {
-      definedChains: state.PBaaS.definedChains,
-      showChainInfoChainIndex: state.PBaaS.showChainInfoChainIndex,
-      showChainInfo: state.PBaaS.showChainInfo,
-      activeSectionPbaas: state.PBaaS.activeSectionPbaas
+    PBaaSMain: {
+      definedChains: state.PBaaSMain.definedChains,
+      showChainInfoChainIndex: state.PBaaSMain.showChainInfoChainIndex,
+      showChainInfo: state.PBaaSMain.showChainInfo,
+      activeSectionPbaas: state.PBaaSMain.activeSectionPbaas
     }
   };
 };

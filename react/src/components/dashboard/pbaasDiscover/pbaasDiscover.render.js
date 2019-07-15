@@ -10,11 +10,6 @@ import { tableSorting } from '../pagination/utils';
 import { fromSats } from 'agama-wallet-lib/src/utils';
 import { estimateReward } from '../pbaasUtils/chainData';
 
-const VRSC_LOGO_DIR = `assets/images/cryptologo/btc/vrsc.png`
-const EXPONENTIAL = 'exponential'
-const LINEAR = 'linear'
-const LINEAR_DECAY = 100000000
-
 export const PBaaSDiscoverRender = function() {
   return (
     <span>
@@ -75,7 +70,7 @@ export const PBaaSDiscoverRender = function() {
 }
 
 export const ChainsListRender = function() {
-  const _definedChains = this.props.PBaaS.definedChains
+  const _definedChains = this.props.PBaaSMain.definedChains
   let _data;
 
   if (_definedChains &&
@@ -161,7 +156,7 @@ export const chainDetailRender = function(chainIndex) {
     <button
       type="button"
       className="btn btn-xs white btn-info waves-effect waves-light btn-kmdtxid"
-      onClick={ () => this.toggleChainInfoModal(!this.props.PBaaS.showChainInfo, chainIndex) }>
+      onClick={ () => this.toggleChainInfoModal(!this.props.PBaaSMain.showChainInfo, chainIndex) }>
       <i className="icon fa-search"></i>
     </button>
   );

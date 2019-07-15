@@ -155,8 +155,8 @@ class PBaaSConnect extends React.Component {
 const mapStateToProps = (state) => {
   return {
     Main: state.Main,
-    PBaaS: {
-      activeSectionPbaas: state.PBaaS.activeSectionPbaas
+    PBaaSMain: {
+      activeSectionPbaas: state.PBaaSMain.activeSectionPbaas
     }
   };
 };

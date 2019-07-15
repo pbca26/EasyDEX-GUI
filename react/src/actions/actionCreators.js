@@ -40,6 +40,9 @@ import {
   UPDATE_PBAAS_FORM_STATE,
   UPDATE_DEFINED_CHAINS,
   PBAAS_ACTIVE_CHAININFO_MODAL,
+  CHANGE_PBAAS_CONVERT_ACTIVE_SECTION,
+  UPDATE_PBAAS_QUICK_CONVERT_FORM_STATE,
+  UPDATE_PBAAS_CC_FORM_STATE,
   UPDATE_MINING_INFO,
   TOGGLE_MINING_OPTIONS
 } from './storeType';
@@ -384,6 +387,27 @@ export const updatePbaasDefinedChains = (definedChains) => {
   return {
     type: UPDATE_DEFINED_CHAINS,
     definedChains: definedChains
+  }
+}
+
+export const pbaasConvertChangeSectionState = (sectionName) => {
+  return {
+    type: CHANGE_PBAAS_CONVERT_ACTIVE_SECTION,
+    activeSection: sectionName
+  }
+}
+
+export const updatePbaasQuickConvertFormState = (state) => {
+  return {
+    type: UPDATE_PBAAS_QUICK_CONVERT_FORM_STATE,
+    quickFormState: state
+  }
+}
+
+export const updatePbaasCCFormState = (state) => {
+  return {
+    type: UPDATE_PBAAS_CC_FORM_STATE,
+    conversionControlFormState: state
   }
 }
 
