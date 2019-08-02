@@ -9,9 +9,21 @@ class PBaaSConvert extends React.Component {
     super(props);
   }
 
+  isSectionActive(section) {
+    return this.props.PBaaSConvert.activeSection === section;
+  }
+
   render() {
     return PBaaSConvertRender.call(this);
   }
 }
 
-export default connect()(PBaaSConvert);
+const mapStateToProps = (state) => {
+  return {
+    PBaaSConvert: {
+      activeSection: state.PBaaSConvert.activeSection
+    }
+  };
+};
+
+export default connect(mapStateToProps)(PBaaSConvert);

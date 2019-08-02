@@ -1524,7 +1524,22 @@ const LANG_EN = {
     NO_CHAINS: 'No chains found',
     FAILED_LOAD_CHAIN: 'Failed to load chain',
     QUICK_CONVERT: 'Direct (Quick & Easy)',
-    CONTROL_CENTER: 'Control Center (Advanced)'
+    CONTROL_CENTER: 'Control Center (Advanced)',
+    FILL_CONVERT_FORM: 'Fill Conversion Form',
+    CONFIRMING_CONVERSION: 'Confirming',
+    PROCESSING_CONVERSION: 'Processing Conversion',
+    FILL_CONVERT_FORM_DESC: 'Enter details',
+    CONFIRMING_CONVERSION_DESC: 'Double check your input',
+    PROCESSING_CONVERSION_DESC: 'Convert your currency!',
+    AMOUNT_CONVERT_FROM: 'Amount to convert from:',
+    AMOUNT_CONVERT_TO: 'Amount converted to:',
+    AMOUNT_CONVERT_FROM_HOLDER: 'Enter @template@ amount',
+    AMOUNT_CONVERT_TO_HOLDER: 'Est. conversion result',
+    COIN_CONVERT_FROM: 'Coin to convert from:',
+    COIN_CONVERT_TO: 'Coin to convert to:',
+    SELECT_CONVERT_COIN_FROM_HOLDER: 'Select a coin to convert from',
+    EST_CONVERSION_RATE: 'Estimated conversion rate:',
+    SELECT_CONVERT_COIN_TO_HOLDER: 'Select a coin to convert to'
   }
 };
 

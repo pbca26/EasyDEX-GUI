@@ -11,17 +11,12 @@ import {
 } from '../../../util/coinHelper';
 import translate from '../../../translate/translate';
 import ReactImageFallback from "react-image-fallback";
+import { 
+  DEFAULT_CHAIN,
+  MAX_COINNAME_DISPLAY_LENGTH,
+  COINS_TO_SKIP
+} from '../../../util/constants'
 
-const _skipCoins = [
-  'KMD',
-  'JUMBLR',
-  'MESH',
-  'MVP',
-];
-
-const DEFAULT_CHAIN = "defaultChain.png"
-
-const MAX_LENGTH = 10
 
 const WalletsMainRender = function() {
   const _coin = this.props.ActiveCoin.coin;
@@ -32,7 +27,7 @@ const WalletsMainRender = function() {
           id="easydex-header-div"
           className="background-color-white"
           style={ this.getCoinStyle('transparent') }>
-          <ol className={ 'coin-logo breadcrumb' + (_skipCoins.indexOf(_coin) > -1 ? ' coin-logo-wide' : '') + ' native-coin-logo' }>
+          <ol className={ 'coin-logo breadcrumb' + (COINS_TO_SKIP.indexOf(_coin) > -1 ? ' coin-logo-wide' : '') + ' native-coin-logo' }>
             <li className="header-easydex-section">
               { this.getCoinStyle('title') &&
                 <ReactImageFallback
@@ -45,9 +40,9 @@ const WalletsMainRender = function() {
                   className="kmd-mobile-icon"
                   src={ `assets/images/cryptologo/btc/${_coin.toLowerCase()}.png` } />
               }
-              { _skipCoins.indexOf(_coin) === -1 &&
+              { COINS_TO_SKIP.indexOf(_coin) === -1 &&
                 <span className="margin-left-20 easydex-section-image">
-                  { _coin.length <= MAX_LENGTH ?
+                  { _coin.length <= MAX_COINNAME_DISPLAY_LENGTH ?
                       translate(((this.props.ActiveCoin.mode === 'spv' || 
                       this.props.ActiveCoin.mode === 'native') && 
                       isKomodoCoin(_coin) ? 'ASSETCHAINS.' : 'CRYPTO.') + _coin.toUpperCase()) 
@@ -55,7 +50,7 @@ const WalletsMainRender = function() {
                       ((
                         translate(((this.props.ActiveCoin.mode === 'spv' || 
                         this.props.ActiveCoin.mode === 'native') && 
-                        isKomodoCoin(_coin) ? 'ASSETCHAINS.' : 'CRYPTO.') + _coin.toUpperCase())).substr(0, MAX_LENGTH) + '...')}
+                        isKomodoCoin(_coin) ? 'ASSETCHAINS.' : 'CRYPTO.') + _coin.toUpperCase())).substr(0, MAX_COINNAME_DISPLAY_LENGTH) + '...')}
                 </span>
               }
             </li>

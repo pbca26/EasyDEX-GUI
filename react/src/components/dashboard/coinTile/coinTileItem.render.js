@@ -4,14 +4,10 @@ import ReactTooltip from 'react-tooltip';
 import mainWindow, { staticVar } from '../../../util/mainWindow';
 import erc20ContractId from 'agama-wallet-lib/src/eth-erc20-contract-id';
 import ReactImageFallback from "react-image-fallback";
-
-const testChains = [
-  'BEER',
-  'PIZZA',
-  'VOTE2018',
-];
-
-const DEFAULT_CHAIN = "defaultChain.png"
+import {
+  DEFAULT_CHAIN,
+  TEST_CHAINS
+} from '../../../util/constants'
 
 const CoinTileItemRender = function() {
   const { item } = this.props;
@@ -36,7 +32,7 @@ const CoinTileItemRender = function() {
               fallbackImage={ `assets/images/cryptologo/${DEFAULT_CHAIN}` }/>
           </a>
           <div className="coin-name">
-            { item.coinname } { testChains.indexOf(item.coinlogo) === -1 && <span>({ item.coinlogo.toUpperCase() })</span> }
+            { item.coinname } { TEST_CHAINS.indexOf(item.coinlogo) === -1 && <span>({ item.coinlogo.toUpperCase() })</span> }
           </div>
         </div>
       </div>
