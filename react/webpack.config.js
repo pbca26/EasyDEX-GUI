@@ -62,11 +62,11 @@ const rules = [
   },
   {
     test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-    loader: 'url-loader?limit=10000&mimetype=application/font-woff'
+    loader: 'url-loader?limit=10000&mimetype=application/font-woff',
   },
   {
     test: /\.(ttf|eot|svg|png)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-    loader: 'file-loader'
+    loader: 'file-loader',
   },
   {
     test: /\.(png|gif|jpg|svg)$/,
@@ -93,13 +93,13 @@ if (isProduction) {
         'css-loader',
         'sass-loader',
       ],
-    }
+    },
   );
 } else {
   // Development plugins
   plugins.push(
     new webpack.HotModuleReplacementPlugin(),
-    new DashboardPlugin()
+    new DashboardPlugin(),
   );
 
   // Development rules
@@ -113,7 +113,7 @@ if (isProduction) {
         'css-loader',
         'sass-loader?sourceMap',
       ],
-    }
+    },
   );
 }
 
@@ -121,7 +121,7 @@ module.exports = {
   devtool: isProduction ? 'eval' : 'source-map',
   context: jsSourcePath,
   entry: {
-    js: './index.js'
+    js: './index.js',
   },
   output: {
     path: buildPath,
@@ -166,8 +166,8 @@ module.exports = {
       new UglifyJSPlugin({
         sourceMap: true,
         uglifyOptions: {
+          warnings: false,
           compress: {
-            warnings: false,
             ie8: false,
             conditionals: true,
             unused: true,
@@ -181,9 +181,9 @@ module.exports = {
           output: {
             comments: false,
           },
-        }
-      })
-    ]
+        },
+      }),
+    ],
   },
-  stats: { children: false }
+  stats: { children: false },
 };
