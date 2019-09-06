@@ -3,7 +3,7 @@ import mainWindow, { staticVar } from '../../util/mainWindow';
 import config from '../../config';
 import { cryptoCoins } from '../../util/coinHelper';
 import { sortObject } from 'agama-wallet-lib/src/utils';
-import erc20ContractId from 'agama-wallet-lib/src/eth-erc20-contract-id';
+import erc20ContractId from 'agama-wallet-lib/src/eth/eth-erc20-contract-id';
 
 let _prepCoinsList;
 let coins = cryptoCoins;

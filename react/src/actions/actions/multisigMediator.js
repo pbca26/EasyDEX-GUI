@@ -14,27 +14,7 @@ import urlParams from '../../util/url';
 import fetchType from '../../util/fetchType';
 import mainWindow from '../../util/mainWindow';
 
-const endPointUrl = 'http://localhost:8115';
-
-// TODO: dev display errors
-
-// src: atomicexplorer
-/*export const apiGetRemoteTimestamp = () => {
-  return new Promise((resolve, reject) => {
-    fetch(
-      'https://www.atomicexplorer.com/api/timestamp/now',
-      fetchType.get
-    )
-    .catch((error) => {
-      console.log(error);
-      resolve({ msg: 'error' });
-    })
-    .then(response => response.json())
-    .then(json => {
-      resolve(json);
-    });
-  });
-}*/
+const endPointUrl = 'https://www.atomicexplorer.com:9991';
 
 export const apiProposalsListState = (json) => {
   return {
@@ -74,10 +54,7 @@ export const apiProposalsList = (coin, pubkey, redeemscript, sig, message, iszca
     });
   }
 }
-/*  History format: encrypted JSON object { timestamp, type, pubkey }
-*    type: 0 - created, 1 - sig added, 2 - comment added, 4 - archived, 5 - restored, 6 - published (locked)
-*  Content format: encrypted JSON object { timestamp, title: string, pubkey hash: string, raw tx }
-*/
+
 export const apiProposalCreate = (coin, pubkey, redeemscript, sig, message, iszcash = false, rawtx) => {
   return new Promise((resolve, reject) => {
     const content = JSON.stringify({

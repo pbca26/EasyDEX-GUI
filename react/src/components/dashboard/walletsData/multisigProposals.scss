@@ -16,5 +16,17 @@
 
   .proposal-details {
     padding: 0 30px;
+    margin-top: 15px;
+
+    > div {
+      padding-bottom: 10px;
+    }
+    .btn {
+      width: 100px;
+      padding: 3px 5px;
+      margin-top: 5px;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
   }
 }

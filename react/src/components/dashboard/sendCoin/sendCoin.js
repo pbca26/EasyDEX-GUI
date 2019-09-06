@@ -54,7 +54,7 @@ import {
 import { formatEther } from 'ethers/utils/units';
 import { getAddress } from 'ethers/utils/address';
 import coinFees from 'agama-wallet-lib/src/fees';
-import erc20ContractId from 'agama-wallet-lib/src/eth-erc20-contract-id';
+import erc20ContractId from 'agama-wallet-lib/src/eth/eth-erc20-contract-id';
 import { addressVersionCheck } from 'agama-wallet-lib/src/keys';
 import networks from 'agama-wallet-lib/src/bitcoinjs-networks';
 import kv from 'agama-wallet-lib/src/kv';

@@ -65,7 +65,7 @@ export const TxConfsRender = function(tx) {
     return (
       <span>{ translate('DASHBOARD.NA') }</span>
     );
-  } else {
+  } else if (this.props.ActiveCoin.mode === 'native') {
     return (
       <span>
         <i

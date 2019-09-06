@@ -3,7 +3,7 @@ import translate from '../../../translate/translate';
 import Config from '../../../config';
 import { secondsToString } from 'agama-wallet-lib/src/time';
 import { explorerList } from 'agama-wallet-lib/src/coin-helpers';
-import erc20ContractId from 'agama-wallet-lib/src/eth-erc20-contract-id';
+import erc20ContractId from 'agama-wallet-lib/src/eth/eth-erc20-contract-id';
 
 const renderKvContent = (content) => {
   return content

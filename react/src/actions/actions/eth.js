@@ -17,7 +17,7 @@ import Store from '../../store';
 import urlParams from '../../util/url';
 import fetchType from '../../util/fetchType';
 import mainWindow from '../../util/mainWindow';
-import erc20ContractId from 'agama-wallet-lib/src/eth-erc20-contract-id';
+import erc20ContractId from 'agama-wallet-lib/src/eth/eth-erc20-contract-id';
 
 export const apiEthereumAuth = (seed) => {
   return dispatch => {

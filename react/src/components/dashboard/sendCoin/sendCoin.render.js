@@ -17,7 +17,7 @@ import Config from '../../../config';
 import mainWindow, { staticVar } from '../../../util/mainWindow';
 import { formatEther } from 'ethers/utils/units';
 import coinFees from 'agama-wallet-lib/src/fees';
-import erc20ContractId from 'agama-wallet-lib/src/eth-erc20-contract-id';
+import erc20ContractId from 'agama-wallet-lib/src/eth/eth-erc20-contract-id';
 
 const _feeLookup = {
   eth: [

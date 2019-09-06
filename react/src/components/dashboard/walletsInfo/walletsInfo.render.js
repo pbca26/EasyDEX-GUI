@@ -6,7 +6,7 @@ import {
   fromSats,
 } from 'agama-wallet-lib/src/utils';
 import fees from 'agama-wallet-lib/src/fees';
-import erc20ContractId from 'agama-wallet-lib/src/eth-erc20-contract-id';
+import erc20ContractId from 'agama-wallet-lib/src/eth/eth-erc20-contract-id';
 
 const WalletsInfoRender = function() {
   const _coin = this.props.ActiveCoin.coin;
