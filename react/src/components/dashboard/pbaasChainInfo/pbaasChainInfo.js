@@ -10,9 +10,10 @@ import {
 } from '../../../actions/actionCreators';
 import Store from '../../../store';
 import ChainInfoRender from './pbaasChainInfo.render';
-
-const NATIVE_MODE = -1;
-const VERUS_DAEMON = 'verusd';
+import {
+  NATIVE_MODE,
+  VERUS_DAEMON
+} from '../../../util/constants'
 
 class PbaasChainInfo extends React.Component {
   constructor() {
@@ -31,7 +32,7 @@ class PbaasChainInfo extends React.Component {
           version: ''
         },
         confirmedheight: '',
-        latestheight: ''
+        lastconfirmedheight: ''
       },
       className: 'hide',
     };
@@ -57,16 +58,17 @@ class PbaasChainInfo extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const _PBaaS = nextProps.PBaaS
+    const _PBaaS = nextProps.PBaaSMain
 
     if (_PBaaS &&
         _PBaaS.definedChains &&
         _PBaaS.showChainInfoChainIndex > -1 &&
-        _PBaaS.showChainInfoChainIndex !== false) {
+        _PBaaS.showChainInfo !== false) {
       const _chainInfo = _PBaaS.definedChains[_PBaaS.showChainInfoChainIndex];
 
       if (_chainInfo &&
           this.props.PBaaSMain.showChainInfoChainIndex !== _PBaaS.showChainInfoChainIndex) {
+
         this.setState({
           className: _PBaaS.showChainInfo ? 'show fade' : 'show out',
           chainInfo: _chainInfo
@@ -207,7 +209,7 @@ class PbaasChainInfo extends React.Component {
   }
 
   render() {
-    const _PBaaS = this.props.PBaaS
+    const _PBaaS = this.props.PBaaSMain
 
     if (this.props &&
       _PBaaS &&

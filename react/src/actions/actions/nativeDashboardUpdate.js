@@ -136,6 +136,10 @@ export const getDashboardUpdateState = (json, coin, fakeResponse) => {
         json.result.z_gettotalbalance.result.total = Number(json.result.z_gettotalbalance.result.transparent) + Number(json.result.z_gettotalbalance.result.interest) + Number(json.result.z_gettotalbalance.result.private);
         json.result.z_gettotalbalance.result.total = json.result.z_gettotalbalance.result.total.toFixed(8);
         json.result.z_gettotalbalance.result.immature = json.result.getwalletinfo.result.immature_balance.toFixed(8);
+
+        if (json.result.getwalletinfo.result.hasOwnProperty('reserve_balance')) {
+          json.result.z_gettotalbalance.result.reserve = json.result.getwalletinfo.result.reserve_balance.toFixed(8);
+        }
       }
 
       return {

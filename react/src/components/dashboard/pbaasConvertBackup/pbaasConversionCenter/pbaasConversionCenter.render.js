@@ -32,7 +32,7 @@ export const _formProgressRender = function() {
   );
 }
 
-export const PBaaSQuickConvertRender = function() {
+export const PBaaSConversionCenterRender = function() {
   const step = this.state.currentStep
 
   return (

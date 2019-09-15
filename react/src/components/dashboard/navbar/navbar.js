@@ -132,7 +132,8 @@ class Navbar extends React.Component {
   handleClickOutside(e) {
     const _srcElement = e ? e.srcElement : null;
 
-    if (e &&
+    if (this.state.openDropMenu &&
+        e &&
         _srcElement &&
         _srcElement.className !== 'dropdown-menu' &&
         _srcElement.className !== 'icon fa-bars' &&

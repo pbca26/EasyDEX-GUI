@@ -46,11 +46,15 @@ class PBaaSCreate extends React.Component {
         currentStep: 0,
         chainName: '',
         includePremine: false,
-        premineAddr: '',
+        paymentAddr: '',
         premineAmount: '',
-        publicPremine: false,
-        convertible: '',
-        launchfee: '',
+        isReserveCurrency: false,
+        publicPreconvert: false,
+        initialContribution: '',
+        conversionRate: '',
+        minPreconvert: '',
+        maxPreconvert: '',
+        launchFee: '',
         startBlock: '',
         rewardEras: [],
         nodes: [],
@@ -64,10 +68,13 @@ class PBaaSCreate extends React.Component {
           //nodes are handled inside node objects,
           //inside nodes
           chainName: false,
-          premineAddr: false,
+          paymentAddr: false,
           premineAmount: false,
-          convertible: false,
-          launchfee: false,
+          initialContribution: '',
+          conversionRate: '',
+          minPreconvert: '',
+          maxPreconvert: '',
+          launchFee: false,
           startBlock: false,
           initCost: false,
           billingPeriod: false
@@ -358,9 +365,16 @@ class PBaaSCreate extends React.Component {
     });
   }
 
-  togglePublicPremine() {
+  toggleIsReserveCurrency() {
     this.setState({
-      publicPremine: !this.state.publicPremine,
+      isReserveCurrency: !this.state.isReserveCurrency,
+      publicPreconvert: this.state.isReserveCurrency ? false : this.state.publicPreconvert
+    });
+  }
+
+  togglePublicPreconvert() {
+    this.setState({
+      publicPreconvert: !this.state.publicPreconvert,
     });
   }
 
@@ -475,9 +489,12 @@ class PBaaSCreate extends React.Component {
   parseState() {
     let payload = {
       name: this.state.chainName,
-      address: "",
+      paymentaddress: this.state.paymentAddr,
       premine: 0,
-      convertible: 0,
+      initialcontribution: 0,
+      conversionrate: 0,
+      minpreconvert: 0,
+      maxpreconvert: 0,
       launchfee: 0,
       startblock: this.state.startBlock,
       eras: [],
@@ -487,12 +504,17 @@ class PBaaSCreate extends React.Component {
     }
 
     if (this.state.includePremine) {
-      payload.address = this.state.premineAddr
       payload.premine = toSats(Number(this.state.premineAmount))
+    }
 
-      if (this.state.publicPremine) {
-        payload.convertible = toSats(Number(this.state.convertible))
-        payload.launchfee = Number(this.state.launchfee)
+    if (this.state.isReserveCurrency) {
+      payload.initialcontribution = toSats(Number(this.state.initialContribution))
+      payload.conversion = toSats(Number(this.state.conversionRate))
+      
+      if (this.state.publicPreconvert) {
+        payload.minpreconvert = toSats(Number(this.state.minPreconvert))
+        payload.maxpreconvert = toSats(Number(this.state.maxPreconvert))
+        payload.launchfee = Number(this.state.launchFee)
       }
     }
 
@@ -526,7 +548,8 @@ class PBaaSCreate extends React.Component {
       return returnObj
     })
 
-    defineAndCreateChain(payload)
+    console.log(payload)
+    /*defineAndCreateChain(payload)
     .then(res => {
       if (res && !res.error) {
         Store.dispatch(
@@ -548,7 +571,7 @@ class PBaaSCreate extends React.Component {
           )
         );
       }
-    })
+    })*/
   }
 
   anyErrorsOrIncomplete() {
@@ -559,23 +582,34 @@ class PBaaSCreate extends React.Component {
         this.state.initCost.length === 0 ||
         this.state.errors.initCost ||
         this.state.billingPeriod.length === 0 ||
-        this.state.errors.billingPeriod) {
+        this.state.errors.billingPeriod ||
+        this.state.paymentAddr.length === 0 ||
+        this.state.errors.paymentAddr) {
       return true
     } 
     
     if (this.state.includePremine) {
-      if (this.state.premineAddr.length === 0 || 
-        this.state.premineAmount === 0 ||
-        this.state.errors.premineAddr ||
+      if (this.state.premineAmount === 0 ||
         this.state.errors.premineAmount) {
           return true
         }
+    }
 
-      if (this.state.publicPremine && 
-        (this.state.convertible.length === 0 || 
-          this.state.errors.convertible || 
-          this.state.launchfee.length === 0 || 
-          this.state.errors.launchfee)) {
+    if (this.state.isReserveCurrency) {
+      if (this.state.initialContribution.length === 0 || 
+          this.state.errors.initialContribution || 
+          this.state.conversionRate.length === 0 || 
+          this.state.errors.conversionRate) {
+          return true
+      }
+  
+      if (this.state.publicPreconvert && 
+        (this.state.minPreconvert.length === 0 || 
+          this.state.errors.minPreconvert || 
+          this.state.maxPreconvert.length === 0 || 
+          this.state.errors.maxPreconvert ||
+          this.state.launchFee.length === 0 || 
+          this.state.errors.launchFee )) {
           return true
       }
     }

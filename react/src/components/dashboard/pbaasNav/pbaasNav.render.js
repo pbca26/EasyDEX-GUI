@@ -43,12 +43,13 @@ const PBaaSNavRender = function() {
                 { ' ' + translate('PBAAS.CREATE') }
               </a>
             </li>
+            {/* TODO: DELETE
             <li className={ this.isSectionActive(CONVERT) ? "active" : "" }>
               <a onClick={ () => this.changeActiveSection(CONVERT) }>
                 <span className="glyphicon glyphicon-transfer" aria-hidden="true"/>
                 { ' ' + translate('PBAAS.CONVERT') }
               </a>
-            </li>
+            </li>*/}
             {/*<li className={ this.isSectionActive(HELP) ? "active" : "" }>
               <a onClick={ () => this.changeActiveSection(HELP) }>
                 <span className="glyphicon glyphicon-question-sign" aria-hidden="true"/>

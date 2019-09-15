@@ -75,7 +75,7 @@ export * from './actions/dice';
 export * from './actions/eth';
 export * from './actions/exchanges';
 export * from './actions/nativeMining';
-export * from './actions/nativePbaas';
+export * from './actions/nativePbaasChain';
 
 export const changeActiveAddress = (address) => {
   return {
@@ -104,28 +104,6 @@ export const syncingNativeModeState = (display, json) => {
     type: SYNCING_NATIVE_MODE,
     syncingNativeMode: display,
     progress: json,
-  }
-}
-
-export const toggleSendCoinFormState = (display) => {
-  return {
-    type: DASHBOARD_ACTIVE_COIN_SEND_FORM,
-    send: display,
-  }
-}
-
-export const toggleReceiveCoinFormState = (display) => {
-  return {
-    type: DASHBOARD_ACTIVE_COIN_RECEIVE_FORM,
-    receive: display,
-  }
-}
-
-export const toggleSendReceiveCoinFormsState = () => {
-  return {
-    type: DASHBOARD_ACTIVE_COIN_RESET_FORMS,
-    send: false,
-    receive: false,
   }
 }
 
@@ -168,24 +146,6 @@ export const getMainAddressState = (json) => {
   return {
     type: GET_MAIN_ADDRESS,
     activeHandle: json,
-  }
-}
-
-export const toggleSendCoinForm = (display) => {
-  return dispatch => {
-    dispatch(toggleSendCoinFormState(display));
-  }
-}
-
-export const toggleReceiveCoinForm = (display) => {
-  return dispatch => {
-    dispatch(toggleReceiveCoinFormState(display));
-  }
-}
-
-export const toggleSendReceiveCoinForms = () => {
-  return dispatch => {
-    dispatch(toggleSendReceiveCoinFormsState());
   }
 }
 
@@ -397,7 +357,7 @@ export const pbaasConvertChangeSectionState = (sectionName) => {
   }
 }
 
-export const updatePbaasQuickConvertFormState = (state) => {
+export const updatePbaasConversionCenterFormState = (state) => {
   return {
     type: UPDATE_PBAAS_QUICK_CONVERT_FORM_STATE,
     quickFormState: state

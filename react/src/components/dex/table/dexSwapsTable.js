@@ -11,8 +11,7 @@ import Config from '../../../config';
 import { triggerToaster } from '../../../actions/actionCreators';
 import Store from '../../../store';
 import { secondsToString } from 'agama-wallet-lib/src/time';
-
-const BOTTOM_BAR_DISPLAY_THRESHOLD = 15;
+import { BOTTOM_BAR_DISPLAY_THRESHOLD } from '../../../util/constants';
 
 class DexSwapsTable extends React.Component {
   constructor(props) {

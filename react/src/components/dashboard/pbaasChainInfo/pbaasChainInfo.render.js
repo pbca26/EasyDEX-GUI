@@ -30,8 +30,27 @@ const ChainInfoRender = function(chainInfo) {
                </h4>
              </div>
             <div className="modal-body modal-body-container chain-info-table">
+              <ul className="nav nav-tabs nav-tabs-line">
+                <li className={ this.state.activeTab === 0 ? 'active' : '' }>
+                  <a onClick={ () => this.openTab(0) }>
+                    <i className="icon md-balance-wallet"></i>{ translate('PBAAS.CHAIN_INFO') }
+                  </a>
+                </li>
+                {chainInfo.bestcurrencystate &&
+                <li className={ this.state.activeTab === 1 ? 'hide active' : 'hide' }>
+                  <a onClick={ () => this.openTab(1) }>
+                    <i className="icon md-plus-square"></i>{ translate('PBAAS.RESERVE_DATA') }
+                  </a>
+                </li>}
+              </ul>
               <div className="panel-body">
-                { this.state.chainInfo ? chainInfoTableRender.call(this, chainInfo) : (translate('PBAAS.FAILED_LOAD_CHAIN')) }
+                { this.state.chainInfo ? 
+                    (this.state.activeTab === 0 ? 
+                      chainInfoTableRender.call(this, chainInfo)
+                      :
+                      null) 
+                    : 
+                    (translate('PBAAS.FAILED_LOAD_CHAIN')) }
               </div>
             </div>
             <div className="modal-footer">

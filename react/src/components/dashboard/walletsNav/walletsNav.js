@@ -2,9 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import {
   copyCoinAddress,
-  toggleSendCoinForm,
-  toggleReceiveCoinForm,
-  toggleSendReceiveCoinForms,
   toggleDashboardActiveSection,
   getNativeNettotals,
   getNativePeers,
@@ -18,11 +15,14 @@ const NET_INFO_INTERVAL = 10000;
 class WalletsNav extends React.Component {
   constructor() {
     super();
-    this.toggleSendReceiveCoinForms = this.toggleSendReceiveCoinForms.bind(this);
     this.toggleNativeWalletInfo = this.toggleNativeWalletInfo.bind(this);
-    this.toggleNativeWalletTransactions = this.toggleNativeWalletTransactions.bind(this);
     this.checkTotalBalance = this.checkTotalBalance.bind(this);
     this.netInfoInterval = null;
+    this.DEFAULT = 'default'
+    this.SEND = 'send',
+    this.RECEIVE = 'receive'
+    this.SETTINGS = 'settings'
+    this.CONVERT = 'convert'
   }
 
   copyMyAddress(address) {
@@ -70,34 +70,13 @@ class WalletsNav extends React.Component {
     Store.dispatch(toggleDashboardActiveSection('settings'));
   }
 
-  toggleNativeWalletTransactions() {
-    Store.dispatch(toggleDashboardActiveSection('default'));
-  }
-
-  // TODO: merge toggle func into one
-  toggleSendReceiveCoinForms() {
+  toggleCoinForm(coinForm) {
     Store.dispatch(
       toggleDashboardActiveSection(
-        this.props.ActiveCoin.activeSection === 'settings' ? 'default' : 'settings'
+        this.props.ActiveCoin.activeSection === coinForm ? this.DEFAULT : coinForm
       )
     );
-  }
-
-  toggleSendCoinForm(display) {
-    Store.dispatch(
-      toggleDashboardActiveSection(
-        this.props.ActiveCoin.activeSection === 'send' ? 'default' : 'send'
-      )
-    );
-  }
-
-  toggleReceiveCoinForm(display) {
-    Store.dispatch(
-      toggleDashboardActiveSection(
-        this.props.ActiveCoin.activeSection === 'receive' ? 'default' : 'receive'
-      )
-    );
-  }
+  } 
 
   render() {
     if (this.props &&

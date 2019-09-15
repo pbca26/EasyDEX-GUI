@@ -21,12 +21,12 @@ import {
   apiEthereumSend,
   apiEthereumSendERC20Preflight,
   shieldCoinbase,
+  getChainDefinition
 } from '../../../actions/actionCreators';
 import Store from '../../../store';
 import {
   AddressListRender,
   SendRender,
-  SendFormRender,
   _SendFormRender,
   ZmergeToAddressRender,
   AddressListRenderShieldCoinbase,
@@ -56,6 +56,7 @@ import { addressVersionCheck } from 'agama-wallet-lib/src/keys';
 import networks from 'agama-wallet-lib/src/bitcoinjs-networks';
 import kv from 'agama-wallet-lib/src/kv';
 import { encodeMemo } from '../../../util/zTxUtils';
+import { isPbaasChain, getChainStatus } from '../../../util/pbaasUtil';
 
 const { shell } = window.require('electron');
 const SPV_MAX_LOCAL_TIMESTAMP_DEVIATION = 300; // 5 min
@@ -95,25 +96,31 @@ class SendCoin extends React.Component {
       subtractFee: false,
       lastSendToResponse: null,
       coin: null,
+      pin: '',
+      noUtxo: false,
+      addressBookSelectorOpen: false,
+      preflightError: null,
+
+      //SPV
       spvVerificationWarning: false,
       spvPreflightSendInProgress: false,
       spvDpowVerificationWarning: 'n/a',
+      spvPreflightRes: null,
+      
+      //BTC Fees
       btcFees: {},
       btcFeesType: 'halfHourFee',
       btcFeesAdvancedStep: 9,
       btcFeesSize: 0,
       btcFeesTimeBasedStep: 1,
-      spvPreflightRes: null,
-      pin: '',
-      noUtxo: false,
-      addressBookSelectorOpen: false,
-      preflightError: null,
+
       // kv
       kvSend: false,
       kvSendTag: '',
       kvSendTitle: '',
       kvSendContent: '',
       kvHex: '',
+
       // z_mergetoaddress
       enableZmergetoaddress: false,
       zmtaSrc: '*',
@@ -122,17 +129,30 @@ class SendCoin extends React.Component {
       zmtaFee: 0.0001,
       zmtaTlimit: 50,
       zmtaZlimit: 10,
+
       // eth
       ethFees: {},
       ethFeeType: 1,
       ethPreflightSendInProgress: false,
       ethPreflightRes: null,
+
       // z_shieldcoinbase
       zshieldcoinbaseToggled: false,
+
       // ztx fee
       ztxSelectorOpen: false,
       ztxFee: DEFAULT_ZTX_FEE,
-      donateInterest: false
+      donateInterest: false,
+
+      //PBaaS
+      sendOffChain: false,
+      sendToChain: '',
+      lastRecordedPrice: 0,
+      convertAmount: false,
+      sendVrscToken: false,
+      loading: false,
+      connectedChain: null,
+      connectedChainStatus: null
     };
     this.defaultState = JSON.parse(JSON.stringify(this.state));
     this.updateInput = this.updateInput.bind(this);
@@ -166,6 +186,11 @@ class SendCoin extends React.Component {
     this.zshieldcoinbaseToggle = this.zshieldcoinbaseToggle.bind(this);
     this.toggleZtxDropdown = this.toggleZtxDropdown.bind(this);
     this.setZtxFee = this.setZtxFee.bind(this);
+    this.toggleSendOffChain = this.toggleSendOffChain.bind(this);
+    this.fetchLastRecordedPrice = this.fetchLastRecordedPrice.bind(this);
+    this.toggleConvertAmount = this.toggleConvertAmount.bind(this);
+    this.toggleSendVrscToken = this.toggleSendVrscToken.bind(this);
+    this.findChain = this.findChain.bind(this)
     //this.loadTestData = this.loadTestData.bind(this);
   }
 
@@ -185,6 +210,99 @@ class SendCoin extends React.Component {
       ztxFee: val,
       ztxSelectorOpen: false,
       amount: _amount,
+    });
+  }
+
+  toggleSendOffChain() {
+    if (!this.state.sendOffChain) {
+      this.setState({
+        sendOffChain: true,
+        sendToChain: isPbaasChain(this.props.ActiveCoin.coin) ? (Config.verus.pbaasTestmode ? 'VRSCTEST' : 'VRSC') : '',
+        convertAmount: !isPbaasChain(this.props.ActiveCoin.coin) ? this.state.convertAmount : true,
+        sendVrscToken: !isPbaasChain(this.props.ActiveCoin.coin) ? false : true,
+      });
+    } else {
+      this.setState({
+        sendOffChain: false,
+        sendToChain: '',
+        convertAmount: !isPbaasChain(this.props.ActiveCoin.coin) ? false : this.state.convertAmount,
+      });
+    } 
+  }
+
+  resetPbaasState() {
+    this.setState({
+      sendOffChain: false,
+      sendToChain: '',
+      lastRecordedPrice: 0,
+      convertAmount: false,
+      sendVrscToken: false,
+      connectedChain: null,
+      connectedChainStatus: null
+    })
+  }
+
+  //TODO: Finish this by using fetch function instead of hardcode
+  fetchLastRecordedPrice(chain) {
+    this.setState({
+      lastRecordedPrice: 0.25
+    })
+  }
+
+  toggleConvertAmount() {
+    this.setState({
+      convertAmount: !this.state.convertAmount
+    })
+  }
+
+  toggleSendVrscToken() {
+    this.setState({
+      sendVrscToken: !this.state.sendVrscToken
+    })
+  }
+
+  findChain() {
+    const _chain = this.state.sendToChain
+
+    this.setState({
+      loading: true,
+    }, () => {
+      getChainDefinition(_chain)
+      .then((json) => {
+        if (json.result) {
+          this.setState({
+            loading: false,
+            connectedChain: json.result,
+            connectedChainStatus: getChainStatus(
+              this.props.ActiveCoin.progress.longestchain,
+              json.result.startblock,
+              json.result.minpreconvert,
+              json.result.maxpreconvert,
+              toSats(json.result.bestcurrencystate ? json.result.bestcurrencystate.initialsupply : 0)
+            )
+          }, () => {
+            Store.dispatch(
+              triggerToaster(
+                translate('PBAAS.CHAIN_FOUND', _chain),
+                translate('TOASTR.SUCCESS'),
+                'success'
+              )
+            );
+          })
+        } else {
+          this.setState({
+            loading: false,
+          }, () => {
+            Store.dispatch(
+              triggerToaster(
+                translate('PBAAS.ERROR_FETCHING_CHAIN') + _chain,
+                translate('TOASTR.ERROR'),
+                'error'
+              )
+            );
+          })
+        }
+      })
     });
   }
 
@@ -432,6 +550,8 @@ class SendCoin extends React.Component {
     if (_coin !== props.ActiveCoin.coin &&
         this.props.ActiveCoin.lastSendToResponse) {
       Store.dispatch(clearLastSendToResponseState());
+    } else if (_coin !== props.ActiveCoin.coin) {
+      this.resetPbaasState()
     }
     this.checkZAddressCount(props);
 
@@ -505,7 +625,8 @@ class SendCoin extends React.Component {
     const _srcElement = e ? e.srcElement : null;
     let _state = {};
 
-    if (e &&
+    if (this.state.addressSelectorOpen &&
+        e &&
         _srcElement &&
         _srcElement.className &&
         typeof _srcElement.className === 'string' &&
@@ -515,7 +636,8 @@ class SendCoin extends React.Component {
       _state.addressSelectorOpen = false;
     }
 
-    if (e &&
+    if (this.state.addressBookSelectorOpen &&
+        e &&
         _srcElement &&
         _srcElement.className &&
         typeof _srcElement.className === 'string' &&
@@ -524,7 +646,8 @@ class SendCoin extends React.Component {
       _state.addressBookSelectorOpen = false;
     }
 
-    if (e &&
+    if (this.state.ztxSelectorOpen &&
+        e &&
         _srcElement &&
         _srcElement.className &&
         typeof _srcElement.className === 'string' &&
@@ -533,7 +656,7 @@ class SendCoin extends React.Component {
       _state.ztxSelectorOpen = false;
     }
 
-    this.setState(_state);
+    if (Object.keys(_state).length > 0) this.setState(_state)
   }
 
   checkZAddressCount(props) {
@@ -1691,13 +1814,7 @@ class SendCoin extends React.Component {
   }
 
   render() {
-    if (this.props &&
-        this.props.ActiveCoin &&
-        (this.props.ActiveCoin.activeSection === 'send' || this.props.activeSection === 'send')) {
-      return SendRender.call(this);
-    }
-
-    return null;
+    return (this.props ? SendRender.call(this) : null)
   }
 }
 
@@ -1712,6 +1829,7 @@ const mapStateToProps = (state, props) => {
       activeSection: state.ActiveCoin.activeSection,
       lastSendToResponse: state.ActiveCoin.lastSendToResponse,
       progress: state.ActiveCoin.progress,
+      walletinfo: state.ActiveCoin.walletinfo
     },
     Dashboard: state.Dashboard,
     AddressBook: state.Settings.addressBook,

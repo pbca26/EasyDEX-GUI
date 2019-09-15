@@ -2,19 +2,19 @@ import React from 'react';
 import { connect } from 'react-redux';
 import Store from '../../../../store';
 import {
-  PBaaSQuickConvertRender,
+  PBaaSConversionCenterRender,
   _formProgressRender
-} from './pbaasQuickConvert.render';
+} from './pbaasConversionCenter.render';
 import {
   _inputFormRender,
   _confirmingFormRender,
   _processingFormRender
-} from './pbaasQuickConvert.renderQuickConvertForm';
-import { updatePbaasQuickConvertFormState } from '../../../../actions/actionCreators';
+} from './pbaasConversionCenter.renderConversionCenterForm';
+import { updatePbaasConversionCenterFormState } from '../../../../actions/actionCreators';
 import ReactImageFallback from "react-image-fallback";
 import { DEFAULT_CHAIN } from '../../../../util/constants'
 
-class PBaaSQuickConvert extends React.Component {
+class PBaaSConversionCenter extends React.Component {
   constructor(props) {
     super(props);
 
@@ -35,7 +35,7 @@ class PBaaSQuickConvert extends React.Component {
   }
 
   componentWillUnmount() {
-    Store.dispatch(updatePbaasQuickConvertFormState(this.state))
+    Store.dispatch(updatePbaasConversionCenterFormState(this.state))
   }
 
   updateSelectedTo(coinObj) {
@@ -79,7 +79,7 @@ class PBaaSQuickConvert extends React.Component {
   }
 
   render() {
-    return PBaaSQuickConvertRender.call(this);
+    return PBaaSConversionCenterRender.call(this);
   }
 }
 
@@ -91,4 +91,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(PBaaSQuickConvert);
+export default connect(mapStateToProps)(PBaaSConversionCenter);

@@ -37,12 +37,11 @@ import { secondsToString } from 'agama-wallet-lib/src/time';
 import { getRandomElectrumServer } from 'agama-wallet-lib/src/utils';
 import DoubleScrollbar from 'react-double-scrollbar';
 import mainWindow, { staticVar } from '../../../util/mainWindow';
+import { BOTTOM_BAR_DISPLAY_THRESHOLD } from '../../../util/constants'
 
 /*import io from 'socket.io-client';
 
 const socket = io.connect(`http://127.0.0.1:${Config.agamaPort}`);*/
-
-const BOTTOM_BAR_DISPLAY_THRESHOLD = 15;
 
 class WalletsData extends React.Component {
   constructor(props) {
@@ -100,12 +99,27 @@ class WalletsData extends React.Component {
     this.toggleFilterMenuOpen = this.toggleFilterMenuOpen.bind(this);
   }
 
-  componentWillMount() {
+  componentDidMount() {
     document.addEventListener(
       'click',
       this.handleClickOutside,
       false
     );
+
+    //TODO: Find more efficient way to do this, it isn't performing
+    //as well as it could be when it's here and also in 
+    //componentwillreceiveprops
+    if (this.state.itemsList.length === 0) {
+      if (this.props.ActiveCoin.coin !== 'BEER' &&
+      this.props.ActiveCoin.coin !== 'PIZZA' &&
+      this.props.ActiveCoin.coin !== 'KV') {
+        this.setState({
+          kvView: false,
+        });
+      }
+
+      this._setTxHistory();
+    }
   }
 
   componentWillUnmount() {
@@ -114,6 +128,18 @@ class WalletsData extends React.Component {
       this.handleClickOutside,
       false
     );
+  }
+
+  componentWillReceiveProps(props) {
+    if (props.ActiveCoin.coin !== 'BEER' &&
+        props.ActiveCoin.coin !== 'PIZZA' &&
+        props.ActiveCoin.coin !== 'KV') {
+      this.setState({
+        kvView: false,
+      });
+    }
+
+    this._setTxHistory();
   }
 
   isOutValue(tx) {
@@ -625,7 +651,8 @@ class WalletsData extends React.Component {
   handleClickOutside(e) {
     const _srcElement = e ? e.srcElement : null;
 
-    if (e &&
+    if (this.state.addressSelectorOpen &&
+        e &&
         _srcElement &&
         _srcElement.className !== 'btn dropdown-toggle btn-info' &&
         (_srcElement.offsetParent && _srcElement.offsetParent.className !== 'btn dropdown-toggle btn-info') &&
@@ -767,18 +794,6 @@ class WalletsData extends React.Component {
     }
     
     this.setState(_stateChange);
-  }
-
-  componentWillReceiveProps(props) {
-    if (props.ActiveCoin.coin !== 'BEER' &&
-        props.ActiveCoin.coin !== 'PIZZA' &&
-        props.ActiveCoin.coin !== 'KV') {
-      this.setState({
-        kvView: false,
-      });
-    }
-
-    this._setTxHistory();
   }
 
   spvAutoReconnect() {
@@ -1228,14 +1243,7 @@ class WalletsData extends React.Component {
   }
 
   render() {
-    if (this.props &&
-        this.props.ActiveCoin &&
-        this.props.ActiveCoin.coin &&
-        this.props.ActiveCoin.activeSection === 'default') {
-      return WalletsDataRender.call(this);
-    } else {
-      return null;
-    }
+    return (this.props ? WalletsDataRender.call(this) : null)
   }
 }
 

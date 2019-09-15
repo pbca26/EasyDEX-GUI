@@ -15,11 +15,12 @@ import {
   dashboardChangeActiveCoin
 } from '../../../actions/actionCreators'
 import translate from '../../../translate/translate';
+import {
+  NATIVE_MODE,
+  VERUS_DAEMON
+} from '../../../util/constants'
 
 const { shell } = window.require('electron');
-
-const NATIVE_MODE = -1;
-const VERUS_DAEMON = 'verusd';
 
 class PBaaSConnect extends React.Component {
   constructor(props) {

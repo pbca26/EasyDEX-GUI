@@ -14,10 +14,16 @@ import {
   AddressItemRender,
   ReceiveCoinRender,
   _ReceiveCoinTableRender,
+  AddressRender,
+  AddressTypeRender,
+  AddressAmountRender,
+  AddressListRender
 } from './receiveCoin.render';
+import DoubleScrollbar from 'react-double-scrollbar';
 import translate from '../../../translate/translate';
 import mainWindow, { staticVar } from '../../../util/mainWindow';
 import Config from '../../../config';
+import { BOTTOM_BAR_DISPLAY_THRESHOLD } from '../../../util/constants'
 
 // TODO: implement balance/interest sorting
 
@@ -26,9 +32,15 @@ class ReceiveCoin extends React.Component {
     super();
     this.state = {
       openDropMenu: false,
-      hideZeroAdresses: false,
+      hideZeroAddresses: false,
       toggledAddressMenu: null,
       toggleIsMine: false,
+      visible: true,
+      itemsListColumns: this.generateItemsListColumns(),
+      addresses: [],
+      pageSize: 20,
+      showPagination: false,
+      defaultPageSize: 20,
     };
     this.openDropMenu = this.openDropMenu.bind(this);
     this.handleClickOutside = this.handleClickOutside.bind(this);
@@ -39,11 +51,16 @@ class ReceiveCoin extends React.Component {
     this.toggleIsMine = this.toggleIsMine.bind(this);
     this.validateCoinAddress = this.validateCoinAddress.bind(this);
     this.copyPubkeyNative = this.copyPubkeyNative.bind(this);
+    this.generateAddressList = this.generateAddressList.bind(this);
+    this.renderAddressList = this.renderAddressList.bind(this);
   }
 
   toggleAddressMenu(address) {
     this.setState({
       toggledAddressMenu: this.state.toggledAddressMenu === address ? null : address,
+    }, () => {
+      //TODO: Streamline this, it is slow and performs poorly
+      this.setState({itemsListColumns: this.generateItemsListColumns()})
     });
   }
 
@@ -57,6 +74,23 @@ class ReceiveCoin extends React.Component {
       this.handleClickOutside,
       false
     );
+
+    this.generateAddressList()
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (JSON.stringify(prevProps.addresses) != JSON.stringify(this.props.addresses) ||
+        prevState.toggleIsMine != this.state.toggleIsMine ||
+        prevState.hideZeroAddresses != this.state.hideZeroAddresses) {
+      this.generateAddressList();
+    }
+  }
+
+  onPageSizeChange(pageSize, pageIndex) {
+    this.setState(Object.assign({}, this.state, {
+      pageSize: pageSize,
+      showPagination: this.state.addresses && this.state.addresses.length >= this.state.defaultPageSize,
+    }));
   }
 
   componentWillUnmount() {
@@ -68,8 +102,6 @@ class ReceiveCoin extends React.Component {
   }
 
   copyPubkeyNative(address) {
-    this.toggleAddressMenu(null);
-
     validateAddress(
       this.props.coin,
       address
@@ -91,8 +123,6 @@ class ReceiveCoin extends React.Component {
   }
 
   validateCoinAddress(address, isZaddr) {
-    this.toggleAddressMenu(address);
-
     validateAddress(
       this.props.coin,
       address,
@@ -118,8 +148,6 @@ class ReceiveCoin extends React.Component {
   }
 
   dumpPrivKey(address, isZaddr) {
-    this.toggleAddressMenu(address);
-
     dumpPrivKey(
       this.props.coin,
       address,
@@ -135,23 +163,29 @@ class ReceiveCoin extends React.Component {
 
   handleClickOutside(e) {
     const _srcElement = e ? e.srcElement : null;
+    let _state = {}
 
     if (e &&
         _srcElement &&
         _srcElement.offsetParent &&
         _srcElement.offsetParent.className.indexOf('dropdown') === -1 &&
         (_srcElement.offsetParent && _srcElement.offsetParent.className.indexOf('dropdown') === -1)) {
-      this.setState({
-        openDropMenu: false,
-        toggledAddressMenu:
-          _srcElement.className.indexOf('receive-address-context-menu-trigger') === -1 &&
-          _srcElement.className.indexOf('fa-qrcode') === -1 &&
-          _srcElement.className.indexOf('receive-address-context-menu-get-qr') === -1 &&
-          _srcElement.className.indexOf('qrcode-modal') === -1 &&
-          _srcElement.offsetParent.className.indexOf('modal') &&
-          _srcElement.offsetParent.className.indexOf('close') ? null : this.state.toggledAddressMenu,
-      });
+      
+      if (this.state.openDropMenu) _state.openDropMenu = false
+
+      if(_srcElement.className.indexOf('receive-address-context-menu-trigger') === -1 &&
+      _srcElement.className.indexOf('fa-qrcode') === -1 &&
+      _srcElement.className.indexOf('receive-address-context-menu-get-qr') === -1 &&
+      _srcElement.className.indexOf('qrcode-modal') === -1 &&
+      _srcElement.offsetParent.className.indexOf('modal') &&
+      _srcElement.offsetParent.className.indexOf('close') &&
+      this.state.toggledAddressMenu != null) {
+        _state.toggledAddressMenu = null
+        _state.itemsListColumns = this.generateItemsListColumns()
+      }
     }
+
+    if (Object.keys(_state).length > 0) this.setState(_state)
   }
 
   openDropMenu() {
@@ -161,12 +195,10 @@ class ReceiveCoin extends React.Component {
   }
 
   copyPubkeySpv(pubkey) {
-    this.toggleAddressMenu(null);
     Store.dispatch(copyString(pubkey, translate('INDEX.PUBKEY_COPIED')));
   }
 
   _copyCoinAddress(address) {
-    this.toggleAddressMenu(address);
     Store.dispatch(copyCoinAddress(address));
   }
 
@@ -198,6 +230,26 @@ class ReceiveCoin extends React.Component {
     }));
   }
 
+  defaultSorting(a, b) {
+    a = a.props.children;
+    b = b.props.children;
+    // force null and undefined to the bottom
+    a = (a === null || a === undefined) ? -Infinity : a;
+    b = (b === null || b === undefined) ? -Infinity : b;
+    // force any string values to lowercase
+    a = typeof a === 'string' ? a.toLowerCase() : a;
+    b = typeof b === 'string' ? b.toLowerCase() : b;
+    // Return either 1 or -1 to indicate a sort priority
+    if (a > b) {
+      return 1;
+    }
+    if (a < b) {
+      return -1;
+    }
+    // returning 0 or undefined will use any subsequent column sorting methods or the row index as a tiebreaker
+    return 0;
+  }
+
   checkTotalBalance() {
     let _balance = '0';
 
@@ -209,118 +261,148 @@ class ReceiveCoin extends React.Component {
     return _balance;
   }
 
-  renderAddressList(type) {
+  generateAddressList() {
     const _addresses = this.props.addresses;
+    const addrTypesNative = ['public', 'private']
+    let addrArray = []
 
-    if (_addresses &&
-        _addresses[type] &&
-        _addresses[type].length) {
-      let items = [];
-
-      for (let i = 0; i < _addresses[type].length; i++) {
-        let address = _addresses[type][i];
-
-        if (this.state.hideZeroAddresses) {
-          if (!this.hasNoAmount(address)) {
-            items.push(
-              AddressItemRender.call(this, address, type)
-            );
-          }
-
-          if (!this.state.toggleIsMine &&
-              !address.canspend &&
-              address.address.substring(0, 2) !== 'zc' &&
-              address.address.substring(0, 2) !== 'zs') {
-            items.pop();
-          }
-        } else {
-          if (type === 'private' ||
-              (type === 'public' &&
-               (this.props.coin === 'KMD' ||
-                Config.reservedChains.indexOf(this.props.coin) === -1 ||
-                (staticVar.chainParams &&
-                 staticVar.chainParams[this.props.coin] &&
-                 !staticVar.chainParams[this.props.coin].ac_private)))) {
-            items.push(
-              AddressItemRender.call(this, address, type)
-            );
-          }
-
-          if (!this.state.toggleIsMine &&
-              !address.canspend &&
-              address.address.substring(0, 2) !== 'zc' &&
-              address.address.substring(0, 2) !== 'zs') {
-            items.pop();
+    if (this.props.mode === 'native') {
+      addrTypesNative.forEach((type) => {
+        if (_addresses &&
+          _addresses[type] &&
+          _addresses[type].length) {
+  
+          for (let i = 0; i < _addresses[type].length; i++) {
+            let address = _addresses[type][i];
+            address.type = type
+    
+            if (this.state.hideZeroAddresses) {
+              if (!this.hasNoAmount(address)) {
+                addrArray.push(address);
+              }
+    
+              if (!this.state.toggleIsMine &&
+                  !address.canspend &&
+                  address.address.substring(0, 2) !== 'zc' &&
+                  address.address.substring(0, 2) !== 'zs') {
+                addrArray.pop();
+              }
+            } else {
+              if (type === 'private' ||
+                  (type === 'public' &&
+                  (this.props.coin === 'KMD' ||
+                    Config.reservedChains.indexOf(this.props.coin) === -1 ||
+                    (staticVar.chainParams &&
+                    staticVar.chainParams[this.props.coin] &&
+                    !staticVar.chainParams[this.props.coin].ac_private)))) {
+                  addrArray.push(address);
+              }
+    
+              if (!this.state.toggleIsMine &&
+                  !address.canspend &&
+                  address.address.substring(0, 2) !== 'zc' &&
+                  address.address.substring(0, 2) !== 'zs') {
+                addrArray.pop();
+              }
+            }
           }
         }
-      }
-
-      return items;
-    } else {
-      if (this.props.electrumCoins &&
-          this.props.mode === 'spv' &&
-          type === 'public') {
-        let items = [];
-
+      })
+    } else if (this.props.electrumCoins &&
+          this.props.mode === 'spv') {
         if (mainWindow.multisig &&
             mainWindow.multisig.addresses &&
             mainWindow.multisig.addresses[this.props.coin.toUpperCase()]) {
-          items.push(
-            AddressItemRender.call(
-              this,
-              {
-                address: mainWindow.multisig.addresses[this.props.coin.toUpperCase()],
-                amount: this.props.balance.balance
-              },
-              'public'
-            )
-          );
+
+          addrArray.push({
+            address: mainWindow.multisig.addresses[this.props.coin.toUpperCase()],
+            amount: this.props.balance.balance,
+            type: 'public'
+          })
+
         } else {
-          items.push(
-            AddressItemRender.call(
-              this,
-              {
-                address: this.props.electrumCoins[this.props.coin].pub,
-                amount: this.props.balance.balance
-              },
-              'public'
-            )
-          );
+
+          addrArray.push({
+            address:  this.props.electrumCoins[this.props.coin].pub,
+            amount: this.props.balance.balance,
+            type: 'public'
+          })
+
         }
+    } else if (
+      this.props.ethereumCoins &&
+      this.props.mode === 'eth'
+    ) {
 
-        return items;
-      } else if (
-        this.props.ethereumCoins &&
-        this.props.mode === 'eth' &&
-        type === 'public'
-      ) {
-        let items = [];
+      addrArray.push({
+        address: this.props.ethereumCoins[this.props.coin].pub,
+        amount: this.props.balance.balance,
+        type: 'public'
+      })
 
-        items.push(
-          AddressItemRender.call(
-            this,
-            {
-              address: this.props.ethereumCoins[this.props.coin].pub,
-              amount: this.props.balance.balance
-            },
-            'public'
-          )
-        );
+    } else {
+      return null;
+    }
 
-        return items;
-      } else {
-        return null;
-      }
+    this.setState({
+      addresses: addrArray,
+      showPagination: addrArray.length >= this.state.defaultPageSize,
+    })
+  }
+
+  generateItemsListColumns() {
+    const _addrs = this.state ? this.state.addresses : []
+
+    let columns = [{
+      id: 'type',
+      Header: translate('INDEX.TYPE'),
+      Footer: translate('INDEX.TYPE'),
+      sortMethod: this.defaultSorting,
+      accessor: (addr) => AddressTypeRender.call(this, addr),
+    },
+    {
+      id: 'address',
+      Header: translate('INDEX.ADDRESS'),
+      Footer: translate('INDEX.ADDRESS'),
+      sortMethod: this.defaultSorting,
+      accessor: (addr) => AddressRender.call(this, addr),
+    },
+    {
+      id: 'amount',
+      Header: translate('INDEX.AMOUNT'),
+      Footer: translate('INDEX.AMOUNT'),
+      sortMethod: this.defaultSorting,
+      accessor: (addr) => AddressAmountRender.call(this, addr),
+    }];
+
+    if (_addrs.length <= BOTTOM_BAR_DISPLAY_THRESHOLD) {
+      return columns.map((column, index) => {
+        delete column.Footer
+        return column
+      })
+    } else {
+      return columns
+    }
+  }
+
+  renderAddressList() { 
+    if (this.state.addresses.length) {
+      return (
+        //<DoubleScrollbar>
+        <div className="address-table-container">
+          { AddressListRender.call(this) }
+        </div>
+        //</DoubleScrollbar>
+      );
+    } else {
+      return (
+        <div className="text-center">{ translate('INDEX.NO_ADDRESSES') }</div>
+      );
     }
   }
 
   render() {
-    if (this.props &&
-       (this.props.receive || this.props.activeSection === 'receive')) {
-      return ReceiveCoinRender.call(this);
-    }
-
-    return null;
+    return (this.props ? ReceiveCoinRender.call(this) : null)
   }
 }
 

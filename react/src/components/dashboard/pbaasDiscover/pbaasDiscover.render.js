@@ -7,8 +7,9 @@ import Spinner from '../spinner/spinner';
 import ReactTable from 'react-table';
 import mainWindow, { staticVar } from '../../../util/mainWindow';
 import { tableSorting } from '../pagination/utils';
-import { fromSats } from 'agama-wallet-lib/src/utils';
+import { fromSats, toSats } from 'agama-wallet-lib/src/utils';
 import { estimateReward } from '../pbaasUtils/chainData';
+import { getChainStatus } from '../../../util/pbaasUtil'
 
 export const PBaaSDiscoverRender = function() {
   return (
@@ -108,13 +109,13 @@ export const chainNameRender = function(chain) {
 };
 
 export const lastHeightRender = function(chain) {
-  const lastHeight = chain.latestheight;
+  const lastHeight = chain.lastconfirmedheight;
 
   return (<span>{ Number(lastHeight) }</span>)
 };
 
 export const lastRewardRender = function(chain) {
-  return (<span>{ estimateReward(chain.chaindefinition, chain.latestheight) }</span>)
+  return (<span>{ estimateReward(chain.chaindefinition, chain.lastconfirmedheight) }</span>)
 };
 
 export const notaryRewardRender = function(chain) {
@@ -166,4 +167,20 @@ export const premineRender = function(chain) {
   const premine = chain.chaindefinition.premine
 
   return (<span>{ Number(premine) > 0 ? translate('SETTINGS.YES') : translate('SETTINGS.NO') }</span>)
+}
+
+export const statusRender = function(chain, currentHeight) {
+
+  console.log(chain)
+  console.log(currentHeight)
+  const status = getChainStatus(
+    currentHeight,
+    chain.chaindefinition ? chain.chaindefinition.startblock : 0,
+    chain.chaindefinition ? chain.chaindefinition.minpreconvert : 0,
+    chain.chaindefinition ? chain.chaindefinition.maxpreconvert : 0,
+    toSats(chain.bestcurrencystate ? chain.bestcurrencystate.initialsupply : 0))
+
+  console.log(status)
+
+  return (status.icon)
 }

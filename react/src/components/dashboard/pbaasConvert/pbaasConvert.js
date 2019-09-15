@@ -14,7 +14,7 @@ class PBaaSConvert extends React.Component {
   }
 
   render() {
-    return PBaaSConvertRender.call(this);
+    return (this.props ? PBaaSConvertRender.call(this) : null)
   }
 }
 
@@ -22,6 +22,9 @@ const mapStateToProps = (state) => {
   return {
     PBaaSConvert: {
       activeSection: state.PBaaSConvert.activeSection
+    },
+    ActiveCoin: {
+      activeSection: state.ActiveCoin.activeSection
     }
   };
 };

@@ -49,11 +49,15 @@
 @import '../components/dashboard/pbaasConnect/pbaasConnect.scss';
 @import '../components/dashboard/pbaasCreate/pbaasCreate.scss';
 @import '../components/dashboard/pbaasConvert/pbaasConvert.scss';
-@import '../components/dashboard/pbaasConvert/pbaasQuickConvert/pbaasQuickConvert.scss';
+@import '../components/dashboard/pbaasConvert/pbaasConversionCenter/pbaasConversionCenter.scss';
 @import '../components/dashboard/pbaasConvert/pbaasConvertNav/pbaasConvertNav.scss';
+@import '../components/dashboard/pbaasConvertBalance/pbaasConvertBalance.scss';
+@import '../components/dashboard/pbaasLimitHistory/pbaasLimitHistory.scss';
 @import '../components/dashboard/pbaas/pbaas.scss';
 @import '../components/dashboard/pbaasNav/pbaasNav.scss';
+@import '../components/dashboard/pbaasPriceData/pbaasPriceData.scss';
 @import '../components/dashboard/sendCoin/sendCoin.scss';
+@import '../components/dashboard/receiveCoin//receiveCoin.scss';
 @import '../components/dashboard/walletsNav/walletsNav.scss';
 @import '../components/dashboard/coinTile/coinTile.scss';
 @import '../components/dashboard/navbar/navbar.scss';

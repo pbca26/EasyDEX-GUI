@@ -10,6 +10,8 @@ import {
   LINEAR
 } from '../../../util/constants';
 
+const PBAAS_ROOT_CHAIN = Config.verus.pbaasTestmode ? 'VRSCTEST' : 'VRSC'
+
 export const _nameFormRender = function() {
   return (
     <div className="row">
@@ -42,6 +44,234 @@ export const _launchFormRender = function() {
   return (
     <div className="row">
       <div className="col-xlg-12 form-group form-material">
+        
+      <div className="font-weight-600">{ translate('PBAAS.RESERVE') }</div>
+        <div className="create-form-description">{ translate('PBAAS.RESERVE_DESC') }</div>
+        <span className="pointer">
+          <label className="switch">
+            <input
+              type="checkbox"
+              checked={ this.state.isReserveCurrency }
+              readOnly />
+            <div
+              className="slider"
+              onClick={ this.toggleIsReserveCurrency.bind(this) }></div>
+          </label>
+          <div
+            className="toggle-label"
+            onClick={ this.toggleIsReserveCurrency.bind(this) }>
+            { translate('PBAAS.IS_RESERVE_CURRENCY') }
+          </div>
+        </span>
+
+        {this.state.isReserveCurrency &&
+          <div>
+            <div className="margin-bottom-15">
+              <label
+              className="control-label">
+                { translate('PBAAS.INITIAL_RESERVE_BALANCE') }
+                {<span>
+                  <i
+                    className="icon fa-question-circle settings-help"
+                    data-html={ true }
+                    data-for="initReserve"
+                    data-tip={ translate(`PBAAS.INITIAL_RESERVE_BALANCE_DESC`, PBAAS_ROOT_CHAIN) }></i>
+                  <ReactTooltip
+                    id="initReserve"
+                    effect="solid"
+                    className="text-left"
+                    place="right" />
+                </span>}
+              </label>
+              <input
+                type="text"
+                className={ 'form-control' }
+                name="initialContribution"
+                onChange={ this.updateAmountInput }
+                value={ this.state.initialContribution }
+                id="pbaasInitialContribution"
+                placeholder={ translate('PBAAS.INITIAL_RESERVE_BALANCE_HOLDER', PBAAS_ROOT_CHAIN) }
+                autoComplete="off"
+                required />
+              { this.state.errors.initialContribution && 
+              <label
+                className="control-label error-text">
+                { translate('PBAAS.INVALID_AMOUNT') }
+              </label> }
+            </div>
+
+            <div className="margin-bottom-15">
+              <label
+              className="control-label">
+                { translate('PBAAS.CONVERSION_RATE') }
+                {<span>
+                  <i
+                    className="icon fa-question-circle settings-help"
+                    data-html={ true }
+                    data-for="conversionRate"
+                    data-tip={ translate(`PBAAS.CONVERSION_RATE_DESC`, PBAAS_ROOT_CHAIN) }></i>
+                  <ReactTooltip
+                    id="conversionRate"
+                    effect="solid"
+                    className="text-left" 
+                    place="right" />
+                </span>}
+              </label>
+              <input
+                type="text"
+                className={ 'form-control' }
+                name="conversionRate"
+                onChange={ this.updateAmountInput }
+                value={ this.state.conversionRate }
+                id="pbaasConversionRate"
+                placeholder={ translate('PBAAS.CONVERSION_RATE_HOLDER', PBAAS_ROOT_CHAIN) }
+                autoComplete="off"
+                required />
+              { this.state.errors.conversionRate && 
+              <label
+                className="control-label error-text">
+                { translate('PBAAS.INVALID_AMOUNT') }
+              </label> }
+            </div>
+
+            <span className="pointer">
+              <label className="switch">
+                <input
+                  type="checkbox"
+                  checked={ this.state.publicPreconvert }
+                  readOnly />
+                <div
+                  className="slider"
+                  onClick={ this.togglePublicPreconvert.bind(this) }></div>
+              </label>
+              <div
+                className="toggle-label"
+                onClick={ this.togglePublicPreconvert.bind(this) }>
+                { translate('PBAAS.PUBLIC_PRECONVERT') }
+                {<span>
+                  <i
+                    className="icon fa-question-circle settings-help"
+                    data-html={ true }
+                    data-for="preconvert"
+                    data-tip={ translate(`PBAAS.PUBLIC_PRECONVERT_DESC`, PBAAS_ROOT_CHAIN) }></i>
+                  <ReactTooltip
+                    id="preconvert"
+                    effect="solid"
+                    className="text-left" 
+                    place="right" />
+                </span>}
+              </div>
+            </span>
+
+            {this.state.publicPreconvert && 
+              <div>
+                
+                <div className="margin-bottom-15">
+                  <label
+                  className="control-label">
+                    { translate('PBAAS.MIN_PRECONVERT') }
+                    {<span>
+                      <i
+                        className="icon fa-question-circle settings-help"
+                        data-html={ true }
+                        data-for="minPreconvert"
+                        data-tip={ translate(`PBAAS.MIN_PRECONVERT_DESC`, PBAAS_ROOT_CHAIN) }></i>
+                      <ReactTooltip
+                        id="minPreconvert"
+                        effect="solid"
+                        className="text-left" 
+                        place="right" />
+                    </span>}
+                  </label>
+                  <input
+                    type="text"
+                    className={ 'form-control' }
+                    name="minPreconvert"
+                    onChange={ this.updateAmountInput }
+                    value={ this.state.minPreconvert }
+                    id="pbaasMinPreconvert"
+                    placeholder={ translate('PBAAS.MIN_PRECONVERT_HOLDER', PBAAS_ROOT_CHAIN) }
+                    autoComplete="off"
+                    required />
+                  { this.state.errors.minPreconvert && 
+                  <label
+                    className="control-label error-text">
+                    { translate('PBAAS.INVALID_AMOUNT') }
+                  </label> }
+                </div>
+
+                <div className="margin-bottom-15">
+                  <label
+                  className="control-label">
+                    { translate('PBAAS.MAX_PRECONVERT') }
+                    {<span>
+                      <i
+                        className="icon fa-question-circle settings-help"
+                        data-html={ true }
+                        data-for="maxPreconvert"
+                        data-tip={ translate(`PBAAS.MAX_PRECONVERT_DESC`, PBAAS_ROOT_CHAIN) }></i>
+                      <ReactTooltip
+                        id="maxPreconvert"
+                        effect="solid"
+                        className="text-left" 
+                        place="right" />
+                    </span>}
+                  </label>
+                  <input
+                    type="text"
+                    className={ 'form-control' }
+                    name="maxPreconvert"
+                    onChange={ this.updateAmountInput }
+                    value={ this.state.maxPreconvert }
+                    id="pbaasMaxPreconvert"
+                    placeholder={ translate('PBAAS.MAX_PRECONVERT_HOLDER', PBAAS_ROOT_CHAIN) }
+                    autoComplete="off"
+                    required />
+                  { this.state.errors.maxPreconvert && 
+                  <label
+                    className="control-label error-text">
+                    { translate('PBAAS.INVALID_AMOUNT') }
+                  </label> }
+                </div>
+
+                <div className="margin-bottom-10 margin-top-10">
+                  <label
+                  className="control-label">
+                  { translate('PBAAS.LAUNCH_FEE') }
+                  {<span>
+                    <i
+                      className="icon fa-question-circle settings-help"
+                      data-html={ true }
+                      data-for="launchFee"
+                      data-tip={ translate(`PBAAS.LAUNCH_FEE_DESC`) }></i>
+                    <ReactTooltip
+                      id="launchFee"
+                      effect="solid"
+                      className="text-left" 
+                      place="right" />
+                  </span>}
+                  </label>
+                  <input
+                    type="text"
+                    className={ 'form-control' }
+                    name="launchFee"
+                    onChange={ this.updateAmountInput }
+                    value={ this.state.launchFee }
+                    id="pbaasLaunchFee"
+                    placeholder={ translate('PBAAS.LAUNCH_FEE_HOLDER') }
+                    autoComplete="off"
+                    required />
+                  { this.state.errors.launchFee && 
+                  <label
+                    className="control-label error-text">
+                    { translate('PBAAS.INVALID_AMOUNT') }
+                  </label> }
+                </div>
+              </div>
+            }
+          </div>
+        }
+        
         <div className="font-weight-600">{ translate('PBAAS.PREMINE') }</div>
         <div className="create-form-description">{ translate('PBAAS.PREMINE_DESC') }</div>
         <span className="pointer">
@@ -63,28 +293,6 @@ export const _launchFormRender = function() {
 
         {this.state.includePremine &&
           <div>
-            <div className="margin-bottom-15">
-              <label
-              className="control-label">
-              { translate('PBAAS.PREMINE_ADDRESS') }
-              </label>
-              <input
-                type="text"
-                className={ 'form-control' }
-                name="premineAddr"
-                onChange={ this.updateAddressInput }
-                value={ this.state.premineAddr }
-                id="pbaasPremineAddr"
-                placeholder={ translate('PBAAS.PREMINE_ADDRESS_HOLDER') }
-                autoComplete="off"
-                required />
-              { this.state.errors.premineAddr && 
-              <label
-                className="control-label error-text">
-                { translate('PBAAS.INVALID_ADDRESS') }
-              </label> }
-            </div>
-
             <div className="margin-bottom-10">
               <label
               className="control-label">
@@ -106,74 +314,33 @@ export const _launchFormRender = function() {
                 { translate('PBAAS.INVALID_AMOUNT') }
               </label> }
             </div>
-
-            <span className="pointer">
-              <label className="switch">
-                <input
-                  type="checkbox"
-                  checked={ this.state.publicPremine }
-                  readOnly />
-                <div
-                  className="slider"
-                  onClick={ () => {return 0}/*this.togglePublicPremine.bind(this)*/ }></div>
-              </label>
-              <div
-                className="toggle-label"
-                onClick={ () => {return 0}/*this.togglePublicPremine.bind(this)*/ }>
-                { translate('PBAAS.PUBLIC_PREMINE') }
-              </div>
-            </span>
-            {this.state.publicPremine && 
-              <div>
-                <div>
-                  <label
-                  className="control-label">
-                  { translate('PBAAS.CONVERTIBLE_AMOUNT') }
-                  </label>
-                  <input
-                    type="text"
-                    className={ 'form-control' }
-                    name="convertible"
-                    onChange={ this.updateAmountInput }
-                    value={ this.state.convertible }
-                    id="pbaasConvertible"
-                    placeholder={ translate('PBAAS.CONVERTIBLE_AMOUNT_HOLDER') }
-                    autoComplete="off"
-                    required />
-                  { this.state.errors.convertible && 
-                  <label
-                    className="control-label error-text">
-                    { translate('PBAAS.INVALID_AMOUNT') }
-                  </label> }
-                </div>
-                <div className="margin-bottom-10 margin-top-10">
-                  <label
-                  className="control-label">
-                  { translate('PBAAS.LAUNCH_FEE') }
-                  </label>
-                  <input
-                    type="text"
-                    className={ 'form-control' }
-                    name="launchfee"
-                    onChange={ this.updateAmountInput }
-                    value={ this.state.convertible }
-                    id="pbaasLaunchfee"
-                    placeholder={ translate('PBAAS.LAUNCH_FEE_HOLDER') }
-                    autoComplete="off"
-                    required />
-                  { this.state.errors.launchfee && 
-                  <label
-                    className="control-label error-text">
-                    { translate('PBAAS.INVALID_AMOUNT') }
-                  </label> }
-                </div>
-              </div>
-            }
           </div>
         }
 
-        <div className="font-weight-600 margin-top-10">{ translate('PBAAS.LAUNCH') }</div>
+        <div className="font-weight-600 margin-top-10">{ translate('PBAAS.LAUNCH_OPTIONS') }</div>
         <div className="create-form-description">{ translate('PBAAS.LAUNCH_OPTIONS_DESC') }</div>
+
+        <div className="margin-bottom-15">
+          <label
+          className="control-label">
+          { translate('PBAAS.PAYMENT_ADDRESS') }
+          </label>
+          <input
+            type="text"
+            className={ 'form-control' }
+            name="paymentAddr"
+            onChange={ this.updateAddressInput }
+            value={ this.state.paymentAddr }
+            id="pbaasPaymentAddr"
+            placeholder={ translate('PBAAS.PAYMENT_ADDRESS_HOLDER') }
+            autoComplete="off"
+            required />
+          { this.state.errors.paymentAddr && 
+          <label
+            className="control-label error-text">
+            { translate('PBAAS.INVALID_ADDRESS') }
+          </label> }
+        </div>
         
         <div>
           <label
@@ -196,7 +363,6 @@ export const _launchFormRender = function() {
             { translate('PBAAS.INVALID_BLOCK') }
           </label> }
         </div>
-
       </div>
     </div>
   )
@@ -446,7 +612,6 @@ export const _nodesFormRender = function() {
     <div>
       <div className="font-weight-600">{ translate('PBAAS.BOOTSTRAP_NODES') }</div>
       <div className="create-form-description">{ translate('PBAAS.BOOTSTRAP_NODES_DESC') }</div>
-      <div className="create-form-description font-weight-600">{ translate('PBAAS.BOOTSTRAP_NODES') }</div>
       <button
         type="button"
         className="btn btn-success waves-effect waves-light"
@@ -500,7 +665,7 @@ export const _renderNodeCapsules = function() {
             <div>
               <label
               className="control-label margin-top-10">
-              { translate('PBAAS.PAYMENT_ADDRESS') }
+              { translate('PBAAS.NODE_PAYMENT_ADDRESS') }
               </label>
               <input
                 type="text"
@@ -509,7 +674,7 @@ export const _renderNodeCapsules = function() {
                 onChange={ this.updateNodeCapsuleData }
                 value={ node.paymentAddress }
                 id="pbaasPaymentAddress"
-                placeholder={ translate('PBAAS.PAYMENT_ADDRESS_HOLDER') }
+                placeholder={ translate('PBAAS.NODE_PAYMENT_ADDRESS_HOLDER') }
                 autoComplete="off"
                 required />
               { this.state.nodes[index].errors.paymentAddress && 
@@ -632,7 +797,7 @@ export const _confirmNodesRender = function() {
               }
           </div>
           <div>
-            { translate('PBAAS.PAYMENT_ADDRESS') + ': ' }
+            { translate('PBAAS.NODE_PAYMENT_ADDRESS') + ': ' }
             {node.paymentAddress.length > 0 && !node.errors.paymentAddress ?
                 node.paymentAddress
                 :
@@ -681,40 +846,33 @@ export const _confirmFormRender = function() {
                 }
               </td>
             </tr>
+
+            <tr>
+              <td>{ translate('PBAAS.PAYMENT_ADDRESS') }</td>
+              <td>
+                {this.state.paymentAddr.length > 0 && !this.state.errors.paymentAddr ?
+                  this.state.paymentAddr
+                  :
+                  <span>
+                    <i
+                      className="icon fa-warning color-warning margin-right-5"
+                      data-tip={ this.state.errors.paymentAddr ? translate('PBAAS.INVALID_INFO') : translate('PBAAS.REQUIRED_FIELD') }
+                      data-for="paymentAddrError"></i>
+                    <ReactTooltip
+                      id="paymentAddrError"
+                      effect="solid"
+                      className="text-left" />
+                  </span> 
+                }
+              </td>
+            </tr>
+
             <tr>
               <td>{ translate('PBAAS.PREMINE_QUESTION') }</td>
               <td>
                 {this.state.includePremine ? translate('SETTINGS.YES') : translate('SETTINGS.NO') }
               </td>
             </tr>
-            <tr>
-              <td>{ translate('PBAAS.PUBLIC_PREMINE_QUESTION') }</td>
-              <td>
-                {this.state.publicPremine && this.state.includePremine ? translate('SETTINGS.YES') : translate('SETTINGS.NO') }
-              </td>
-            </tr>
-
-            {this.state.includePremine && 
-              <tr>
-                <td>{ translate('PBAAS.PREMINE_ADDRESS') }</td>
-                <td>
-                  {this.state.premineAddr.length > 0 && !this.state.errors.premineAddr ?
-                    this.state.premineAddr
-                    :
-                    <span>
-                      <i
-                        className="icon fa-warning color-warning margin-right-5"
-                        data-tip={ this.state.errors.premineAddr ? translate('PBAAS.INVALID_INFO') : translate('PBAAS.REQUIRED_FIELD_CONDITIONAL') }
-                        data-for="premineAddrError"></i>
-                      <ReactTooltip
-                        id="premineAddrError"
-                        effect="solid"
-                        className="text-left" />
-                    </span> 
-                  }
-                </td>
-              </tr>
-            }
 
             {this.state.includePremine && 
               <tr>
@@ -727,9 +885,9 @@ export const _confirmFormRender = function() {
                         <i
                           className="icon fa-warning color-warning margin-right-5"
                           data-tip={ this.state.errors.premineAmount ? translate('PBAAS.INVALID_INFO') : translate('PBAAS.REQUIRED_FIELD_CONDITIONAL') }
-                          data-for="premineAddrError"></i>
+                          data-for="premineAmountError"></i>
                         <ReactTooltip
-                          id="premineAddrError"
+                          id="premineAmountError"
                           effect="solid"
                           className="text-left" />
                       </span> 
@@ -738,26 +896,119 @@ export const _confirmFormRender = function() {
               </tr>
             }
 
-            {this.state.publicPremine && this.state.includePremine &&
-              <tr>
-                <td>{ translate('PBAAS.CONVERTIBLE_AMOUNT') }</td>
-                <td>
-                  {this.state.convertible.length > 0 && !this.state.errors.convertible ?
-                      this.state.convertible
-                      :
-                      <span>
-                        <i
-                          className="icon fa-warning color-warning margin-right-5"
-                          data-tip={ this.state.errors.convertible ? translate('PBAAS.INVALID_INFO') : translate('PBAAS.REQUIRED_FIELD_CONDITIONAL') }
-                          data-for="premineAddrError"></i>
-                        <ReactTooltip
-                          id="premineAddrError"
-                          effect="solid"
-                          className="text-left" />
-                      </span> 
-                    }
-                </td>
-              </tr>
+            <tr>
+              <td>{ translate('PBAAS.IS_RESERVE_CURRENCY_QUESTION') }</td>
+              <td>
+                {this.state.isReserveCurrency ? translate('SETTINGS.YES') : translate('SETTINGS.NO') }
+              </td>
+            </tr>
+
+            {this.state.isReserveCurrency &&
+              <React.Fragment>
+                <tr>
+                  <td>{ translate('PBAAS.INITIAL_RESERVE_BALANCE') }</td>
+                  <td>
+                    {this.state.initialContribution.length > 0 && !this.state.errors.initialContribution ?
+                        this.state.initialContribution
+                        :
+                        <span>
+                          <i
+                            className="icon fa-warning color-warning margin-right-5"
+                            data-tip={ this.state.errors.initialContribution ? translate('PBAAS.INVALID_INFO') : translate('PBAAS.REQUIRED_FIELD_CONDITIONAL') }
+                            data-for="initReserveError"></i>
+                          <ReactTooltip
+                            id="initReserveError"
+                            effect="solid"
+                            className="text-left" />
+                        </span> 
+                      }
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>{ translate('PBAAS.CONVERSION_RATE') }</td>
+                  <td>
+                    {this.state.conversionRate.length > 0 && !this.state.errors.conversionRate ?
+                        this.state.conversionRate
+                        :
+                        <span>
+                          <i
+                            className="icon fa-warning color-warning margin-right-5"
+                            data-tip={ this.state.errors.conversionRate ? translate('PBAAS.INVALID_INFO') : translate('PBAAS.REQUIRED_FIELD_CONDITIONAL') }
+                            data-for="conversionRateError"></i>
+                          <ReactTooltip
+                            id="conversionRateError"
+                            effect="solid"
+                            className="text-left" />
+                        </span> 
+                      }
+                  </td>
+                </tr>
+                
+                {this.state.publicPreconvert &&
+                  <React.Fragment>
+                    <tr>
+                      <td>{ translate('PBAAS.MIN_PRECONVERT') }</td>
+                      <td>
+                        {this.state.minPreconvert.length > 0 && !this.state.errors.minPreconvert ?
+                            this.state.minPreconvert
+                            :
+                            <span>
+                              <i
+                                className="icon fa-warning color-warning margin-right-5"
+                                data-tip={ this.state.errors.minPreconvert ? translate('PBAAS.INVALID_INFO') : translate('PBAAS.REQUIRED_FIELD_CONDITIONAL') }
+                                data-for="minPreconvertError"></i>
+                              <ReactTooltip
+                                id="minPreconvertError"
+                                effect="solid"
+                                className="text-left" />
+                            </span> 
+                          }
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td>{ translate('PBAAS.MAX_PRECONVERT') }</td>
+                      <td>
+                        {this.state.maxPreconvert.length > 0 && !this.state.errors.maxPreconvert ?
+                            this.state.maxPreconvert
+                            :
+                            <span>
+                              <i
+                                className="icon fa-warning color-warning margin-right-5"
+                                data-tip={ this.state.errors.maxPreconvert ? translate('PBAAS.INVALID_INFO') : translate('PBAAS.REQUIRED_FIELD_CONDITIONAL') }
+                                data-for="maxPreconvertError"></i>
+                              <ReactTooltip
+                                id="maxPreconvertError"
+                                effect="solid"
+                                className="text-left" />
+                            </span> 
+                          }
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td>{ translate('PBAAS.LAUNCH_FEE') }</td>
+                      <td>
+                        {this.state.launchFee.length > 0 && !this.state.errors.launchFee ?
+                            this.state.launchFee
+                            :
+                            <span>
+                              <i
+                                className="icon fa-warning color-warning margin-right-5"
+                                data-tip={ this.state.errors.launchFee ? translate('PBAAS.INVALID_INFO') : translate('PBAAS.REQUIRED_FIELD_CONDITIONAL') }
+                                data-for="launchFeeError"></i>
+                              <ReactTooltip
+                                id="launchFeeError"
+                                effect="solid"
+                                className="text-left" />
+                            </span> 
+                          }
+                      </td>
+                    </tr>
+                  </React.Fragment>
+                }
+              </React.Fragment>
             }
 
             <tr>
@@ -770,9 +1021,9 @@ export const _confirmFormRender = function() {
                       <i
                         className="icon fa-warning color-warning margin-right-5"
                         data-tip={ this.state.errors.startBlock ? translate('PBAAS.INVALID_INFO') : translate('PBAAS.REQUIRED_FIELD_CONDITIONAL') }
-                        data-for="premineAddrError"></i>
+                        data-for="paymentAddrError"></i>
                       <ReactTooltip
-                        id="premineAddrError"
+                        id="paymentAddrError"
                         effect="solid"
                         className="text-left" />
                     </span> 
@@ -796,9 +1047,9 @@ export const _confirmFormRender = function() {
                       <i
                         className="icon fa-warning color-warning margin-right-5"
                         data-tip={ translate('PBAAS.REQUIRED_FIELD') }
-                        data-for="premineAddrError"></i>
+                        data-for="paymentAddrError"></i>
                       <ReactTooltip
-                        id="premineAddrError"
+                        id="paymentAddrError"
                         effect="solid"
                         className="text-left" />
                     </span> 
@@ -816,9 +1067,9 @@ export const _confirmFormRender = function() {
                     <i
                       className="icon fa-warning color-warning margin-right-5"
                       data-tip={ this.state.errors.initCost ? translate('PBAAS.INVALID_INFO') : translate('PBAAS.REQUIRED_FIELD') }
-                      data-for="premineAddrError"></i>
+                      data-for="paymentAddrError"></i>
                     <ReactTooltip
-                      id="premineAddrError"
+                      id="paymentAddrError"
                       effect="solid"
                       className="text-left" />
                   </span> 
@@ -835,9 +1086,9 @@ export const _confirmFormRender = function() {
                     <i
                       className="icon fa-warning color-warning margin-right-5"
                       data-tip={ this.state.errors.billingPeriod ? translate('PBAAS.INVALID_INFO') : translate('PBAAS.REQUIRED_FIELD') }
-                      data-for="premineAddrError"></i>
+                      data-for="paymentAddrError"></i>
                     <ReactTooltip
-                      id="premineAddrError"
+                      id="paymentAddrError"
                       effect="solid"
                       className="text-left" />
                   </span> 
@@ -861,9 +1112,9 @@ export const _confirmFormRender = function() {
                       <i
                         className="icon fa-warning color-warning margin-right-5"
                         data-tip={ translate('PBAAS.REQUIRED_FIELD') }
-                        data-for="premineAddrError"></i>
+                        data-for="paymentAddrError"></i>
                       <ReactTooltip
-                        id="premineAddrError"
+                        id="paymentAddrError"
                         effect="solid"
                         className="text-left" />
                     </span> 

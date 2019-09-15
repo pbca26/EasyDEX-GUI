@@ -1,9 +1,9 @@
 import { fromSats } from 'agama-wallet-lib/src/utils';
 const LINEAR_DECAY = 100000000
 
-export const estimateReward = (chainDefinition, latestHeight) => {
+export const estimateReward = (chainDefinition, lastconfirmedheight) => {
   const eras = chainDefinition.eras
-  const lastHeight = Number(latestHeight);
+  const lastHeight = Number(lastconfirmedheight);
   let eraIndex = 0;
   let reward = 0;
 
@@ -16,7 +16,10 @@ export const estimateReward = (chainDefinition, latestHeight) => {
 
   let currentEra = eras[eraIndex]
 
-  if (Number(currentEra.decay) === LINEAR_DECAY) {
+  if (eras.length === 1 && currentEra.eraend === 0 && currentEra.decay === 0 && currentEra.halving === 0) {
+    //If there is no decay or halving, always return current reward, as it doesn't change
+    reward = fromSats(currentEra.reward)
+  } else if (Number(currentEra.decay) === LINEAR_DECAY) {
     //If decay is linear, create y=mx+b line function to estimate reward
     let yChange = ((eraIndex < eras.length - 1) ? Number(eras[eraIndex + 1].reward) : 0) - Number(currentEra.reward)
     let xChange = Number(currentEra.eraend) - (eraIndex === 0 ? 0 : Number(eras[eraIndex - 1].eraend))

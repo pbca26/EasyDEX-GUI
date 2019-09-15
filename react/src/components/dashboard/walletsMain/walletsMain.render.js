@@ -5,6 +5,7 @@ import SendCoin from '../sendCoin/sendCoin';
 import WalletsProgress from '../walletsProgress/walletsProgress';
 import WalletsData from '../walletsData/walletsData';
 import ReceiveCoin from '../receiveCoin/receiveCoin';
+import PBaaSConvert from '../pbaasConvert/pbaasConvert'
 import {
   getCoinTitle,
   isKomodoCoin,
@@ -20,6 +21,7 @@ import {
 
 const WalletsMainRender = function() {
   const _coin = this.props.ActiveCoin.coin;
+
   return (
     <div className="page margin-left-0">
       <div className="padding-top-0">
@@ -61,11 +63,24 @@ const WalletsMainRender = function() {
             <WalletsProgress />
           }
           <div className="row">
-            <WalletsBalance />
-            <ReceiveCoin />
-            <WalletsData />
-            <SendCoin />
-            <WalletsInfo />
+            { this.props.ActiveCoin.activeSection === 'receive' &&
+              <ReceiveCoin />
+            }
+            { this.props.ActiveCoin.activeSection === 'default' &&
+              <React.Fragment>
+                <WalletsBalance />
+                <WalletsData />
+              </React.Fragment>
+            }
+            { this.props.ActiveCoin.activeSection === 'send' &&
+              <SendCoin />
+            }
+            { this.props.ActiveCoin.activeSection === 'settings' && 
+              <WalletsInfo />
+            }
+            { this.props.ActiveCoin.activeSection === 'convert' &&
+              <PBaaSConvert />
+            }
           </div>
         </div>
       </div>

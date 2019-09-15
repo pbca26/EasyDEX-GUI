@@ -17,6 +17,11 @@ import mainWindow, { staticVar } from '../../../util/mainWindow';
 import { formatEther } from 'ethers/utils/units';
 import coinFees from 'agama-wallet-lib/src/fees';
 import erc20ContractId from 'agama-wallet-lib/src/eth-erc20-contract-id';
+import defaultSendFormRender from './sendCoinForms/defaultSendForm.render'
+import kvSendFormRender from './sendCoinForms/kvSendForm.render'
+import shieldCoinbaseFormRender from './sendCoinForms/shieldCoinbaseForm.render'
+import pbaasSendFormRender from './sendCoinForms/pbaasSendForm.render'
+import { isPbaasChain } from '../../../util/pbaasUtil';
 
 const _feeLookup = {
   eth: [
@@ -43,8 +48,8 @@ export const ZmergeToAddressRender = function() {
 export const AddressListRender = function() {
   const _coin = this.props.ActiveCoin.coin;
   const _mode = this.props.ActiveCoin.mode;
-  const _notAcPrivate = staticVar.chainParams && staticVar.chainParams[_coin] && !staticVar.chainParams[_coin].ac_private;
-
+  const _acPrivate = staticVar.chainParams && staticVar.chainParams[_coin] && staticVar.chainParams[_coin].ac_private;
+  
   return (
     <div className={ `btn-group bootstrap-select form-control form-material showkmdwalletaddrs show-tick ${(this.state.addressSelectorOpen ? 'open' : '')}` }>
       <button
@@ -60,7 +65,7 @@ export const AddressListRender = function() {
         <ul className="dropdown-menu inner">
           { (_mode === 'spv' ||
              _mode === 'eth' ||
-            (_mode === 'native' && _coin !== 'KMD' && _notAcPrivate)) &&
+            (_mode === 'native' && _coin !== 'KMD' && !_acPrivate)) &&
             (!this.state.sendTo || (this.state.sendTo && this.state.sendTo.substring(0, 2) !== 'zc' && this.state.sendTo.substring(0, 2) !== 'zs' && this.state.sendTo.length !== 95)) &&
             <li
               className="selected"
@@ -85,7 +90,7 @@ export const AddressListRender = function() {
           }
           { (_mode === 'spv' ||
              _mode === 'eth' ||
-             ((_mode === 'native' && _coin === 'KMD') || (_mode === 'native' && _coin !== 'KMD' && _notAcPrivate))) &&
+             ((_mode === 'native' && _coin === 'KMD') || (_mode === 'native' && _coin !== 'KMD' && !_acPrivate))) &&
             this.renderAddressByType('public')
           }
           { this.renderAddressByType('private') }
@@ -120,12 +125,31 @@ export const _SendFormRender = function() {
   const _coin = this.props.ActiveCoin.coin;
   const _mode = this.props.ActiveCoin.mode;
   const _isAcPrivate = staticVar.chainParams && staticVar.chainParams[_coin] && staticVar.chainParams[_coin].ac_private;
+  const _isReserveChain = isPbaasChain(this.props.ActiveCoin.coin)
 
   return (
     <div className="extcoin-send-form">
+      {_isReserveChain && !this.state.sendOffChain &&/* has vrsc token balance &&*/ 
+      <span className="pointer">
+          <label className="switch">
+          <input
+            type="checkbox"
+            checked={ this.state.sendVrscToken }
+            readOnly />
+          <div
+            className="slider"
+            onClick={ () => this.toggleSendVrscToken() }></div>
+          </label>
+          <div
+          className="toggle-label"
+          onClick={ () => this.toggleSendVrscToken() }>
+          { translate( 'SEND.SEND_VRSC_TOKEN' ) }
+          </div>
+      </span>}
       { (this.state.renderAddressDropdown ||
         (_mode === 'native' && _coin !== 'KMD' && _isAcPrivate)) &&
         !this.state.zshieldcoinbaseToggled &&
+        !this.state.sendVrscToken &&
         <div className="row">
           <div className="col-xlg-12 form-group form-material">
             <label className="control-label padding-bottom-10">
@@ -137,331 +161,18 @@ export const _SendFormRender = function() {
       }
       { !this.state.kvSend &&
         !this.state.zshieldcoinbaseToggled &&
-        <div className="row">
-          <div className="col-xlg-12 form-group form-material">
-            { ((_mode === 'spv' && this.renderAddressBookDropdown(true) < 1) ||
-                _mode === 'eth') &&
-                !this.props.initState &&
-              <button
-                type="button"
-                className="btn btn-default btn-send-self"
-                onClick={ this.setSendToSelf }>
-                { translate('SEND.SELF') }
-              </button>
-            }
-            { this.props.AddressBook &&
-              this.props.AddressBook.arr &&
-              typeof this.props.AddressBook.arr === 'object' &&
-              this.props.AddressBook.arr[isKomodoCoin(_coin) ? 'KMD' : _coin] &&
-              this.renderAddressBookDropdown(true) > 0 &&
-              <button
-                type="button"
-                className="btn btn-default btn-send-address-book-dropdown"
-                onClick={ this.toggleAddressBookDropdown }>
-                { translate('SETTINGS.ADDRESS_BOOK') } <i className="icon fa-angle-down"></i>
-              </button>
-            }
-            { this.state.addressBookSelectorOpen &&
-              <div className="coin-tile-context-menu coin-tile-context-menu--address-book">
-                <ul>
-                  { this.renderAddressBookDropdown() }
-                </ul>
-              </div>
-            }
-            <label
-              className="control-label"
-              htmlFor="kmdWalletSendTo">
-              { translate('INDEX.SEND_TO') }
-            </label>
-            <input
-              type="text"
-              className={ 'form-control' + (this.props.AddressBook && this.props.AddressBook.arr && typeof this.props.AddressBook.arr === 'object' && this.props.AddressBook.arr[isKomodoCoin(_coin) ? 'KMD' : _coin] ? ' send-to-padding-right' : '') }
-              name="sendTo"
-              onChange={ this.updateInput }
-              value={ this.state.sendTo }
-              disabled={ this.props.initState }
-              id="kmdWalletSendTo"
-              placeholder={ translate('SEND.' + (_mode === 'spv' || _mode === 'eth' ? 'ENTER_ADDRESS' : (_mode === 'native' && _coin !== 'KMD' && _isAcPrivate) ? 'ENTER_Z_ADDR' : 'ENTER_T_OR_Z_ADDR')) }
-              autoComplete="off"
-              required />
-          </div>
-          <div className="col-lg-12 form-group form-material">
-            { !this.props.initState &&
-              <button
-                type="button"
-                className="btn btn-default btn-send-self"
-                onClick={ this.setSendAmountAll }>
-                { translate('SEND.ALL') }
-              </button>
-            }
-            <label
-              className="control-label"
-              htmlFor="kmdWalletAmount">
-              { translate('INDEX.AMOUNT') }
-            </label>
-            <input
-              type="text"
-              className="form-control"
-              name="amount"
-              value={ this.state.amount !== 0 ? this.state.amount : '' }
-              onChange={ this.updateInput }
-              disabled={ this.props.initState }
-              id="kmdWalletAmount"
-              placeholder={translate('SEND.ENTER_AMOUNT')}
-              autoComplete="off" />
-          </div>
-          { (this.props.ActiveCoin.coin === 'VRSC' || 
-            this.props.ActiveCoin.coin === 'VRSCTEST' || 
-            Config.reservedChains.indexOf(this.props.ActiveCoin.coin) === -1) && (this.state.sendTo.length === 95 || this.state.sendTo.length === 78) && 
-            <div className="col-lg-12 form-group form-material">
-              <label
-                className="control-label"
-                htmlFor="kmdWalletMemo">
-                { translate('SEND.PRIVATE_MESSAGE') }
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                name="memo"
-                value={ this.state.memo !== '' ? this.state.memo : '' }
-                onChange={ this.updateInput }
-                id="kmdWalletMemo"
-                placeholder={ translate('SEND.PRIVATE_MESSAGE_DESC') }
-                autoComplete="off" />
-            </div>
-          }
-          { this.isTransparentTx() &&
-            _mode === 'native' &&
-            <div className="col-lg-6 form-group form-material">
-              { this.state.sendTo.length <= 34 &&
-                <span className="pointer">
-                  <label className="switch">
-                    <input
-                      type="checkbox"
-                      checked={ this.state.subtractFee }
-                      readOnly />
-                    <div
-                      className="slider"
-                      onClick={ () => this.toggleSubtractFee() }></div>
-                  </label>
-                  <div
-                    className="toggle-label"
-                    onClick={ () => this.toggleSubtractFee() }>
-                    { translate('DASHBOARD.SUBTRACT_FEE') }
-                  </div>
-                </span>
-              }
-            </div>
-          }
-          { this.renderBTCFees() }
-          { this.renderETHFees() }
-          { _mode === 'spv' &&
-            Config.spv.allowCustomFees &&
-            <div className="col-lg-12 form-group form-material">
-              <label
-                className="control-label"
-                htmlFor="kmdWalletFee">
-                { translate('INDEX.FEE_PER_TX') }
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                name="fee"
-                onChange={ this.updateInput }
-                id="kmdWalletFee"
-                placeholder="0.0001"
-                value={ this.state.fee !== 0 ? this.state.fee : '' }
-                autoComplete="off" />
-              <button
-                type="button"
-                className="btn btn-default btn-send-self"
-                onClick={ this.setDefaultFee }>
-                { translate('INDEX.DEFAULT') }
-              </button>
-            </div>
-          }
-          { _mode === 'native' && this.state.sendFrom &&
-            <div className="row">
-              <div className="col-lg-12 form-group form-material">
-                <button
-                  type="button"
-                  className="btn btn-default btn-send-zfee-dropdown margin-left-15"
-                  onClick={ this.toggleZtxDropdown }>
-                  { translate('SEND.INCLUDE_NON_STANDARD_FEE')} { this.state.ztxFee === 0.0001 ? translate('SEND.INCLUDE_NON_STANDARD_FEE_DEFAULT') : this.state.ztxFee } <i className="icon fa-angle-down"></i>
-                </button>
-              </div>
-              <div className="col-lg-12 form-group form-material">
-                { this.state.ztxSelectorOpen &&
-                  <div className="coin-tile-context-menu coin-tile-context-menu--zfee">
-                    <ul>
-                      { this.renderZtxDropdown() }
-                    </ul>
-                  </div>
-                }
-              </div>
-            </div>
-          }
-          { _mode === 'spv' &&
-            Config.spv.allowCustomFees &&
-            this.state.amount > 0 &&
-            isPositiveNumber(this.state.fee) &&
-            isPositiveNumber(this.state.amount) &&
-            <div className="col-lg-12">
-              <span>
-                <strong>{ translate('INDEX.TOTAL') }:</strong>&nbsp;
-                { this.state.amount } + { this.state.fee } = { Number((Number(this.state.amount) + Number(this.state.fee)).toFixed(8)) }&nbsp;
-                { _coin }
-              </span>
-            </div>
-          }
-          { (!this.isFullySynced() || !navigator.onLine) &&
-            this.props.ActiveCoin &&
-            _mode === 'native' &&
-            <div className="col-lg-12 padding-top-20 padding-bottom-20 send-coin-sync-warning">
-              <i className="icon fa-warning color-warning margin-right-5"></i>&nbsp;
-              <span className="desc">{ translate('SEND.SEND_NATIVE_SYNC_WARNING') }</span>
-            </div>
-          }
-          { this.props.ActiveCoin &&
-            this.props.ActiveCoin.balance &&
-            this.props.ActiveCoin.balance.interest > 0 &&
-            <div>
-              <div className="col-lg-12 padding-top-20 padding-bottom-20 send-coin-sync-warning">
-                <i className="icon fa-warning color-warning margin-right-5"></i>&nbsp;
-                <span className="desc">{ translate('SEND.NONZERO_INTEREST_WARNING', this.props.ActiveCoin.coin) }</span>
-              </div>
-              <div className="col-lg-12 padding-top-20 padding-bottom-20 send-coin-sync-warning">
-                <label className="switch">
-                  <input
-                    type="checkbox"
-                    checked={ this.state.donateInterest }
-                    readOnly />
-                  <div
-                    className="slider"
-                    onClick={ this.toggleDonateInterest.bind(this) }></div>
-                </label>
-                <div
-                  className="toggle-label"
-                  onClick={ this.toggleDonateInterest.bind(this) }>
-                  { translate('SEND.NONZERO_INTEREST_CONFIRM') }
-                </div>
-              </div>
-            </div>
-          }
-          <div className="col-lg-12">
-            <button
-              type="button"
-              className="btn btn-primary waves-effect waves-light pull-right"
-              onClick={ this.props.renderFormOnly ? this.handleSubmit : () => this.changeSendCoinStep(1) }
-              disabled={
-                !this.state.sendTo ||
-                !this.state.amount ||
-                (_coin === 'BTC' && !Number(this.state.btcFeesSize)) ||
-                (_mode === 'eth' && !this.state.ethFees) ||
-                (this.props.ActiveCoin && this.props.ActiveCoin.balance && 
-                  this.props.ActiveCoin.balance.interest > 0 && !this.state.donateInterest)
-              }>
-              { translate('INDEX.SEND') } { this.state.amount } { _coin }
-            </button>
-          </div>
-        </div>
+        !(_isReserveChain || /*this.props.ActiveCoin.coin === 'VRSC' || */this.props.ActiveCoin.coin === 'VRSCTEST') &&
+        defaultSendFormRender(this)
       }
       { this.state.kvSend &&
-        <div className="row">
-          {/*<button
-            type="button"
-            className="btn btn-default btn-send-self"
-            onClick={ this.loadTestData }>
-            Load test data
-          </button>*/}
-          <div className="col-xlg-12 form-group form-material">
-            <label
-              className="control-label"
-              htmlFor="kvSendTag">
-              { translate('KV.TAG') }
-            </label>
-            <input
-              type="text"
-              className="form-control"
-              name="kvSendTag"
-              onChange={ this.updateInput }
-              value={ this.state.kvSendTag }
-              id="kvSendTag"
-              placeholder={ translate('KV.TITLE') }
-              autoComplete="off"
-              maxLength="64"
-              required />
-          </div>
-          <div className="col-xlg-12 form-group form-material">
-            <label
-              className="control-label"
-              htmlFor="kvSendTitle">
-              { translate('KV.TITLE') }
-            </label>
-            <input
-              type="text"
-              className="form-control"
-              name="kvSendTitle"
-              onChange={ this.updateInput }
-              value={ this.state.kvSendTitle }
-              id="kvSendTitle"
-              placeholder={ translate('KV.ENTER_A_TITLE') }
-              autoComplete="off"
-              maxLength="128"
-              required />
-          </div>
-          <div className="col-xlg-12 form-group form-material">
-            <label
-              className="control-label margin-bottom-10"
-              htmlFor="kvSendContent">
-              { translate('KV.CONTENT') }
-            </label>
-            <textarea
-              className="full-width height-400"
-              rows="20"
-              cols="80"
-              id="kvSendContent"
-              name="kvSendContent"
-              onChange={ this.updateInput }
-              value={ this.state.kvSendContent }></textarea>
-          </div>
-          <div className="col-xlg-12 form-group form-material">
-            { (4096 - this.state.kvSendContent.length) > 0 &&
-              <span>{ translate('KV.CHARS_LEFT') }:  { 4096 - this.state.kvSendContent.length }</span>
-            }
-            { (4096 - this.state.kvSendContent.length) < 0 &&
-              <span>{ translate('KV.KV_ERR_TOO_LONG') }</span>
-            }
-          </div>
-          <div className="col-lg-12">
-            <button
-              type="button"
-              className="btn btn-primary waves-effect waves-light pull-right"
-              onClick={ this.props.renderFormOnly ? this.handleSubmit : () => this.changeSendCoinStep(1) }
-              disabled={ !this.state.kvSendContent }>
-              { translate('INDEX.SEND') } KV { this.props.ActiveCoin.coin }
-            </button>
-          </div>
-        </div>
+        !(_isReserveChain || this.props.ActiveCoin.coin === 'VRSC' || this.props.ActiveCoin.coin === 'VRSCTEST') &&
+        kvSendFormRender(this)
       }
       { this.state.zshieldcoinbaseToggled &&
-        <div className="row">
-          <div className="col-xlg-12 form-group form-material">
-            <label className="control-label padding-bottom-10">
-              { translate('INDEX.SEND_TO') }
-            </label>
-            { this.renderShielCoinbaseAddressList() }
-          </div>
-          <div className="col-lg-12">
-            <button
-              type="button"
-              className="btn btn-primary waves-effect waves-light pull-right"
-              onClick={ this._shieldCoinbase }
-              disabled={ !this.state.sendFrom }>
-              { translate('INDEX.CONFIRM') }
-            </button>
-          </div>
-        </div>
+        shieldCoinbaseFormRender(this)
+      }
+      { (_isReserveChain || /* this.props.ActiveCoin.coin === 'VRSC' || */ this.props.ActiveCoin.coin === 'VRSCTEST') &&
+        pbaasSendFormRender(this)
       }
     </div>
   );
@@ -474,6 +185,7 @@ export const SendRender = function() {
     (this.state.spvPreflightRes && 
     this.state.spvPreflightRes.value && 
     fromSats(this.state.spvPreflightRes.value) !== Number(this.state.amount))
+  const _hasZAddrs = this.props.ActiveCoin.mode === 'native' && this.props.ActiveCoin.addresses.private && this.props.ActiveCoin.addresses.private.length > 0
 
   if (this.props.renderFormOnly) {
     return (
@@ -524,15 +236,21 @@ export const SendRender = function() {
                 }
                 { this.props.ActiveCoin.coin === 'VRSC' &&
                   this.props.ActiveCoin.mode === 'native' &&
-                  this.props.ActiveCoin.addresses.private &&
-                  this.props.ActiveCoin.addresses.private.length > 0 &&
                   <div className="padding-left-30 padding-top-20">
                     <button
                       type="button"
                       className="btn btn-default"
+                      disabled={!_hasZAddrs}
+                      data-tip={ !_hasZAddrs ? translate('SEND.CREATE_Z_ADDR_TO_SHIELD') : null }
+                      data-html={ !_hasZAddrs ? true : false}
+                      data-for={ !_hasZAddrs ? "zAddrNeeded": null }
                       onClick={ this.zshieldcoinbaseToggle }>
                       { this.state.zshieldcoinbaseToggled ? translate('INDEX.BACK') : translate('SEND.SHIELD_COINBASE') }
                     </button>
+                    <ReactTooltip
+                      id="zAddrNeeded"
+                      effect="solid"
+                      className="text-left" />
                   </div>
                 }
                 { ((_mode === 'spv' && Config.experimentalFeatures && kvCoins[_coin]) ||
