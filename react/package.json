@@ -132,11 +132,11 @@
     "webpack-dev-server": "^3.1.10"
   },
   "resolutions": {
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.15",
     "static-eval": "^2.0.2",
-    "tar": "^4.4.8",
+    "tar": "^4.4.11",
     "js-yaml": "^3.13.1",
     "braces": "^3.0.2",
-    "handlebars": "^4.1.2"
+    "handlebars": "^4.2.0"
   }
 }
