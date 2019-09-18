@@ -137,6 +137,7 @@ const mapStateToProps = (state) => {
     ActiveCoin: {
       coin: state.ActiveCoin.coin,
       mode: state.ActiveCoin.mode,
+      activeSection: state.ActiveCoin.activeSection,
     },
   };
 };

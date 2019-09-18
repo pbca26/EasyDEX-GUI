@@ -51,7 +51,7 @@ class WalletMain extends React.Component {
           Store.dispatch(toggleLoginSettingsModal(false));
         } else if (this.props.activeModals.displayNotaryElectionsModal) {
           Store.dispatch(toggleNotaryElectionsModal(false));
-        } else if (this.props.PBaaS.showChainInfo) {
+        } else if (this.props.PBaaSMain.showChainInfo) {
           Store.dispatch(togglePbaasChainInfoModal(false));
         }
       }
@@ -88,8 +88,8 @@ class WalletMain extends React.Component {
 const mapStateToProps = (state) => {
   return {
     toaster: state.toaster,
-    PBaaS: {
-      showChainInfo: state.PBaaS.showChainInfo
+    PBaaSMain: {
+      showChainInfo: state.PBaaSMain.showChainInfo
     },
     activeModals: {
       showTransactionInfo: state.ActiveCoin.showTransactionInfo,

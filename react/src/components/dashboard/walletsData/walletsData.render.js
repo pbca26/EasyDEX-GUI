@@ -81,17 +81,19 @@ export const TxConfsRender = function(tx) {
   }
 }
 
-export const AddressTypeRender = function(tx) {
+export const TxTypeRender = function(tx) {
+  const isReserve = tx.reserveamount && tx.reserveamount > 0
+
   return (
     <span>
-      <span className={isPrivate(tx) ? "label label-dark" : "label label-default"}>
+      <span className={`label label-${isPrivate(tx) ? 'dark' : (isReserve ? 'info' : 'default')}`}>
         <i
-        className={ 'icon fa-eye' + (isPrivate(tx) ? '-slash' : '')}
-        data-tip={ isPrivate(tx) ? translate('DASHBOARD.PRIVATE_TX') : translate('DASHBOARD.PUBLIC_TX') }
-        data-for={isPrivate(tx) ? "privateTxIcon" : "publicTxIcon"}
+        className={ `icon ${isPrivate(tx) ? 'fa-eye-slash' : (isReserve ? 'fa-share-alt-square' : 'fa-eye')}`}
+        data-tip={ isPrivate(tx) ? translate('DASHBOARD.PRIVATE_TX') : (isReserve ? translate('DASHBOARD.RESERVE_TX') : translate('DASHBOARD.PUBLIC_TX')) }
+        data-for="txTypeIcon"
         ></i>
         <ReactTooltip
-          id={isPrivate(tx) ? "privateTxIcon" : "publicTxIcon"}
+          id="txTypeIcon"
           effect="solid"
           className="text-left" />
       </span>
@@ -201,7 +203,7 @@ export const AddressListRender = function() {
   }
 };
 
-export const TxTypeRender = function(tx) {
+export const TxDirectionRender = function(tx) {
   const category = tx.category || tx.type;
 
   if (category === 'send' ||
@@ -265,8 +267,20 @@ export const TxAmountRender = function(tx) {
       <span>
         <span
           data-for="txHistory3"
-          data-tip={ tx.amount }>
-          { this.props.ActiveCoin.mode === 'eth' ? formatValue(tx.amount) : Math.abs(tx.interest) !== Math.abs(tx.amount) ? (typeof tx.amount !== undefined ? formatValue(tx.amount) : translate('DASHBOARD.UNKNOWN')) : '' }
+          data-tip={ tx.amount || tx.reserveamount }>
+          { this.props.ActiveCoin.mode === 'eth' ? 
+              formatValue(tx.amount) 
+              : 
+              Math.abs(tx.interest) !== Math.abs(tx.amount) ? 
+                (tx.reserveamount ? 
+                  formatValue(tx.reserveamount) 
+                  : 
+                  (typeof tx.amount !== undefined ? 
+                    formatValue(tx.amount) 
+                    : 
+                    translate('DASHBOARD.UNKNOWN'))) 
+                : 
+                ''}
           { tx.interest &&
             <span
               className="tx-interest"
@@ -301,7 +315,19 @@ export const TxAmountRender = function(tx) {
 
   return (
     <span>
-      { this.props.ActiveCoin.mode === 'eth' ? formatValue(tx.amount) : Math.abs(tx.interest) !== Math.abs(tx.amount) ? (typeof tx.amount !== undefined ? Number(tx.amount) : translate('DASHBOARD.UNKNOWN')) : '' }
+      { this.props.ActiveCoin.mode === 'eth' ? 
+        formatValue(tx.amount) 
+        : 
+        Math.abs(tx.interest) !== Math.abs(tx.amount) ? 
+          (tx.reserveamount ? 
+            formatValue(tx.reserveamount) 
+            : 
+            (typeof tx.amount !== undefined ? 
+              formatValue(tx.amount) 
+              : 
+              translate('DASHBOARD.UNKNOWN'))) 
+          : 
+          ''}
       { tx.interest &&
         <span
           className="tx-interest"

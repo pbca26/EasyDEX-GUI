@@ -4,9 +4,10 @@ import {
   PBAAS_ACTIVE_CHAININFO_MODAL,
   UPDATE_DEFINED_CHAINS
 } from '../actions/storeType';
+import { CONNECT } from '../util/constants'
 
-export const PBaaS = (state = {
-  activeSectionPbaas: 'connect',
+export const PBaaSMain = (state = {
+  activeSectionPbaas: CONNECT,
   formState: {
     currentStep: -1
   },
@@ -41,4 +42,4 @@ export const PBaaS = (state = {
   }
 }
 
-export default PBaaS;
+export default PBaaSMain;

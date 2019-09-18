@@ -1,0 +1,37 @@
+.quick-convert-main-container {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+.quick-convert-sub-container {
+  flex-grow: 1;
+  flex-basis: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.quick-convert-sub-container-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.quick-convert-sub-item {
+  width: 100%;
+}
+
+.convert-dropdown-item-container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.convert-amount-textbox {
+  margin-top: 20px;
+}
+
+.convert-coin-select-label {
+  margin-bottom: 7px;
+}

@@ -11,7 +11,8 @@ import Interval from './interval';
 import Login from './login';
 import Dex from './dex';
 import Dice from './dice';
-import PBaaS from './pbaas';
+import PBaaSMain from './pbaasMain';
+import PBaaSConvert from './pbaasConvert'
 import Mining from './mining';
 
 const appReducer = combineReducers({
@@ -25,7 +26,8 @@ const appReducer = combineReducers({
   Login,
   Dex,
   Dice,
-  PBaaS,
+  PBaaSMain,
+  PBaaSConvert,
   Mining,
   routing: routerReducer,
 });

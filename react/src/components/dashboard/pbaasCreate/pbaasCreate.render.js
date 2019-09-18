@@ -3,8 +3,7 @@ import translate from '../../../translate/translate';
 import mainWindow from '../../../util/mainWindow';
 import ReactTooltip from 'react-tooltip';
 import Config from '../../../config';
-
-const FORM_TITLES = ['NAME', 'LAUNCH', 'REWARD_STRUCTURE', 'BILLING', 'NODES', 'CONFIRM']
+import { FORM_TITLES } from '../../../util/constants'
 
 export const _formProgressRender = function() {
   const step = this.state.currentStep

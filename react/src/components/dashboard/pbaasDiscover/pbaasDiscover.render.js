@@ -7,13 +7,9 @@ import Spinner from '../spinner/spinner';
 import ReactTable from 'react-table';
 import mainWindow, { staticVar } from '../../../util/mainWindow';
 import { tableSorting } from '../pagination/utils';
-import { fromSats } from 'agama-wallet-lib/src/utils';
+import { fromSats, toSats } from 'agama-wallet-lib/src/utils';
 import { estimateReward } from '../pbaasUtils/chainData';
-
-const VRSC_LOGO_DIR = `assets/images/cryptologo/btc/vrsc.png`
-const EXPONENTIAL = 'exponential'
-const LINEAR = 'linear'
-const LINEAR_DECAY = 100000000
+import { getChainStatus } from '../../../util/pbaasUtil'
 
 export const PBaaSDiscoverRender = function() {
   return (
@@ -75,7 +71,7 @@ export const PBaaSDiscoverRender = function() {
 }
 
 export const ChainsListRender = function() {
-  const _definedChains = this.props.PBaaS.definedChains
+  const _definedChains = this.props.PBaaSMain.definedChains
   let _data;
 
   if (_definedChains &&
@@ -113,13 +109,13 @@ export const chainNameRender = function(chain) {
 };
 
 export const lastHeightRender = function(chain) {
-  const lastHeight = chain.latestheight;
+  const lastHeight = chain.lastconfirmedheight;
 
   return (<span>{ Number(lastHeight) }</span>)
 };
 
 export const lastRewardRender = function(chain) {
-  return (<span>{ estimateReward(chain.chaindefinition, chain.latestheight) }</span>)
+  return (<span>{ estimateReward(chain.chaindefinition, chain.lastconfirmedheight) }</span>)
 };
 
 export const notaryRewardRender = function(chain) {
@@ -161,7 +157,7 @@ export const chainDetailRender = function(chainIndex) {
     <button
       type="button"
       className="btn btn-xs white btn-info waves-effect waves-light btn-kmdtxid"
-      onClick={ () => this.toggleChainInfoModal(!this.props.PBaaS.showChainInfo, chainIndex) }>
+      onClick={ () => this.toggleChainInfoModal(!this.props.PBaaSMain.showChainInfo, chainIndex) }>
       <i className="icon fa-search"></i>
     </button>
   );
@@ -171,4 +167,16 @@ export const premineRender = function(chain) {
   const premine = chain.chaindefinition.premine
 
   return (<span>{ Number(premine) > 0 ? translate('SETTINGS.YES') : translate('SETTINGS.NO') }</span>)
+}
+
+export const statusRender = function(chain, currentHeight) {
+  const status = getChainStatus(
+    currentHeight,
+    chain.chaindefinition ? chain.chaindefinition.startblock : 0,
+    chain.chaindefinition ? chain.chaindefinition.minpreconvert : 0,
+    chain.chaindefinition ? chain.chaindefinition.maxpreconvert : 0,
+    toSats(chain.bestcurrencystate ? chain.bestcurrencystate.initialsupply : 0),
+    chain.bestcurrencystate ? chain.bestcurrencystate.priceinreserve : 0)
+
+  return (status.icon)
 }

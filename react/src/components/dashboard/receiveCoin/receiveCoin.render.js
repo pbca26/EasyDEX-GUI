@@ -5,6 +5,9 @@ import InvoiceModal from '../invoiceModal/invoiceModal';
 import ReactTooltip from 'react-tooltip';
 import mainWindow, { staticVar } from '../../../util/mainWindow';
 import Config from '../../../config';
+import TablePaginationRenderer from '../pagination/pagination';
+import { tableSorting } from '../pagination/utils';
+import ReactTable from 'react-table';
 
 export const AddressActionsNonBasiliskModeRender = function(address, type) {
   return (
@@ -26,7 +29,7 @@ export const AddressActionsNonBasiliskModeRender = function(address, type) {
         className="text-left" />
       { this.state.toggledAddressMenu &&
         this.state.toggledAddressMenu === address &&
-        <div className="receive-address-context-menu">
+        <div className="receive-address-context-menu" onClick={ () => this.toggleAddressMenu(address) }>
           <ul>
             <li onClick={ () => this._copyCoinAddress(address) }>
               <i className="icon wb-copy margin-right-5"></i> { `${translate('INDEX.COPY')} ${translate('RECEIVE.' + (type === 'public' ? 'PUB_KEY' : 'Z_KEY'))}` }
@@ -117,84 +120,87 @@ export const AddressItemRender = function(address, type) {
 
 export const _ReceiveCoinTableRender = function() {
   return (
-    <span>
+    <div>
       { this.checkTotalBalance() !== 0 &&
-        <div className="text-left padding-top-20 padding-bottom-15 push-left">
-          { this.props.mode !== 'spv' &&
-            this.props.mode !== 'eth' &&
-            <div>
-              <label className="switch">
-                <input
-                  type="checkbox"
-                  value="on"
-                  checked={ this.state.hideZeroAddresses }
-                  readOnly />
+        <div className="row padding-bottom-5 padding-top-10">
+          <div className="push-left">
+            { this.props.mode !== 'spv' &&
+              this.props.mode !== 'eth' &&
+              <div>
+                <label className="switch">
+                  <input
+                    type="checkbox"
+                    value="on"
+                    checked={ this.state.hideZeroAddresses }
+                    readOnly />
+                  <div
+                    className="slider"
+                    onClick={ this.toggleVisibleAddress }></div>
+                </label>
                 <div
-                  className="slider"
-                  onClick={ this.toggleVisibleAddress }></div>
-              </label>
-              <div
-                className="toggle-label margin-right-15 pointer"
-                onClick={ this.toggleVisibleAddress }>
-                { translate('INDEX.TOGGLE_ZERO_ADDRESSES') }
+                  className="toggle-label margin-right-15 pointer"
+                  onClick={ this.toggleVisibleAddress }>
+                  { translate('INDEX.TOGGLE_ZERO_ADDRESSES') }
+                </div>
               </div>
-            </div>
-          }
+            }
+          </div>
+          <div className="push-right">
+            { this.props.mode !== 'spv' &&
+              this.props.mode !== 'eth' &&
+              <div
+                data-for="receiveCoin5"
+                data-tip={ translate('RECEIVE.DISPLAY_ALL_ADDR') }>
+                <label className="switch">
+                  <input
+                    type="checkbox"
+                    value="on"
+                    checked={ this.state.toggleIsMine }
+                    readOnly />
+                  <div
+                    className="slider"
+                    onClick={ this.toggleIsMine }></div>
+                </label>
+                <div
+                  className="toggle-label margin-right-15 pointer"
+                  onClick={ this.toggleIsMine }>
+                  { translate('DASHBOARD.SHOW_ALL_ADDR') }
+                </div>
+              </div>
+            }
+            <ReactTooltip
+              id="receiveCoin5"
+              effect="solid"
+              className="text-left" />
+          </div>
         </div>
       }
-      { this.checkTotalBalance() !== 0 &&
-        <div className="text-left padding-top-20 padding-bottom-15 push-right">
-          { this.props.mode !== 'spv' &&
-            this.props.mode !== 'eth' &&
-            <div
-              data-for="receiveCoin5"
-              data-tip={ translate('RECEIVE.DISPLAY_ALL_ADDR') }>
-              <label className="switch">
-                <input
-                  type="checkbox"
-                  value="on"
-                  checked={ this.state.toggleIsMine }
-                  readOnly />
-                <div
-                  className="slider"
-                  onClick={ this.toggleIsMine }></div>
-              </label>
-              <div
-                className="toggle-label margin-right-15 pointer"
-                onClick={ this.toggleIsMine }>
-                { translate('DASHBOARD.SHOW_ALL_ADDR') }
-              </div>
-            </div>
-          }
-          <ReactTooltip
-            id="receiveCoin5"
-            effect="solid"
-            className="text-left" />
-        </div>
-      }
-      <table className="table table-hover dataTable table-striped">
-        <thead>
-          <tr>
-            <th>{ translate('INDEX.TYPE') }</th>
-            <th>{ translate('INDEX.ADDRESS') }</th>
-            <th>{ translate('INDEX.AMOUNT') }</th>
-          </tr>
-        </thead>
-        <tbody>
-          { this.renderAddressList('public') }
-          { this.renderAddressList('private') }
-        </tbody>
-        <tfoot>
-          <tr>
-            <th>{ translate('INDEX.TYPE') }</th>
-            <th>{ translate('INDEX.ADDRESS') }</th>
-            <th>{ translate('INDEX.AMOUNT') }</th>
-          </tr>
-        </tfoot>
-      </table>
-    </span>
+      <div className="row txhistory-table">
+        { this.renderAddressList() }
+      </div>
+    </div>
   );
 };
+
+export const AddressListRender = function() {
+  return (<ReactTable
+    data={ this.state.addresses }
+    columns={ this.state.itemsListColumns }
+    minRows="0"
+    sortable={ true }
+    className="-striped -highlight address-table"
+    PaginationComponent={ TablePaginationRenderer }
+    nextText={ translate('INDEX.NEXT_PAGE') }
+    previousText={ translate('INDEX.PREVIOUS_PAGE') }
+    showPaginationBottom={ this.state.showPagination }
+    pageSize={ this.state.pageSize }
+    defaultSortMethod={ tableSorting }
+    defaultSorted={[{ // default sort
+      id: 'amount',
+      desc: true,
+    }]}
+    onPageSizeChange={ (pageSize, pageIndex) => this.onPageSizeChange(pageSize, pageIndex) } />)
+}
 
 export const ReceiveCoinRender = function() {
   if (this.props.renderTableOnly) {
@@ -222,11 +228,11 @@ export const ReceiveCoinRender = function() {
                             <span className="caret"></span>
                           </a>
                           <ul className="dropdown-menu dropdown-menu-right">
-                           { (this.props.coin === 'KMD' ||
+                          { (this.props.coin === 'KMD' ||
                               Config.reservedChains.indexOf(this.props.coin) === -1 ||
                               (staticVar.chainParams &&
                                 staticVar.chainParams[this.props.coin] &&
-                               !staticVar.chainParams[this.props.coin].ac_private)) &&
+                              !staticVar.chainParams[this.props.coin].ac_private)) &&
                               <li>
                                 <a onClick={ () => this.getNewAddress('public') }>
                                   <i className="icon fa-eye"></i> { translate('INDEX.TRANSPARENT_ADDRESS') }
@@ -257,4 +263,81 @@ export const ReceiveCoinRender = function() {
       </div>
     );
   }
+};
+
+export const AddressRender = function(addr) {
+  return (<span>{ addr.address }</span>)
+};
+
+export const AddressAmountRender = function(addr) {
+  return (<span>{ addr.amount }</span>)
+};
+
+export const AddressReserveAmountRender = function(addr) {
+  return (<span>{ addr.reserveAmount }</span>)
+}
+
+export const AddressTypeRender = function(addr) {
+  const type = addr.type
+  const address = addr.address
+
+  return (
+    <React.Fragment>
+      <span className={ 'label label-' + (type === 'public' ? 'default' : 'dark') }>
+        <i className={ 'icon fa-eye' + (type === 'public' ? '' : '-slash') }></i>&nbsp;
+        { type === 'public' ? translate('IAPI.PUBLIC_SM') : translate('KMD_NATIVE.PRIVATE') }
+      </span>
+      <button
+        onClick={ () => this.toggleAddressMenu(address) }
+        data-tip={ translate('RECEIVE.TOOGLE_ADDRESS') }
+        data-for="receiveCoin1"
+        className="btn btn-default btn-xs clipboard-edexaddr margin-left-10 receive-address-context-menu-trigger">
+        <i className="fa fa-ellipsis-v receive-address-context-menu-trigger"></i>
+      </button>
+      <ReactTooltip
+        id="receiveCoin1"
+        effect="solid"
+        className="text-left" />
+      { this.state.toggledAddressMenu &&
+        this.state.toggledAddressMenu === address &&
+        <div className="address-dropdown-menu" onClick={ () => this.toggleAddressMenu(address) }>
+          <ul>
+            <li onClick={ () => this._copyCoinAddress(address) }>
+              <i className="icon wb-copy margin-right-5"></i> { `${translate('INDEX.COPY')} ${translate('RECEIVE.' + (type === 'public' ? 'PUB_KEY' : 'Z_KEY'))}` }
+            </li>
+            { !address.canspend &&
+              this.props.mode !== 'spv' &&
+              this.props.mode !== 'eth' &&
+              <li onClick={ () => this.dumpPrivKey(address, type !== 'public' ? true : null) }>
+                <i className="icon fa-key margin-right-5"></i> { `${translate('INDEX.COPY')} ${translate('RECEIVE.PRIV_KEY')}` }
+              </li>
+            }
+            { this.props.mode !== 'spv' &&
+              this.props.mode !== 'eth' &&
+              <li onClick={ () => this.validateCoinAddress(address, type !== 'public' ? true : null) }>
+                <i className="icon fa-check margin-right-5"></i> { translate('RECEIVE.VALIDATE_ADDRESS') }
+              </li>
+            }
+            { this.props.mode === 'spv' &&
+              this.props.electrumCoins[this.props.coin].pubHex &&
+              <li onClick={ () => this.copyPubkeySpv(this.props.electrumCoins[this.props.coin].pubHex) }>
+                <i className="icon wb-copy margin-right-5"></i> { `${translate('INDEX.COPY')} ${translate('INDEX.PUBKEY').toLowerCase()}` }
+              </li>
+            }
+            { this.props.mode === 'native' &&
+              type === 'public' &&
+              <li onClick={ () => this.copyPubkeyNative(address) }>
+                <i className="icon wb-copy margin-right-5"></i> { `${translate('INDEX.COPY')} ${translate('INDEX.PUBKEY').toLowerCase()}` }
+              </li>
+            }
+            <li className="address-dropdown-menu-get-qr">
+              <QRModal
+                content={ address }
+                cbOnClose={ this.toggleAddressMenu } />
+            </li>
+          </ul>
+        </div>
+      }
+    </React.Fragment>
+  )
 };

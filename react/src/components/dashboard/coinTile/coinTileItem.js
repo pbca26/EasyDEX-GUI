@@ -85,13 +85,15 @@ class CoinTileItem extends React.Component {
   handleClickOutside(e) {
     const _srcElement = e ? e.srcElement : null;
     
-    if (e &&
+    if (this.state.toggledCoinMenu &&
+        e &&
         _srcElement &&
         _srcElement.offsetParent &&
         _srcElement.offsetParent.className.indexOf('dropdown') === -1 &&
-      (_srcElement.offsetParent && _srcElement.offsetParent.className.indexOf('dropdown') === -1)) {
+      (_srcElement.offsetParent && _srcElement.offsetParent.className.indexOf('dropdown') === -1) &&
+      _srcElement.className.indexOf('coin-tile-context-menu-trigger') === -1) {
       this.setState({
-        toggledCoinMenu: _srcElement.className.indexOf('coin-tile-context-menu-trigger') === -1 ? null : this.state.toggledCoinMenu,
+        toggledCoinMenu: null,
       });
     }
   }

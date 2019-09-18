@@ -54,7 +54,11 @@ const coins = {
     SPLTEST: 'Sapling Test Chain',
     LUMBER: 'Lumberscout',
     K64: 'Komodore64',
-    RFOX: 'Redfox Labs'
+    RFOX: 'Redfox Labs',
+    HUSH: 'HUSH',
+    LABS: 'LABS',
+    MTST3: 'MTST3',
+    DP: 'DigitalPrice',
   },
   CRYPTO: {
     VRSC: 'Verus',

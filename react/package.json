@@ -38,9 +38,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/core": "^7.0.0",
-    "agama-wallet-lib": "https://github.com/VerusCoin/agama-wallet-lib.git#dev",
-    "bitcoinjs-lib": "https://github.com/SuperNETorg/bitcoinjs-lib.git",
-    "bitgo-utxo-lib": "git://github.com/VerusCoin/bitgo-utxo-lib",
+    "agama-wallet-lib": "git+https://github.com/VerusCoin/agama-wallet-lib.git#dev",
     "bluebird": "^3.5.0",
     "ethers": "git://github.com/VerusCoin/ethers.js",
     "express": "^4.14.0",
@@ -134,11 +132,11 @@
     "webpack-dev-server": "^3.1.10"
   },
   "resolutions": {
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.15",
     "static-eval": "^2.0.2",
-    "tar": "^4.4.8",
+    "tar": "^4.4.11",
     "js-yaml": "^3.13.1",
     "braces": "^3.0.2",
-    "handlebars": "^4.1.2"
+    "handlebars": "^4.2.0"
   }
 }

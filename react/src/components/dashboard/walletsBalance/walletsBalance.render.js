@@ -5,14 +5,19 @@ import Spinner from '../spinner/spinner';
 import Config from '../../../config';
 import mainWindow, { staticVar } from '../../../util/mainWindow';
 import { isKomodoCoin } from 'agama-wallet-lib/src/coin-helpers';
+import { isPbaasChain } from '../../../util/pbaasUtil'
 
 const WalletsBalanceRender = function() {
   const _mode = this.props.ActiveCoin.mode;
   const _coin = this.props.ActiveCoin.coin;
-  const _notAcPrivate = (staticVar.chainParams && staticVar.chainParams[_coin] && !staticVar.chainParams[_coin].ac_private) 
+  const notAcPrivate = (staticVar.chainParams && staticVar.chainParams[_coin] && !staticVar.chainParams[_coin].ac_private) 
   || Config.reservedChains.indexOf(_coin) === -1;
-  const _isAcPrivate = staticVar.chainParams && staticVar.chainParams[_coin] && staticVar.chainParams[_coin].ac_private;
-  const _balanceUnconf = this.props.ActiveCoin.balance && this.props.ActiveCoin.balance.unconfirmed ? this.props.ActiveCoin.balance.unconfirmed : 0;
+  
+  const onlyTBalance = ((this.props.ActiveCoin.coin === 'CHIPS' ||
+  (this.props.ActiveCoin.mode === 'spv' && this.props.ActiveCoin.coin !== 'KMD') ||
+  this.renderBalance('total') === this.renderBalance('transparent') ||
+  (this.renderBalance('total') === 0) && this.renderBalance('immature') === 0 && this.renderBalance('reserve') === 0)) &&
+  ((this.renderBalance('immature') === 0 && this.renderBalance('reserve') === 0) || this.props.ActiveCoin.mode === 'spv')
 
   return (
     <div
@@ -22,14 +27,10 @@ const WalletsBalanceRender = function() {
         <div className="col-xs-12 flex">
         { (_mode === 'spv' ||
             _mode === 'eth' ||
-            (_mode === 'native' && _notAcPrivate) ||
+            (_mode === 'native' && notAcPrivate) ||
             (_mode === 'native' && _coin === 'KMD')) &&
             <div className={
-              ((this.props.ActiveCoin.coin === 'CHIPS' ||
-              (this.props.ActiveCoin.mode === 'spv' && this.props.ActiveCoin.coin !== 'KMD') ||
-              this.renderBalance('total') === this.renderBalance('transparent') ||
-              (this.renderBalance('total') === 0) && this.renderBalance('immature') === 0)) &&
-              (this.renderBalance('immature') === 0 || this.props.ActiveCoin.mode === 'spv') ? 'col-lg-12 col-xs-12 balance-placeholder--bold' : (this.renderBalance('total') === 0 && this.renderBalance('immature') > 0) ? 'hide' : 'col-lg-4 col-xs-12'
+              onlyTBalance ? 'col-lg-12 col-xs-12 balance-placeholder--bold' : (this.renderBalance('total') === 0 && this.renderBalance('immature') > 0) ? 'hide' : 'col-lg-4 col-xs-12'
             }>
               <div className="widget widget-shadow">
                 <div className="widget-content">
@@ -68,7 +69,7 @@ const WalletsBalanceRender = function() {
                         }
                       </div>
                       <span
-                        className="pull-right padding-top-10 font-size-20 min-width-160r">
+                        className={`pull-right padding-top-10 font-size-20 ${onlyTBalance ? "min-width-160r" : "balance-text"}`}>
                         { this.renderBalance('transparent', true) }
                         <ReactTooltip
                           effect="solid"
@@ -119,6 +120,33 @@ const WalletsBalanceRender = function() {
                     className={"pull-right padding-top-10 font-size-20 " + ((Number(this.renderBalance('total')) > 0) ? 'balance-text' : 'min-width-160r')}
                     data-tip={ Config.roundValues ? this.renderBalance('immature') : '' }>
                     { this.renderBalance('immature', true) }
+                  </span>
+                  <ReactTooltip
+                    effect="solid"
+                    className="text-left" />
+                </div>
+              </div>
+              </div>
+            </div>
+          </div>
+
+          <div className={ 
+              (isPbaasChain(this.props.ActiveCoin.coin) && Number(this.renderBalance('reserve')) > 0) > 0 ? 
+              ((Number(this.renderBalance('total')) > 0 || Number(this.renderBalance('immature')) > 0) ? 'col-lg-4 col-xs-12' : 'col-lg-12 col-xs-12 balance-placeholder--bold')
+              : 
+              'hide'}>
+            <div className="widget widget-shadow">
+            <div className="widget-content">
+              <div className="padding-10 padding-top-10">
+                <div className="clearfix cursor-default">
+                  <div className="pull-left padding-vertical-10 min-width-160l">
+                    <i className="icon fa-share-alt-square font-size-24 vertical-align-bottom margin-right-5"></i>
+                    { translate('INDEX.RESERVE_BALANCE') }
+                  </div>
+                  <span
+                    className={"pull-right padding-top-10 font-size-20 " + ((Number(this.renderBalance('total')) > 0 || Number(this.renderBalance('immature')) > 0) ? 'balance-text' : 'min-width-160r')}
+                    data-tip={ Config.roundValues ? this.renderBalance('reserve') : '' }>
+                    { this.renderBalance('reserve', true) }
                   </span>
                   <ReactTooltip
                     effect="solid"
