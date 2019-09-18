@@ -17,19 +17,20 @@ import {
   AddressRender,
   AddressTypeRender,
   AddressAmountRender,
+  AddressReserveAmountRender,
   AddressListRender
 } from './receiveCoin.render';
-import DoubleScrollbar from 'react-double-scrollbar';
 import translate from '../../../translate/translate';
 import mainWindow, { staticVar } from '../../../util/mainWindow';
 import Config from '../../../config';
 import { BOTTOM_BAR_DISPLAY_THRESHOLD } from '../../../util/constants'
+import { isPbaasChain } from '../../../util/pbaasUtil';
 
 // TODO: implement balance/interest sorting
 
 class ReceiveCoin extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       openDropMenu: false,
       hideZeroAddresses: false,
@@ -352,6 +353,7 @@ class ReceiveCoin extends React.Component {
 
   generateItemsListColumns() {
     const _addrs = this.state ? this.state.addresses : []
+    const _coin = this.props.coin
 
     let columns = [{
       id: 'type',
@@ -374,6 +376,16 @@ class ReceiveCoin extends React.Component {
       sortMethod: this.defaultSorting,
       accessor: (addr) => AddressAmountRender.call(this, addr),
     }];
+
+    if (isPbaasChain(_coin)) {
+      columns.push({
+        id: 'reserve_amount',
+        Header: translate('PBAAS.RESERVE_AMOUNT'),
+        Footer: translate('PBAAS.RESERVE_AMOUNT'),
+        sortMethod: this.defaultSorting,
+        accessor: (addr) => AddressReserveAmountRender.call(this, addr),
+      })
+    }
 
     if (_addrs.length <= BOTTOM_BAR_DISPLAY_THRESHOLD) {
       return columns.map((column, index) => {

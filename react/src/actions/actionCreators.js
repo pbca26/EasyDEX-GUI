@@ -76,6 +76,7 @@ export * from './actions/eth';
 export * from './actions/exchanges';
 export * from './actions/nativeMining';
 export * from './actions/nativePbaasChain';
+export * from './actions/nativePbaasSend';
 
 export const changeActiveAddress = (address) => {
   return {

@@ -9,8 +9,10 @@ import {
   EXPONENTIAL,
   LINEAR
 } from '../../../util/constants';
+import { blocksToTime } from '../../../util/blockMath'
 
 const PBAAS_ROOT_CHAIN = Config.verus.pbaasTestmode ? 'VRSCTEST' : 'VRSC'
+const MIN_START_BLOCK_DISTANCE = 150
 
 export const _nameFormRender = function() {
   return (
@@ -242,10 +244,10 @@ export const _launchFormRender = function() {
                     <i
                       className="icon fa-question-circle settings-help"
                       data-html={ true }
-                      data-for="launchFee"
+                      data-for="launchfee"
                       data-tip={ translate(`PBAAS.LAUNCH_FEE_DESC`) }></i>
                     <ReactTooltip
-                      id="launchFee"
+                      id="launchfee"
                       effect="solid"
                       className="text-left" 
                       place="right" />
@@ -254,17 +256,17 @@ export const _launchFormRender = function() {
                   <input
                     type="text"
                     className={ 'form-control' }
-                    name="launchFee"
-                    onChange={ this.updateAmountInput }
-                    value={ this.state.launchFee }
+                    name="launchfee"
+                    onChange={ this.updatePercentInput }
+                    value={ this.state.launchfee }
                     id="pbaasLaunchFee"
                     placeholder={ translate('PBAAS.LAUNCH_FEE_HOLDER') }
                     autoComplete="off"
                     required />
-                  { this.state.errors.launchFee && 
+                  { this.state.errors.launchfee && 
                   <label
                     className="control-label error-text">
-                    { translate('PBAAS.INVALID_AMOUNT') }
+                    { translate('PBAAS.INVALID_PERCENT') }
                   </label> }
                 </div>
               </div>
@@ -351,7 +353,7 @@ export const _launchFormRender = function() {
             type="text"
             className={ 'form-control' }
             name="startBlock"
-            onChange={ this.updateBlockInput }
+            onChange={ this.updateStartBlockInput }
             value={ this.state.startBlock }
             id="pbaasStartBlock"
             placeholder={ translate('PBAAS.START_BLOCK_HOLDER') }
@@ -362,6 +364,26 @@ export const _launchFormRender = function() {
             className="control-label error-text">
             { translate('PBAAS.INVALID_BLOCK') }
           </label> }
+        </div>
+        <div>
+          <label
+            className="control-label">
+            { `${translate('PBAAS.EST_CURRENT_HEIGHT', PBAAS_ROOT_CHAIN)}: ${this.props.CurrentHeight ? this.props.CurrentHeight : translate('PBAAS.SYNCING')}` }
+          </label>
+        </div>
+        <div>
+          <label
+            className="control-label">
+            { `${translate('PBAAS.EST_TIME_TO_LAUNCH')}: ${ 
+              this.props.CurrentHeight ? 
+                (this.state.errors.startBlock || !this.state.startBlock ? '-' 
+                : 
+                blocksToTime((
+                  Number(this.state.startBlock) - this.props.CurrentHeight) < MIN_START_BLOCK_DISTANCE ? 
+                    MIN_START_BLOCK_DISTANCE 
+                    : 
+                    (Number(this.state.startBlock) - this.props.CurrentHeight))) : translate('PBAAS.SYNCING') }` }
+          </label>
         </div>
       </div>
     </div>
@@ -990,16 +1012,16 @@ export const _confirmFormRender = function() {
                     <tr>
                       <td>{ translate('PBAAS.LAUNCH_FEE') }</td>
                       <td>
-                        {this.state.launchFee.length > 0 && !this.state.errors.launchFee ?
-                            this.state.launchFee
+                        {this.state.launchfee.length > 0 && !this.state.errors.launchfee ?
+                            this.state.launchfee
                             :
                             <span>
                               <i
                                 className="icon fa-warning color-warning margin-right-5"
-                                data-tip={ this.state.errors.launchFee ? translate('PBAAS.INVALID_INFO') : translate('PBAAS.REQUIRED_FIELD_CONDITIONAL') }
-                                data-for="launchFeeError"></i>
+                                data-tip={ this.state.errors.launchfee ? translate('PBAAS.INVALID_INFO') : translate('PBAAS.REQUIRED_FIELD_CONDITIONAL') }
+                                data-for="launchfeeError"></i>
                               <ReactTooltip
-                                id="launchFeeError"
+                                id="launchfeeError"
                                 effect="solid"
                                 className="text-left" />
                             </span> 

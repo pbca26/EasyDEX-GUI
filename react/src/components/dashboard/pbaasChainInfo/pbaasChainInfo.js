@@ -95,63 +95,6 @@ class PbaasChainInfo extends React.Component {
     }
   }
 
-  checkForPlural(term, time) {
-    if (time > 1 && time < 2){
-      return (translate('TX_INFO.' + term));
-    }
-    else {
-      return (translate('TX_INFO.' + term + 'S'));
-    }
-  }
-
-  renderTimeToUnlock(blockstomaturity){
-    const years = ((blockstomaturity/60)/24)/356;
-    const months = (years % 1) * 12;
-    const days = (months % 1) * 30.4375;
-    const hours = (days % 1) * 24;
-    const minutes = (hours % 1) * 60;
-
-    if (years < 1){
-      if (months < 1){
-        if (days < 1){
-          if (hours < 1){
-            if (minutes < 1){
-              return('0 ' + translate('TX_INFO.MINUTES'));
-            }
-            else {
-                return(Math.floor(minutes) + ' ' + this.checkForPlural('MINUTE', minutes));
-            }
-          }
-          else {
-              return(Math.floor(hours) + ' ' + this.checkForPlural('HOUR', hours) + ' ' + 
-              Math.floor(minutes) + ' ' + this.checkForPlural('MINUTE', minutes));
-          }
-        }
-        else {
-            return(
-              Math.floor(days) + ' ' + this.checkForPlural('DAY', days) + ' ' +
-              Math.floor(hours) + ' ' + this.checkForPlural('HOUR', hours) + ' ' + 
-              Math.floor(minutes) + ' ' + this.checkForPlural('MINUTE', minutes));
-        }
-      }
-      else {
-          return(
-            Math.floor(months) + ' ' + this.checkForPlural('MONTH', months) + ' ' +
-            Math.floor(days) + ' ' + this.checkForPlural('DAY', days) + ' ' +
-            Math.floor(hours) + ' ' + this.checkForPlural('HOUR', hours) + ' ' + 
-            Math.floor(minutes) + ' ' + this.checkForPlural('MINUTE', minutes));
-      }
-    }
-    else {
-        return(
-          Math.floor(years) + ' ' + this.checkForPlural('YEAR', years) + ' ' + 
-          Math.floor(months) + ' ' + this.checkForPlural('MONTH', months) + ' ' +
-          Math.floor(days) + ' ' + this.checkForPlural('DAY', days) + ' ' +
-          Math.floor(hours) + ' ' + this.checkForPlural('HOUR', hours) + ' ' + 
-          Math.floor(minutes) + ' ' + this.checkForPlural('MINUTE', minutes));
-    }
-  }
-
   activatePbaasChain() {
     let chainDefition = this.state.chainInfo.chaindefinition
 
@@ -237,7 +180,8 @@ const mapStateToProps = (state) => {
       showChainInfoChainIndex: state.PBaaSMain.showChainInfoChainIndex,
       showChainInfo: state.PBaaSMain.showChainInfo,
       activeSectionPbaas: state.PBaaSMain.activeSectionPbaas
-    }
+    },
+    CurrentHeight: state.ActiveCoin.progress.longestchain
   };
 };
 

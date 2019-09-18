@@ -5,6 +5,7 @@ import translate from '../../../translate/translate';
 import {
   triggerToaster,
   sendNativeTx,
+  sendReserve,
   getKMDOPID,
   clearLastSendToResponseState,
   apiElectrumSend,
@@ -62,6 +63,7 @@ const { shell } = window.require('electron');
 const SPV_MAX_LOCAL_TIMESTAMP_DEVIATION = 300; // 5 min
 const FEE_EXCEEDS_DEFAULT_THRESHOLD = 5; // N fold increase
 const DEFAULT_ZTX_FEE = 0.0001;
+const PBAAS_ROOT_CHAIN = Config.verus.pbaasTestmode ? 'VRSCTEST' : 'VRSC'
 
 // TODO: - render z address trim
 
@@ -217,8 +219,8 @@ class SendCoin extends React.Component {
     if (!this.state.sendOffChain) {
       this.setState({
         sendOffChain: true,
-        sendToChain: isPbaasChain(this.props.ActiveCoin.coin) ? (Config.verus.pbaasTestmode ? 'VRSCTEST' : 'VRSC') : '',
-        convertAmount: !isPbaasChain(this.props.ActiveCoin.coin) ? this.state.convertAmount : true,
+        sendToChain: isPbaasChain(this.props.ActiveCoin.coin) ? PBAAS_ROOT_CHAIN : '',
+        convertAmount: !isPbaasChain(this.props.ActiveCoin.coin) ? this.state.convertAmount : false,
         sendVrscToken: !isPbaasChain(this.props.ActiveCoin.coin) ? false : true,
       });
     } else {
@@ -226,6 +228,8 @@ class SendCoin extends React.Component {
         sendOffChain: false,
         sendToChain: '',
         convertAmount: !isPbaasChain(this.props.ActiveCoin.coin) ? false : this.state.convertAmount,
+        connectedChain: null,
+        connectedChainStatus: null
       });
     } 
   }
@@ -278,7 +282,8 @@ class SendCoin extends React.Component {
               json.result.startblock,
               json.result.minpreconvert,
               json.result.maxpreconvert,
-              toSats(json.result.bestcurrencystate ? json.result.bestcurrencystate.initialsupply : 0)
+              toSats(json.result.bestcurrencystate ? json.result.bestcurrencystate.initialsupply : 0),
+              json.result.bestcurrencystate ? json.result.bestcurrencystate.priceinreserve : 0
             )
           }, () => {
             Store.dispatch(
@@ -807,8 +812,8 @@ class SendCoin extends React.Component {
     }
   }
 
-  renderAddressList() {
-    return AddressListRender.call(this);
+  renderAddressList(includePrivate) {
+    return AddressListRender.call(this, includePrivate);
   }
 
   renderShielCoinbaseAddressList() {
@@ -1176,12 +1181,37 @@ class SendCoin extends React.Component {
   handleSubmit() {
     const _coin = this.props.ActiveCoin.coin;
     const _mode = this.props.ActiveCoin.mode;
+    const _toCoin = isPbaasChain(_coin) && this.state.sendOffChain ? 
+      PBAAS_ROOT_CHAIN 
+      : 
+      (this.state.connectedChain ? 
+        this.state.connectedChain.name 
+        : 
+        null)
+    const _isPreconvert = this.state.connectedChainStatus ? 
+                            (this.state.connectedChainStatus.state === 'FULLY_FUNDED' || 
+                            this.state.connectedChainStatus.state === 'PRE_CONVERT')
+                            :
+                            null
 
     if (!this.validateSendFormData()) {
       return;
     }
 
-    if (_mode === 'native') {
+    if(this.state.sendOffChain || this.state.sendVrscToken || this.state.convertAmount) {
+      Store.dispatch(
+        sendReserve(
+          _coin, 
+          _toCoin, 
+          this.state.sendTo, 
+          this.state.sendFrom, 
+          this.state.amount,
+          !_isPreconvert && _toCoin !== PBAAS_ROOT_CHAIN && (this.state.convertAmount && (_coin === PBAAS_ROOT_CHAIN || (_coin !== PBAAS_ROOT_CHAIN && this.state.sendVrscToken))),
+          !_isPreconvert && _toCoin !== PBAAS_ROOT_CHAIN && (_coin !== PBAAS_ROOT_CHAIN && this.state.convertAmount && !this.state.sendVrscToken),
+          _isPreconvert,
+          false)
+      );
+    } else if (_mode === 'native') {
       Store.dispatch(
         sendNativeTx(
           _coin,
@@ -1473,7 +1503,7 @@ class SendCoin extends React.Component {
             valid = false;
           } 
         } else if (this.state.sendTo) {
-          if ((this.state.subtractFee ? 0 : 0.0001).toFixed(8) >= Number(Number(this.props.ActiveCoin.balance.transparent).toFixed(8))) {
+          if ((this.state.subtractFee ? 0 : 0.0001).toFixed(8) >= Number(Number(this.state.sendVrscToken ? _balance.reserve : _balance.transparent).toFixed(8))) {
             Store.dispatch(
               triggerToaster(
                 `${translate('SEND.BALANCE_LESS_THAN_FEE', 0.0001)}`,
@@ -1482,16 +1512,16 @@ class SendCoin extends React.Component {
               )
             );
             valid = false;
-          } else if(Number((Number(Number(this.state.amount) + (this.state.subtractFee ? 0 : 0.0001)).toFixed(8))) > Number(Number(this.props.ActiveCoin.balance.transparent).toFixed(8))) {
+          } else if(Number((Number(Number(this.state.amount) + (this.state.subtractFee ? 0 : 0.0001)).toFixed(8))) > Number(Number(this.state.sendVrscToken ? _balance.reserve : _balance.transparent).toFixed(8))) {
             Store.dispatch(
               triggerToaster(
-                Number(this.state.sendFromAmount || _balance.transparent) > 0 ? `${translate('SEND.INSUFFICIENT_FUNDS')} ${translate('SEND.MAX_AVAIL_BALANCE')} ${Number(this.state.sendFromAmount || _balance.transparent)} ${_coin}` : translate('SEND.INSUFFICIENT_FUNDS'),
+                Number(this.state.sendVrscToken ? _balance.reserve : _balance.transparent) > 0 ? `${translate('SEND.INSUFFICIENT_FUNDS')} ${translate('SEND.MAX_AVAIL_BALANCE')} ${Number(this.state.sendVrscToken ? _balance.reserve : _balance.transparent)} ${this.state.sendVrscToken ? 'Verus Reserve Token' : _coin}` : translate('SEND.INSUFFICIENT_FUNDS'),
                 translate('TOASTR.WALLET_NOTIFICATION'),
                 'error'
               )
             );
             valid = false;
-          } 
+          }
         }   
       } else if (
         this.state.addressType === 'private' &&

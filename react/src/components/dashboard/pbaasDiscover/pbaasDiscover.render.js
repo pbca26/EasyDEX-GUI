@@ -170,17 +170,13 @@ export const premineRender = function(chain) {
 }
 
 export const statusRender = function(chain, currentHeight) {
-
-  console.log(chain)
-  console.log(currentHeight)
   const status = getChainStatus(
     currentHeight,
     chain.chaindefinition ? chain.chaindefinition.startblock : 0,
     chain.chaindefinition ? chain.chaindefinition.minpreconvert : 0,
     chain.chaindefinition ? chain.chaindefinition.maxpreconvert : 0,
-    toSats(chain.bestcurrencystate ? chain.bestcurrencystate.initialsupply : 0))
-
-  console.log(status)
+    toSats(chain.bestcurrencystate ? chain.bestcurrencystate.initialsupply : 0),
+    chain.bestcurrencystate ? chain.bestcurrencystate.priceinreserve : 0)
 
   return (status.icon)
 }

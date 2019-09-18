@@ -37,6 +37,8 @@ const kvCoins = {
   'PIZZA': true,
 };
 
+const PBAAS_ROOT_CHAIN = Config.verus.pbaasTestmode ? 'VRSCTEST' : 'VRSC'
+
 export const ZmergeToAddressRender = function() {
   return (
     <div className="zmergetoaddress">
@@ -45,7 +47,12 @@ export const ZmergeToAddressRender = function() {
   );
 }
 
-export const AddressListRender = function() {
+/**
+ * Render function for address list dropdown on send screen.
+ * 
+ * @param {Boolean} includePrivate (Optional, defaults to true) Include private (z) addresses in dropdown list.
+ */
+export const AddressListRender = function(includePrivate = true) {
   const _coin = this.props.ActiveCoin.coin;
   const _mode = this.props.ActiveCoin.mode;
   const _acPrivate = staticVar.chainParams && staticVar.chainParams[_coin] && staticVar.chainParams[_coin].ac_private;
@@ -93,7 +100,7 @@ export const AddressListRender = function() {
              ((_mode === 'native' && _coin === 'KMD') || (_mode === 'native' && _coin !== 'KMD' && !_acPrivate))) &&
             this.renderAddressByType('public')
           }
-          { this.renderAddressByType('private') }
+          { includePrivate ? this.renderAddressByType('private') : null }
         </ul>
       </div>
     </div>
@@ -126,6 +133,12 @@ export const _SendFormRender = function() {
   const _mode = this.props.ActiveCoin.mode;
   const _isAcPrivate = staticVar.chainParams && staticVar.chainParams[_coin] && staticVar.chainParams[_coin].ac_private;
   const _isReserveChain = isPbaasChain(this.props.ActiveCoin.coin)
+  const _chainStatus = this.state.connectedChainStatus
+  const _isPreconvert = _chainStatus ? 
+                            (_chainStatus.state === 'FULLY_FUNDED' || 
+                            _chainStatus.state === 'PRE_CONVERT')
+                            :
+                            null
 
   return (
     <div className="extcoin-send-form">
@@ -149,13 +162,27 @@ export const _SendFormRender = function() {
       { (this.state.renderAddressDropdown ||
         (_mode === 'native' && _coin !== 'KMD' && _isAcPrivate)) &&
         !this.state.zshieldcoinbaseToggled &&
-        !this.state.sendVrscToken &&
+        ((!this.state.sendVrscToken && !this.state.sendOffChain && !this.state.convertAmount) || _isPreconvert) &&
         <div className="row">
           <div className="col-xlg-12 form-group form-material">
             <label className="control-label padding-bottom-10">
-              { translate('INDEX.SEND_FROM') }
+              { _isPreconvert ? translate('PBAAS.REFUND_ADDRESS') : translate('INDEX.SEND_FROM') }
+              { _isPreconvert &&
+                <span>
+                  <i
+                    className="icon fa-question-circle settings-help"
+                    data-html={ true }
+                    data-for="refundAddr"
+                    data-tip={ translate('PBAAS.REFUND_ADDRESS_DESC') }></i>
+                  <ReactTooltip
+                    id="refundAddr"
+                    effect="solid"
+                    className="text-left" 
+                    place="right" />
+                </span>
+              }
             </label>
-            { this.renderAddressList() }
+            { this.renderAddressList(_isPreconvert ? false : true) }
           </div>
         </div>
       }
@@ -186,6 +213,24 @@ export const SendRender = function() {
     this.state.spvPreflightRes.value && 
     fromSats(this.state.spvPreflightRes.value) !== Number(this.state.amount))
   const _hasZAddrs = this.props.ActiveCoin.mode === 'native' && this.props.ActiveCoin.addresses.private && this.props.ActiveCoin.addresses.private.length > 0
+  const _chainStatus = this.state.connectedChainStatus
+  const _isReserveChain = isPbaasChain(this.props.ActiveCoin.coin)
+  const _isPreconvert = _chainStatus ? 
+                            (_chainStatus.state === 'FULLY_FUNDED' || 
+                            _chainStatus.state === 'PRE_CONVERT')
+                            :
+                            null
+  const _price = _coin === PBAAS_ROOT_CHAIN ? 
+    this.state.connectedChain ? 
+      (this.state.connectedChain.hasOwnProperty('bestcurrencystate') ? 
+        this.state.connectedChain.bestcurrencystate.priceinreserve 
+        : 
+        0)
+      : 
+      0
+    :
+    this.props.ActiveCoin.walletinfo.price_in_reserve
+  const _launchfee = this.state.connectedChain ? this.state.connectedChain.launchfee : 0
 
   if (this.props.renderFormOnly) {
     return (
@@ -372,13 +417,156 @@ export const SendRender = function() {
                 { this.state.sendFrom &&
                   <div className="row padding-top-20">
                     <div className="col-xs-12">
-                      <strong>{ translate('INDEX.FROM') }</strong>
+                      <strong>{ _isPreconvert ? translate('PBAAS.REFUND_ADDRESS') : translate('INDEX.FROM') }</strong>
                     </div>
                     <div className="col-lg-6 col-sm-6 col-xs-12 word-break--all">{ this.state.sendFrom }</div>
+                    {!_isPreconvert && 
                     <div className="col-lg-6 col-sm-6 col-xs-6 confirm-currency-send-container">
                       { Number(this.state.amount) } { _coin }
-                    </div>
+                    </div>}
                   </div>
+                }
+                { (this.state.sendOffChain || this.state.sendVrscToken || this.state.convertAmount) &&
+                  <React.Fragment>
+                    { this.state.sendToChain && this.state.sendToChain.length > 0 &&
+                      <React.Fragment>
+                        <div className="row padding-top-20">
+                          <div className="col-xs-12">
+                            <strong>{ `${translate('SEND.ORIGIN_CHAIN')}:` }</strong>
+                          </div>
+                          <div
+                            className={"col-lg-6 col-sm-6 col-xs-6"}>
+                            <span>
+                            { _coin }
+                            </span>
+                          </div>
+                        </div>
+                        <div className="row padding-top-20">
+                          <div className="col-xs-12">
+                            <strong>{ `${translate('SEND.DESTINATION_CHAIN')}:` }</strong>
+                          </div>
+                          <div
+                            className={"col-lg-6 col-sm-6 col-xs-6"}>
+                            <span>
+                            { this.state.sendToChain }
+                            </span>
+                          </div>
+                        </div>
+                      </React.Fragment>
+                    }
+                    { ((this.state.sendToChain && this.state.sendToChain.length > 0) || (this.state.sendVrscToken) || (this.state.convertAmount)) &&
+                      <React.Fragment>
+                        <div className="row padding-top-20">
+                          <div className="col-xs-12">
+                            <strong>{ `${translate('SEND.FROM_COIN')}:` }</strong>
+                          </div>
+                          <div
+                            className={"col-lg-6 col-sm-6 col-xs-6"}>
+                            <span>
+                            { this.state.sendVrscToken ? 'Verus Reserve Token' : _coin }
+                            </span>
+                          </div>
+                        </div>
+                        <div className="row padding-top-20">
+                          <div className="col-xs-12">
+                            <strong>{ `${translate('SEND.TO_COIN')}:` }</strong>
+                          </div>
+                          <div
+                            className={"col-lg-6 col-sm-6 col-xs-6"}>
+                            <span>
+                            { this.state.convertAmount ? 
+                                (this.state.sendToChain && this.state.sendToChain.length > 0) ? 
+                                  this.state.sendToChain
+                                  :
+                                  this.state.sendVrscToken ? 
+                                    _coin
+                                    :
+                                    'Verus Reserve Token'
+                                :
+                                this.state.sendVrscToken ? 
+                                  this.state.sendOffChain ? 
+                                    PBAAS_ROOT_CHAIN
+                                    :
+                                    'Verus Reserve Token'
+                                  :
+                                  (this.state.sendOffChain ? 
+                                  'Verus Reserve Token'
+                                  :
+                                  _coin)
+                             }
+                            </span>
+                          </div>
+                        </div>
+                      </React.Fragment>
+                    }
+                    { this.state.convertAmount || _isPreconvert &&
+                      <React.Fragment>
+                        <div className="row padding-top-20">
+                          <div className="col-xs-12">
+                            <strong>{ `${translate('SEND.RECENT_PRICE')}:` }</strong>
+                          </div>
+                          <div
+                            className={"col-lg-6 col-sm-6 col-xs-6"}>
+                            <span>
+                              {`${this.state.connectedChain && !_isReserveChain ? 
+                                (this.state.connectedChain.hasOwnProperty('bestcurrencystate') ? 
+                                  this.state.connectedChain.bestcurrencystate.priceinreserve 
+                                  : 
+                                  0)
+                                :
+                                this.props.ActiveCoin.walletinfo.price_in_reserve
+                              } ${ PBAAS_ROOT_CHAIN }/${
+                                this.state.connectedChain && !_isReserveChain ? 
+                                    this.state.connectedChain.name 
+                                  : 
+                                    _coin}`}
+                            </span>
+                          </div>
+                        </div>
+                        {_isPreconvert && 
+                        <div className="row padding-top-20">
+                          <div className="col-xs-12">
+                            <strong>{ `${translate('PBAAS.LAUNCH_FEE')}:` }</strong>
+                          </div>
+                          <div
+                            className={"col-lg-6 col-sm-6 col-xs-6"}>
+                            <span>
+                              { this.state.connectedChain ? `${(fromSats(this.state.connectedChain.launchfee) * 100).toFixed(2)}%` : '' }
+                            </span>
+                          </div>
+                        </div>}
+                        <div className="row padding-top-20">
+                          <div className="col-xs-12">
+                            <strong>{ `${translate('PBAAS.RETURN_BASED_ON_RECENT_PRICE')}:` }</strong>
+                          </div>
+                          <div
+                            className={"col-lg-6 col-sm-6 col-xs-6"}>
+                            <span>
+                            { this.state.amount && !isNaN(Number(this.state.amount)) && Number(this.state.amount) > 0 ?
+                            ((Number(this.state.amount) - (Number(this.state.amount) * (_isPreconvert ? fromSats(_launchfee) : 0))) * (
+                              _coin === PBAAS_ROOT_CHAIN || this.state.sendVrscToken ? 
+                                _price > 0 ? 
+                                  _price 
+                                  : 
+                                  0
+                                :
+                                1/_price)).toFixed(8)
+                            : 
+                            '-'}
+                            {' '}
+                            { _coin === PBAAS_ROOT_CHAIN ? 
+                                this.state.connectedChain.name 
+                                : 
+                                this.state.sendVrscToken ? 
+                                  _coin
+                                  :
+                                  'Verus Reserve Token' }
+                            </span>
+                          </div>
+                        </div>
+                      </React.Fragment>
+                    }
+                  </React.Fragment>
                 }
                 { this.state.spvPreflightRes &&
                   <div className="row padding-top-20">

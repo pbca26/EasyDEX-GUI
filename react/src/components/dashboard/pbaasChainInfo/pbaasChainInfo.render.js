@@ -2,7 +2,7 @@ import React from 'react';
 import translate from '../../../translate/translate';
 import { secondsToString } from 'agama-wallet-lib/src/time';
 import { explorerList } from 'agama-wallet-lib/src/coin-helpers';
-import { chainInfoTableRender } from '../pbaasUtils/chainInfoRenders';
+import { chainInfoTableRender, reserveChainInfoTableRender } from '../pbaasUtils/chainInfoRenders';
 
 const ChainInfoRender = function(chainInfo) { 
   return (
@@ -33,22 +33,22 @@ const ChainInfoRender = function(chainInfo) {
               <ul className="nav nav-tabs nav-tabs-line">
                 <li className={ this.state.activeTab === 0 ? 'active' : '' }>
                   <a onClick={ () => this.openTab(0) }>
-                    <i className="icon md-balance-wallet"></i>{ translate('PBAAS.CHAIN_INFO') }
+                    <i className="icon md-link"></i>{ translate('PBAAS.CHAIN_INFO') }
                   </a>
                 </li>
                 {chainInfo.bestcurrencystate &&
-                <li className={ this.state.activeTab === 1 ? 'hide active' : 'hide' }>
+                <li className={ this.state.activeTab === 1 ? 'active' : '' }>
                   <a onClick={ () => this.openTab(1) }>
-                    <i className="icon md-plus-square"></i>{ translate('PBAAS.RESERVE_DATA') }
+                    <i className="icon md-device-hub"></i>{ translate('PBAAS.RESERVE_DATA') }
                   </a>
                 </li>}
               </ul>
               <div className="panel-body">
                 { this.state.chainInfo ? 
                     (this.state.activeTab === 0 ? 
-                      chainInfoTableRender.call(this, chainInfo)
+                      chainInfoTableRender.call(this, chainInfo, this.props.CurrentHeight)
                       :
-                      null) 
+                      reserveChainInfoTableRender.call(this, chainInfo)) 
                     : 
                     (translate('PBAAS.FAILED_LOAD_CHAIN')) }
               </div>

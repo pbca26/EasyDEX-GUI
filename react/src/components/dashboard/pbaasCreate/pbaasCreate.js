@@ -54,7 +54,7 @@ class PBaaSCreate extends React.Component {
         conversionRate: '',
         minPreconvert: '',
         maxPreconvert: '',
-        launchFee: '',
+        launchfee: '',
         startBlock: '',
         rewardEras: [],
         nodes: [],
@@ -74,7 +74,7 @@ class PBaaSCreate extends React.Component {
           conversionRate: '',
           minPreconvert: '',
           maxPreconvert: '',
-          launchFee: false,
+          launchfee: false,
           startBlock: false,
           initCost: false,
           billingPeriod: false
@@ -97,7 +97,8 @@ class PBaaSCreate extends React.Component {
     this.updateChainName = this.updateChainName.bind(this)
     this.updateAddressInput = this.updateAddressInput.bind(this)
     this.updateAmountInput = this.updateAmountInput.bind(this)
-    this.updateBlockInput = this.updateBlockInput.bind(this)
+    this.updatePercentInput = this.updatePercentInput.bind(this)
+    this.updateStartBlockInput = this.updateStartBlockInput.bind(this)
     this.updateBillingPeriod = this.updateBillingPeriod.bind(this)
     this.updateDecayType = this.updateDecayType.bind(this)
     this.updateEraCapsuleData = this.updateEraCapsuleData.bind(this)
@@ -210,7 +211,7 @@ class PBaaSCreate extends React.Component {
     });
   }
 
-  updateBlockInput(e) {
+  updateStartBlockInput(e) {
     let value = e.target.value
     let name = e.target.name
     let _errors = this.state.errors
@@ -268,6 +269,23 @@ class PBaaSCreate extends React.Component {
     let _errors = this.state.errors
 
     if (isNaN(value) || Number(value) < 0) {
+      _errors[name] = true
+    } else if (_errors[name]) {
+      _errors[name] = false
+    }
+
+    this.setState({
+      errors: _errors,
+      [name]: value,
+    });
+  }
+
+  updatePercentInput(e) {
+    let value = e.target.value
+    let name = e.target.name
+    let _errors = this.state.errors
+
+    if (isNaN(value) || Number(value) < 0 || Number(value) > 100) {
       _errors[name] = true
     } else if (_errors[name]) {
       _errors[name] = false
@@ -492,11 +510,11 @@ class PBaaSCreate extends React.Component {
       paymentaddress: this.state.paymentAddr,
       premine: 0,
       initialcontribution: 0,
-      conversionrate: 0,
+      conversion: 0,
       minpreconvert: 0,
       maxpreconvert: 0,
       launchfee: 0,
-      startblock: this.state.startBlock,
+      startblock: Number(this.state.startBlock),
       eras: [],
       notarizationreward: 0,
       billingperiod: 0,
@@ -514,7 +532,7 @@ class PBaaSCreate extends React.Component {
       if (this.state.publicPreconvert) {
         payload.minpreconvert = toSats(Number(this.state.minPreconvert))
         payload.maxpreconvert = toSats(Number(this.state.maxPreconvert))
-        payload.launchfee = Number(this.state.launchFee)
+        payload.launchfee = toSats(Number(this.state.launchfee) / 100)
       }
     }
 
@@ -527,7 +545,7 @@ class PBaaSCreate extends React.Component {
         : 
             (Number(rewardEra.decay.magnitude) === 2 ? 0 
           : 
-            LINEAR_DECAY/Number(rewardEra.decay.magnitude)),
+            Number((LINEAR_DECAY/Number(rewardEra.decay.magnitude)).toFixed(0))),
 
         halving: rewardEra.decay.type === LINEAR ? 1 : Number(rewardEra.decay.halving),
         eraend: index === this.state.rewardEras - 1 ? 0 : Number(Number(rewardEra.end))
@@ -548,8 +566,7 @@ class PBaaSCreate extends React.Component {
       return returnObj
     })
 
-    console.log(payload)
-    /*defineAndCreateChain(payload)
+    defineAndCreateChain(payload)
     .then(res => {
       if (res && !res.error) {
         Store.dispatch(
@@ -571,7 +588,7 @@ class PBaaSCreate extends React.Component {
           )
         );
       }
-    })*/
+    })
   }
 
   anyErrorsOrIncomplete() {
@@ -608,8 +625,8 @@ class PBaaSCreate extends React.Component {
           this.state.errors.minPreconvert || 
           this.state.maxPreconvert.length === 0 || 
           this.state.errors.maxPreconvert ||
-          this.state.launchFee.length === 0 || 
-          this.state.errors.launchFee )) {
+          this.state.launchfee.length === 0 || 
+          this.state.errors.launchfee )) {
           return true
       }
     }
@@ -665,7 +682,8 @@ const mapStateToProps = (state) => {
     PBaaSMain: {
       activeSectionPbaas: state.PBaaSMain.activeSectionPbaas,
       formState: state.PBaaSMain.formState
-    }
+    },
+    CurrentHeight: state.ActiveCoin.progress.longestchain
   };
 };
 

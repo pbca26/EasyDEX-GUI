@@ -22,28 +22,35 @@ export const isPbaasChain = (chain, includeVrsc = false) => {
  * it's minimum preconvert value maximum preconvert value
  * and it's initial supply. All values are expected in satoshis.
  * 
- * @param {Number} currentHeight The reserve chain's current blockheight
+ * @param {Number} currentHeight The reserve chain's current blockheight 
  * @param {Number} activationHeight The chains set activation height
- * @param {Number} minPreconvert (Optional) The minimum preconvert value if the chain has a public premine
- * @param {Number} maxPreconvert (Optional) The maximum preconvert value if the chain has a public premine
- * @param {Number} initialSupply (Optional) The chain's initial supply
+ * @param {Number} minPreconvert (Optional) The minimum preconvert value if the chain has a public premine (in Sats)
+ * @param {Number} maxPreconvert (Optional) The maximum preconvert value if the chain has a public premine (in Sats)
+ * @param {Number} initialSupply (Optional) The chain's initial supply (in Sats)
+ * @param {Number} priceInReserve (Optional) The chain's price in its reserve currency (if it is a reserve currency) 
  */
-export const getChainStatus = (currentHeight, activationHeight, minPreconvert, maxPreconvert, initialSupply) => {
+export const getChainStatus = (currentHeight, activationHeight, minPreconvert, maxPreconvert, initialSupply, priceInReserve) => {
   let chainStatus = {
     state: null,
     age: currentHeight - activationHeight,
     startblock: activationHeight,
-    icon: null
+    icon: null,
+    openForSend: false,
+    price: priceInReserve
   }
   let labeltype = "info"
  
-  if (activationHeight < currentHeight) {
+  if (!currentHeight) {
+    chainStatus.state = 'SYNCING'
+    labeltype = "info"
+  } else if (activationHeight < currentHeight) {
     if (initialSupply < minPreconvert) {
       chainStatus.state = 'FAILED'
       labeltype = "danger"
     } else {
       chainStatus.state = 'RUNNING'
       labeltype = "success"
+      chainStatus.openForSend = priceInReserve && priceInReserve > 0
     }
   } else if (minPreconvert > 0) {
     if (initialSupply >= maxPreconvert) {
@@ -52,6 +59,7 @@ export const getChainStatus = (currentHeight, activationHeight, minPreconvert, m
     } else {
       chainStatus.state = 'PRE_CONVERT'
       labeltype = "info"
+      chainStatus.openForSend = true
     }
   } else {
     chainStatus.state = 'PRE_LAUNCH'

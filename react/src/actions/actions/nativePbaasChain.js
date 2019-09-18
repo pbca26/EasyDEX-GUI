@@ -55,7 +55,7 @@ export const defineChain = (
   conversion,
   minpreconvert,
   maxpreconvert,
-  launchFee, 
+  launchfee, 
   startblock,
   eras,
   notarizationreward,
@@ -76,7 +76,7 @@ export const defineChain = (
         conversion: conversion,
         minpreconvert: minpreconvert,
         maxpreconvert: maxpreconvert,
-        launchFee: launchFee,
+        launchfee: launchfee,
         startblock: startblock,
         eras: eras,
         notarizationreward: notarizationreward,
@@ -84,8 +84,6 @@ export const defineChain = (
         nodes: nodes
       }],
     };
-
-    console.log(payload)
 
     fetch(
       `http://127.0.0.1:${agamaPort}/api/cli`,
@@ -119,7 +117,7 @@ export const defineAndCreateChain = (_params) => {
       _params.conversion,
       _params.minpreconvert,
       _params.maxpreconvert,
-      _params.launchFee, 
+      _params.launchfee, 
       _params.startblock,
       _params.eras,
       _params.notarizationreward,
@@ -127,6 +125,7 @@ export const defineAndCreateChain = (_params) => {
       _params.nodes
     )
     .then((res) => {
+      console.log(res)
       if (res.error || !res.result) {
         return res
       } else {

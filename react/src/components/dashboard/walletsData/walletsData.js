@@ -22,11 +22,11 @@ import {
 } from '../../../actions/actionCreators';
 import Store from '../../../store';
 import {
-  AddressTypeRender,
+  TxTypeRender,
   TransactionDetailRender,
   AddressRender,
   AddressItemRender,
-  TxTypeRender,
+  TxDirectionRender,
   TxAmountRender,
   TxHistoryListRender,
   TxConfsRender,
@@ -146,8 +146,9 @@ class WalletsData extends React.Component {
     if (this.props.ActiveCoin.mode === 'spv' &&
         (tx.category === 'send' || tx.category === 'sent') ||
         (tx.type === 'send' || tx.type === 'sent') &&
-        tx.amount > 0) {
-      tx.amount = tx.amount * -1;
+        (tx.amount > 0 || tx.reserveamount > 0)) {
+      tx.amount = Math.abs(tx.amount);
+      tx.reserveamount = Math.abs(tx.reserveamount)
       return tx;
     } else {
       return tx;
@@ -480,7 +481,7 @@ class WalletsData extends React.Component {
         headerClassName: 'colum--type',
         footerClassName: 'colum--type',
         sortMethod: this.typeSorting,
-        accessor: (tx) => AddressTypeRender.call(this, tx),
+        accessor: (tx) => TxTypeRender.call(this, tx),
       };
 
       if (itemsCount <= BOTTOM_BAR_DISPLAY_THRESHOLD) {
@@ -498,7 +499,7 @@ class WalletsData extends React.Component {
       headerClassName: 'colum--direction',
       footerClassName: 'colum--direction',
       sortMethod: this.directionSorting,
-      accessor: (tx) => TxTypeRender.call(this, tx),
+      accessor: (tx) => TxDirectionRender.call(this, tx),
     },
     {
       id: 'confirmations',
@@ -600,7 +601,7 @@ class WalletsData extends React.Component {
         className: 'colum--direction',
         headerClassName: 'colum--direction',
         footerClassName: 'colum--direction',
-        accessor: (tx) => TxTypeRender.call(this, tx),
+        accessor: (tx) => TxDirectionRender.call(this, tx),
       },
       {
         id: 'tag',
@@ -1185,6 +1186,7 @@ class WalletsData extends React.Component {
       (this.contains(tx.address, term) ||
       this.contains(tx.confirmations, term) ||
       this.contains(tx.amount, term) ||
+      this.contains(tx.reserveamount, newSearchTerm) ||
       this.contains(tx.type, term) ||
       this.contains(secondsToString(tx.blocktime || tx.timestamp || tx.time), term))) 
     {

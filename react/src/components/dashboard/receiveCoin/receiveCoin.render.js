@@ -273,6 +273,10 @@ export const AddressAmountRender = function(addr) {
   return (<span>{ addr.amount }</span>)
 };
 
+export const AddressReserveAmountRender = function(addr) {
+  return (<span>{ addr.reserveAmount }</span>)
+}
+
 export const AddressTypeRender = function(addr) {
   const type = addr.type
   const address = addr.address

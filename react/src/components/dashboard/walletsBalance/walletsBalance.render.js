@@ -16,8 +16,8 @@ const WalletsBalanceRender = function() {
   const onlyTBalance = ((this.props.ActiveCoin.coin === 'CHIPS' ||
   (this.props.ActiveCoin.mode === 'spv' && this.props.ActiveCoin.coin !== 'KMD') ||
   this.renderBalance('total') === this.renderBalance('transparent') ||
-  (this.renderBalance('total') === 0) && this.renderBalance('immature') === 0)) &&
-  (this.renderBalance('immature') === 0 || this.props.ActiveCoin.mode === 'spv')
+  (this.renderBalance('total') === 0) && this.renderBalance('immature') === 0 && this.renderBalance('reserve') === 0)) &&
+  ((this.renderBalance('immature') === 0 && this.renderBalance('reserve') === 0) || this.props.ActiveCoin.mode === 'spv')
 
   return (
     <div
@@ -140,7 +140,7 @@ const WalletsBalanceRender = function() {
               <div className="padding-10 padding-top-10">
                 <div className="clearfix cursor-default">
                   <div className="pull-left padding-vertical-10 min-width-160l">
-                    <i className="icon fa-clock-o font-size-24 vertical-align-bottom margin-right-5"></i>
+                    <i className="icon fa-share-alt-square font-size-24 vertical-align-bottom margin-right-5"></i>
                     { translate('INDEX.RESERVE_BALANCE') }
                   </div>
                   <span
