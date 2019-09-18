@@ -10,9 +10,10 @@ import {
 } from '../../../actions/actionCreators';
 import Store from '../../../store';
 import ChainInfoRender from './pbaasChainInfo.render';
-
-const NATIVE_MODE = -1;
-const VERUS_DAEMON = 'verusd';
+import {
+  NATIVE_MODE,
+  VERUS_DAEMON
+} from '../../../util/constants'
 
 class PbaasChainInfo extends React.Component {
   constructor() {
@@ -31,7 +32,7 @@ class PbaasChainInfo extends React.Component {
           version: ''
         },
         confirmedheight: '',
-        latestheight: ''
+        lastconfirmedheight: ''
       },
       className: 'hide',
     };
@@ -57,16 +58,17 @@ class PbaasChainInfo extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const _PBaaS = nextProps.PBaaS
+    const _PBaaS = nextProps.PBaaSMain
 
     if (_PBaaS &&
         _PBaaS.definedChains &&
         _PBaaS.showChainInfoChainIndex > -1 &&
-        _PBaaS.showChainInfoChainIndex !== false) {
+        _PBaaS.showChainInfo !== false) {
       const _chainInfo = _PBaaS.definedChains[_PBaaS.showChainInfoChainIndex];
 
       if (_chainInfo &&
-          this.props.PBaaS.showChainInfoChainIndex !== _PBaaS.showChainInfoChainIndex) {
+          this.props.PBaaSMain.showChainInfoChainIndex !== _PBaaS.showChainInfoChainIndex) {
+
         this.setState({
           className: _PBaaS.showChainInfo ? 'show fade' : 'show out',
           chainInfo: _chainInfo
@@ -90,63 +92,6 @@ class PbaasChainInfo extends React.Component {
   handleKeydown(e) {
     if (e.key === 'Escape') {
       this.toggleChainInfoModal();
-    }
-  }
-
-  checkForPlural(term, time) {
-    if (time > 1 && time < 2){
-      return (translate('TX_INFO.' + term));
-    }
-    else {
-      return (translate('TX_INFO.' + term + 'S'));
-    }
-  }
-
-  renderTimeToUnlock(blockstomaturity){
-    const years = ((blockstomaturity/60)/24)/356;
-    const months = (years % 1) * 12;
-    const days = (months % 1) * 30.4375;
-    const hours = (days % 1) * 24;
-    const minutes = (hours % 1) * 60;
-
-    if (years < 1){
-      if (months < 1){
-        if (days < 1){
-          if (hours < 1){
-            if (minutes < 1){
-              return('0 ' + translate('TX_INFO.MINUTES'));
-            }
-            else {
-                return(Math.floor(minutes) + ' ' + this.checkForPlural('MINUTE', minutes));
-            }
-          }
-          else {
-              return(Math.floor(hours) + ' ' + this.checkForPlural('HOUR', hours) + ' ' + 
-              Math.floor(minutes) + ' ' + this.checkForPlural('MINUTE', minutes));
-          }
-        }
-        else {
-            return(
-              Math.floor(days) + ' ' + this.checkForPlural('DAY', days) + ' ' +
-              Math.floor(hours) + ' ' + this.checkForPlural('HOUR', hours) + ' ' + 
-              Math.floor(minutes) + ' ' + this.checkForPlural('MINUTE', minutes));
-        }
-      }
-      else {
-          return(
-            Math.floor(months) + ' ' + this.checkForPlural('MONTH', months) + ' ' +
-            Math.floor(days) + ' ' + this.checkForPlural('DAY', days) + ' ' +
-            Math.floor(hours) + ' ' + this.checkForPlural('HOUR', hours) + ' ' + 
-            Math.floor(minutes) + ' ' + this.checkForPlural('MINUTE', minutes));
-      }
-    }
-    else {
-        return(
-          Math.floor(years) + ' ' + this.checkForPlural('YEAR', years) + ' ' + 
-          Math.floor(months) + ' ' + this.checkForPlural('MONTH', months) + ' ' +
-          Math.floor(days) + ' ' + this.checkForPlural('DAY', days) + ' ' +
-          Math.floor(hours) + ' ' + this.checkForPlural('HOUR', hours) + ' ' + 
-          Math.floor(minutes) + ' ' + this.checkForPlural('MINUTE', minutes));
     }
   }
 
@@ -207,7 +152,7 @@ class PbaasChainInfo extends React.Component {
   }
 
   render() {
-    const _PBaaS = this.props.PBaaS
+    const _PBaaS = this.props.PBaaSMain
 
     if (this.props &&
       _PBaaS &&
@@ -230,12 +175,13 @@ const mapStateToProps = (state) => {
     Main: {
       coins: state.Main.coins
     },
-    PBaaS: {
-      definedChains: state.PBaaS.definedChains,
-      showChainInfoChainIndex: state.PBaaS.showChainInfoChainIndex,
-      showChainInfo: state.PBaaS.showChainInfo,
-      activeSectionPbaas: state.PBaaS.activeSectionPbaas
-    }
+    PBaaSMain: {
+      definedChains: state.PBaaSMain.definedChains,
+      showChainInfoChainIndex: state.PBaaSMain.showChainInfoChainIndex,
+      showChainInfo: state.PBaaSMain.showChainInfo,
+      activeSectionPbaas: state.PBaaSMain.activeSectionPbaas
+    },
+    CurrentHeight: state.ActiveCoin.progress.longestchain
   };
 };
 

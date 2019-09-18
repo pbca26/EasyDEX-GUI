@@ -24,32 +24,36 @@ import { addressVersionCheck } from 'agama-wallet-lib/src/keys';
 import { toSats } from 'agama-wallet-lib/src/utils';
 import networks from 'agama-wallet-lib/src/bitcoinjs-networks';
 import { updatePbaasFormState, defineAndCreateChain, triggerToaster } from '../../../actions/actionCreators';
-
+import { 
+  EXPONENTIAL,
+  LINEAR,
+  END,
+  FREQUENCY,
+  MAGNITUDE,
+  LINEAR_DECAY,
+  MIN_BILLING_PERIOD
+} from '../../../util/constants';
 const { shell } = window.require('electron');
-
-const EXPONENTIAL = 'exponential'
-const LINEAR = 'linear'
-const END = 'END'
-const FREQUENCY = 'FREQUENCY'
-const MAGNITUDE = 'MAGNITUDE'
-const LINEAR_DECAY = 100000000
-const MIN_BILLING_PERIOD = 480
 
 class PBaaSCreate extends React.Component {
   constructor(props) {
     super(props);
 
-    if (this.props.PBaaS.formState.currentStep > -1) {
-      this.state = this.props.PBaaS.formState
+    if (this.props.PBaaSMain.formState.currentStep > -1) {
+      this.state = this.props.PBaaSMain.formState
     } else {
       this.state = {
         currentStep: 0,
         chainName: '',
         includePremine: false,
-        premineAddr: '',
+        paymentAddr: '',
         premineAmount: '',
-        publicPremine: false,
-        convertible: '',
+        isReserveCurrency: false,
+        publicPreconvert: false,
+        initialContribution: '',
+        conversionRate: '',
+        minPreconvert: '',
+        maxPreconvert: '',
         launchfee: '',
         startBlock: '',
         rewardEras: [],
@@ -64,9 +68,12 @@ class PBaaSCreate extends React.Component {
           //nodes are handled inside node objects,
           //inside nodes
           chainName: false,
-          premineAddr: false,
+          paymentAddr: false,
           premineAmount: false,
-          convertible: false,
+          initialContribution: '',
+          conversionRate: '',
+          minPreconvert: '',
+          maxPreconvert: '',
           launchfee: false,
           startBlock: false,
           initCost: false,
@@ -90,7 +97,8 @@ class PBaaSCreate extends React.Component {
     this.updateChainName = this.updateChainName.bind(this)
     this.updateAddressInput = this.updateAddressInput.bind(this)
     this.updateAmountInput = this.updateAmountInput.bind(this)
-    this.updateBlockInput = this.updateBlockInput.bind(this)
+    this.updatePercentInput = this.updatePercentInput.bind(this)
+    this.updateStartBlockInput = this.updateStartBlockInput.bind(this)
     this.updateBillingPeriod = this.updateBillingPeriod.bind(this)
     this.updateDecayType = this.updateDecayType.bind(this)
     this.updateEraCapsuleData = this.updateEraCapsuleData.bind(this)
@@ -203,7 +211,7 @@ class PBaaSCreate extends React.Component {
     });
   }
 
-  updateBlockInput(e) {
+  updateStartBlockInput(e) {
     let value = e.target.value
     let name = e.target.name
     let _errors = this.state.errors
@@ -261,6 +269,23 @@ class PBaaSCreate extends React.Component {
     let _errors = this.state.errors
 
     if (isNaN(value) || Number(value) < 0) {
+      _errors[name] = true
+    } else if (_errors[name]) {
+      _errors[name] = false
+    }
+
+    this.setState({
+      errors: _errors,
+      [name]: value,
+    });
+  }
+
+  updatePercentInput(e) {
+    let value = e.target.value
+    let name = e.target.name
+    let _errors = this.state.errors
+
+    if (isNaN(value) || Number(value) < 0 || Number(value) > 100) {
       _errors[name] = true
     } else if (_errors[name]) {
       _errors[name] = false
@@ -358,9 +383,16 @@ class PBaaSCreate extends React.Component {
     });
   }
 
-  togglePublicPremine() {
+  toggleIsReserveCurrency() {
     this.setState({
-      publicPremine: !this.state.publicPremine,
+      isReserveCurrency: !this.state.isReserveCurrency,
+      publicPreconvert: this.state.isReserveCurrency ? false : this.state.publicPreconvert
+    });
+  }
+
+  togglePublicPreconvert() {
+    this.setState({
+      publicPreconvert: !this.state.publicPreconvert,
     });
   }
 
@@ -475,11 +507,14 @@ class PBaaSCreate extends React.Component {
   parseState() {
     let payload = {
       name: this.state.chainName,
-      address: "",
+      paymentaddress: this.state.paymentAddr,
       premine: 0,
-      convertible: 0,
+      initialcontribution: 0,
+      conversion: 0,
+      minpreconvert: 0,
+      maxpreconvert: 0,
       launchfee: 0,
-      startblock: this.state.startBlock,
+      startblock: Number(this.state.startBlock),
       eras: [],
       notarizationreward: 0,
       billingperiod: 0,
@@ -487,12 +522,17 @@ class PBaaSCreate extends React.Component {
     }
 
     if (this.state.includePremine) {
-      payload.address = this.state.premineAddr
       payload.premine = toSats(Number(this.state.premineAmount))
+    }
 
-      if (this.state.publicPremine) {
-        payload.convertible = toSats(Number(this.state.convertible))
-        payload.launchfee = Number(this.state.launchfee)
+    if (this.state.isReserveCurrency) {
+      payload.initialcontribution = toSats(Number(this.state.initialContribution))
+      payload.conversion = toSats(Number(this.state.conversionRate))
+      
+      if (this.state.publicPreconvert) {
+        payload.minpreconvert = toSats(Number(this.state.minPreconvert))
+        payload.maxpreconvert = toSats(Number(this.state.maxPreconvert))
+        payload.launchfee = toSats(Number(this.state.launchfee) / 100)
       }
     }
 
@@ -505,7 +545,7 @@ class PBaaSCreate extends React.Component {
         : 
             (Number(rewardEra.decay.magnitude) === 2 ? 0 
           : 
-            LINEAR_DECAY/Number(rewardEra.decay.magnitude)),
+            Number((LINEAR_DECAY/Number(rewardEra.decay.magnitude)).toFixed(0))),
 
         halving: rewardEra.decay.type === LINEAR ? 1 : Number(rewardEra.decay.halving),
         eraend: index === this.state.rewardEras - 1 ? 0 : Number(Number(rewardEra.end))
@@ -559,23 +599,34 @@ class PBaaSCreate extends React.Component {
         this.state.initCost.length === 0 ||
         this.state.errors.initCost ||
         this.state.billingPeriod.length === 0 ||
-        this.state.errors.billingPeriod) {
+        this.state.errors.billingPeriod ||
+        this.state.paymentAddr.length === 0 ||
+        this.state.errors.paymentAddr) {
       return true
     } 
     
     if (this.state.includePremine) {
-      if (this.state.premineAddr.length === 0 || 
-        this.state.premineAmount === 0 ||
-        this.state.errors.premineAddr ||
+      if (this.state.premineAmount === 0 ||
         this.state.errors.premineAmount) {
           return true
         }
+    }
 
-      if (this.state.publicPremine && 
-        (this.state.convertible.length === 0 || 
-          this.state.errors.convertible || 
+    if (this.state.isReserveCurrency) {
+      if (this.state.initialContribution.length === 0 || 
+          this.state.errors.initialContribution || 
+          this.state.conversionRate.length === 0 || 
+          this.state.errors.conversionRate) {
+          return true
+      }
+  
+      if (this.state.publicPreconvert && 
+        (this.state.minPreconvert.length === 0 || 
+          this.state.errors.minPreconvert || 
+          this.state.maxPreconvert.length === 0 || 
+          this.state.errors.maxPreconvert ||
           this.state.launchfee.length === 0 || 
-          this.state.errors.launchfee)) {
+          this.state.errors.launchfee )) {
           return true
       }
     }
@@ -628,10 +679,11 @@ class PBaaSCreate extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    PBaaS: {
-      activeSectionPbaas: state.PBaaS.activeSectionPbaas,
-      formState: state.PBaaS.formState
-    }
+    PBaaSMain: {
+      activeSectionPbaas: state.PBaaSMain.activeSectionPbaas,
+      formState: state.PBaaSMain.formState
+    },
+    CurrentHeight: state.ActiveCoin.progress.longestchain
   };
 };
 

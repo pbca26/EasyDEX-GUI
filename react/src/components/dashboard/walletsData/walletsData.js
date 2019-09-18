@@ -22,11 +22,11 @@ import {
 } from '../../../actions/actionCreators';
 import Store from '../../../store';
 import {
-  AddressTypeRender,
+  TxTypeRender,
   TransactionDetailRender,
   AddressRender,
   AddressItemRender,
-  TxTypeRender,
+  TxDirectionRender,
   TxAmountRender,
   TxHistoryListRender,
   TxConfsRender,
@@ -37,12 +37,11 @@ import { secondsToString } from 'agama-wallet-lib/src/time';
 import { getRandomElectrumServer } from 'agama-wallet-lib/src/utils';
 import DoubleScrollbar from 'react-double-scrollbar';
 import mainWindow, { staticVar } from '../../../util/mainWindow';
+import { BOTTOM_BAR_DISPLAY_THRESHOLD } from '../../../util/constants'
 
 /*import io from 'socket.io-client';
 
 const socket = io.connect(`http://127.0.0.1:${Config.agamaPort}`);*/
-
-const BOTTOM_BAR_DISPLAY_THRESHOLD = 15;
 
 class WalletsData extends React.Component {
   constructor(props) {
@@ -100,12 +99,27 @@ class WalletsData extends React.Component {
     this.toggleFilterMenuOpen = this.toggleFilterMenuOpen.bind(this);
   }
 
-  componentWillMount() {
+  componentDidMount() {
     document.addEventListener(
       'click',
       this.handleClickOutside,
       false
     );
+
+    //TODO: Find more efficient way to do this, it isn't performing
+    //as well as it could be when it's here and also in 
+    //componentwillreceiveprops
+    if (this.state.itemsList.length === 0) {
+      if (this.props.ActiveCoin.coin !== 'BEER' &&
+      this.props.ActiveCoin.coin !== 'PIZZA' &&
+      this.props.ActiveCoin.coin !== 'KV') {
+        this.setState({
+          kvView: false,
+        });
+      }
+
+      this._setTxHistory();
+    }
   }
 
   componentWillUnmount() {
@@ -116,12 +130,25 @@ class WalletsData extends React.Component {
     );
   }
 
+  componentWillReceiveProps(props) {
+    if (props.ActiveCoin.coin !== 'BEER' &&
+        props.ActiveCoin.coin !== 'PIZZA' &&
+        props.ActiveCoin.coin !== 'KV') {
+      this.setState({
+        kvView: false,
+      });
+    }
+
+    this._setTxHistory();
+  }
+
   isOutValue(tx) {
     if (this.props.ActiveCoin.mode === 'spv' &&
         (tx.category === 'send' || tx.category === 'sent') ||
         (tx.type === 'send' || tx.type === 'sent') &&
-        tx.amount > 0) {
-      tx.amount = tx.amount * -1;
+        (tx.amount > 0 || tx.reserveamount > 0)) {
+      tx.amount = Math.abs(tx.amount);
+      tx.reserveamount = Math.abs(tx.reserveamount)
       return tx;
     } else {
       return tx;
@@ -454,7 +481,7 @@ class WalletsData extends React.Component {
         headerClassName: 'colum--type',
         footerClassName: 'colum--type',
         sortMethod: this.typeSorting,
-        accessor: (tx) => AddressTypeRender.call(this, tx),
+        accessor: (tx) => TxTypeRender.call(this, tx),
       };
 
       if (itemsCount <= BOTTOM_BAR_DISPLAY_THRESHOLD) {
@@ -472,7 +499,7 @@ class WalletsData extends React.Component {
       headerClassName: 'colum--direction',
       footerClassName: 'colum--direction',
       sortMethod: this.directionSorting,
-      accessor: (tx) => TxTypeRender.call(this, tx),
+      accessor: (tx) => TxDirectionRender.call(this, tx),
     },
     {
       id: 'confirmations',
@@ -574,7 +601,7 @@ class WalletsData extends React.Component {
         className: 'colum--direction',
         headerClassName: 'colum--direction',
         footerClassName: 'colum--direction',
-        accessor: (tx) => TxTypeRender.call(this, tx),
+        accessor: (tx) => TxDirectionRender.call(this, tx),
       },
       {
         id: 'tag',
@@ -625,7 +652,8 @@ class WalletsData extends React.Component {
   handleClickOutside(e) {
     const _srcElement = e ? e.srcElement : null;
 
-    if (e &&
+    if (this.state.addressSelectorOpen &&
+        e &&
         _srcElement &&
         _srcElement.className !== 'btn dropdown-toggle btn-info' &&
         (_srcElement.offsetParent && _srcElement.offsetParent.className !== 'btn dropdown-toggle btn-info') &&
@@ -767,18 +795,6 @@ class WalletsData extends React.Component {
     }
     
     this.setState(_stateChange);
-  }
-
-  componentWillReceiveProps(props) {
-    if (props.ActiveCoin.coin !== 'BEER' &&
-        props.ActiveCoin.coin !== 'PIZZA' &&
-        props.ActiveCoin.coin !== 'KV') {
-      this.setState({
-        kvView: false,
-      });
-    }
-
-    this._setTxHistory();
   }
 
   spvAutoReconnect() {
@@ -1170,6 +1186,7 @@ class WalletsData extends React.Component {
       (this.contains(tx.address, term) ||
       this.contains(tx.confirmations, term) ||
       this.contains(tx.amount, term) ||
+      this.contains(tx.reserveamount, newSearchTerm) ||
       this.contains(tx.type, term) ||
       this.contains(secondsToString(tx.blocktime || tx.timestamp || tx.time), term))) 
     {
@@ -1228,14 +1245,7 @@ class WalletsData extends React.Component {
   }
 
   render() {
-    if (this.props &&
-        this.props.ActiveCoin &&
-        this.props.ActiveCoin.coin &&
-        this.props.ActiveCoin.activeSection === 'default') {
-      return WalletsDataRender.call(this);
-    } else {
-      return null;
-    }
+    return (this.props ? WalletsDataRender.call(this) : null)
   }
 }
 

@@ -49,9 +49,12 @@ export const getChainDefinition = (chain) => {
 
 export const defineChain = (
   name, 
-  address, 
+  paymentaddress, 
   premine, 
-  convertible, 
+  initialcontribution,
+  conversion,
+  minpreconvert,
+  maxpreconvert,
   launchfee, 
   startblock,
   eras,
@@ -67,9 +70,12 @@ export const defineChain = (
       token,
       params: [{
         name: name,
-        address: address,
+        paymentaddress: paymentaddress,
         premine: premine,
-        convertible: convertible,
+        initialcontribution: initialcontribution,
+        conversion: conversion,
+        minpreconvert: minpreconvert,
+        maxpreconvert: maxpreconvert,
         launchfee: launchfee,
         startblock: startblock,
         eras: eras,
@@ -78,8 +84,6 @@ export const defineChain = (
         nodes: nodes
       }],
     };
-
-    console.log(payload)
 
     fetch(
       `http://127.0.0.1:${agamaPort}/api/cli`,
@@ -106,11 +110,14 @@ export const defineChain = (
 export const defineAndCreateChain = (_params) => {
   return new Promise((resolve, reject) => {
     defineChain(
-      _params.name,
-      _params.address,
-      _params.premine,
-      _params.convertible,
-      _params.launchfee,
+      _params.name, 
+      _params.paymentaddress, 
+      _params.premine, 
+      _params.initialcontribution,
+      _params.conversion,
+      _params.minpreconvert,
+      _params.maxpreconvert,
+      _params.launchfee, 
       _params.startblock,
       _params.eras,
       _params.notarizationreward,
@@ -118,6 +125,7 @@ export const defineAndCreateChain = (_params) => {
       _params.nodes
     )
     .then((res) => {
+      console.log(res)
       if (res.error || !res.result) {
         return res
       } else {

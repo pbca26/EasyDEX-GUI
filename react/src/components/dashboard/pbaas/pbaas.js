@@ -15,7 +15,7 @@ class PBaaS extends React.Component {
   }
 
   isSectionActive(section) {
-    return this.props.PBaaS.activeSectionPbaas === section;
+    return this.props.PBaaSMain.activeSectionPbaas === section;
   }
 
   render() {
@@ -25,8 +25,8 @@ class PBaaS extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    PBaaS: {
-      activeSectionPbaas: state.PBaaS.activeSectionPbaas
+    PBaaSMain: {
+      activeSectionPbaas: state.PBaaSMain.activeSectionPbaas
     }
   };
 };

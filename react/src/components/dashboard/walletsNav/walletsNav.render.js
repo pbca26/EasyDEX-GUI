@@ -2,13 +2,14 @@ import React from 'react';
 import ReactTooltip from 'react-tooltip';
 import translate from '../../../translate/translate';
 import mainWindow, { staticVar } from '../../../util/mainWindow';
+import { isPbaasChain } from '../../../util/pbaasUtil'
 
 const WalletsNavWithWalletRender = function() {
   const _coin = this.props.ActiveCoin.coin;
   const _mode = this.props.ActiveCoin.mode;
   const _electrumCoin = this.props.Dashboard.electrumCoins ? this.props.Dashboard.electrumCoins[_coin] : null;
   const _ethereumCoin = this.props.Dashboard.ethereumCoins ? this.props.Dashboard.ethereumCoins[_coin] : null;
-  
+
   return (
     <div>
       <div
@@ -65,7 +66,7 @@ const WalletsNavWithWalletRender = function() {
             <button
               type="button"
               className="btn btn-dark waves-effect waves-light"
-              onClick={ this.toggleNativeWalletTransactions }
+              onClick={() => this.toggleCoinForm(this.DEFAULT) }
               disabled={ this.props.ActiveCoin.activeSection === 'default' }>
               <i className="icon md-view-dashboard"></i> <span className="placeholder">{ translate('INDEX.TRANSACTIONS') }</span>
             </button>
@@ -74,7 +75,7 @@ const WalletsNavWithWalletRender = function() {
               <button
                 type="button"
                 className="btn btn-primary waves-effect waves-light"
-                onClick={ () => this.toggleSendCoinForm(!this.props.ActiveCoin.send) }
+                onClick={ () => this.toggleCoinForm(this.SEND) }
                 disabled={
                   this.checkTotalBalance() <= 0 ||
                   this.props.ActiveCoin.activeSection === 'send'
@@ -85,10 +86,29 @@ const WalletsNavWithWalletRender = function() {
             <button
               type="button"
               className="btn btn-success waves-effect waves-light"
-              onClick={ () => this.toggleReceiveCoinForm(!this.props.ActiveCoin.receive) }
+              onClick={ () => this.toggleCoinForm(this.RECEIVE) }
               disabled={ this.props.ActiveCoin.activeSection === 'receive' }>
               <i className="icon fa-inbox"></i> <span className="placeholder">{ translate('INDEX.RECEIVE') }</span>
             </button>
+            {/* (_mode === 'native' && isPbaasChain(_coin, true)) &&
+              <span 
+              data-tip={ translate('PBAAS.CONVERT_DISABLED') }
+              data-for="pbaasConvertDisabled">
+                <button
+                  type="button"
+                  className="btn btn-info waves-effect waves-light"
+                  onClick={ () => this.toggleCoinForm(this) }
+                  disabled={ _coin === 'VRSC' || _coin === 'VRSCTEST' || this.props.ActiveCoin.activeSection === 'convert'}>
+                <i className="glyphicon glyphicon-transfer"></i> <span className="placeholder">{ translate('PBAAS.CONVERT') }</span>
+                </button>
+              </span>
+            }
+            {(_coin === 'VRSC' || _coin === 'VRSCTEST') &&
+              <ReactTooltip
+                id="pbaasConvertDisabled"
+                effect="solid"
+                className="text-bottom" />
+            */}
             { (_mode === 'spv' && mainWindow.isWatchOnly()) &&
               <i
                 className="icon fa-question-circle settings-help"

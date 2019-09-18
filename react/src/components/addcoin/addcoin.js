@@ -22,9 +22,11 @@ import Spinner from '../dashboard/spinner/spinner';
 import CoinSelectorsRender from './coin-selectors.render';
 import AddCoinRender from './addcoin.render';
 
-const SEED_TRIM_TIMEOUT = 5000;
-const DEFAULT_CHAIN = "defaultChain.png"
-const VERUS_DAEMON = 'verusd';
+import {
+  SEED_TRIM_TIMEOUT,
+  DEFAULT_CHAIN,
+  VERUS_DAEMON
+} from '../../util/constants'
 
 class AddCoin extends React.Component {
   constructor() {

@@ -215,19 +215,19 @@ export const ActiveCoin = (state = {
         ...state,
         balance: action.balance,
       };
-    case DASHBOARD_ACTIVE_COIN_SEND_FORM:
+    case DASHBOARD_ACTIVE_COIN_SEND_FORM: //DEPRECATED
       return {
         ...state,
         send: action.send,
         receive: false,
       };
-    case DASHBOARD_ACTIVE_COIN_RECEIVE_FORM:
+    case DASHBOARD_ACTIVE_COIN_RECEIVE_FORM: //DEPRECATED
       return {
         ...state,
         send: false,
         receive: action.receive,
       };
-    case DASHBOARD_ACTIVE_COIN_RESET_FORMS:
+    case DASHBOARD_ACTIVE_COIN_RESET_FORMS: //DEPRECATED
       return {
         ...state,
         send: false,

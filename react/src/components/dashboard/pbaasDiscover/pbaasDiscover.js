@@ -12,6 +12,7 @@ import {
   notaryRewardRender,
   chainDetailRender,
   premineRender,
+  statusRender,
   chainNameRender,
   ChainsListRender
 } from './pbaasDiscover.render';
@@ -27,11 +28,11 @@ import {
 import translate from '../../../translate/translate';
 import DoubleScrollbar from 'react-double-scrollbar';
 import { estimateReward } from '../pbaasUtils/chainData';
-
-const BOTTOM_BAR_DISPLAY_THRESHOLD = 15;
-
-const NATIVE_MODE = -1;
-const VERUS_DAEMON = 'verusd';
+import { 
+  BOTTOM_BAR_DISPLAY_THRESHOLD,
+  NATIVE_MODE,
+  VERUS_DAEMON
+} from '../../../util/constants'
 
 class PBaaSDiscover extends React.Component {
   constructor(props) {
@@ -61,7 +62,7 @@ class PBaaSDiscover extends React.Component {
   }
 
   onSearchTermChange(newSearchTerm) {
-    let _chains = this.props.PBaaS.definedChains
+    let _chains = this.props.PBaaSMain.definedChains
     let _searchTerm = newSearchTerm
     
     if (!isNaN(_searchTerm)) {
@@ -82,7 +83,7 @@ class PBaaSDiscover extends React.Component {
   }
 
   _setChains() {
-    let _chains = this.props.PBaaS.definedChains
+    let _chains = this.props.PBaaSMain.definedChains
     let _stateChange = {}
     
     if (_chains &&
@@ -115,8 +116,8 @@ class PBaaSDiscover extends React.Component {
     else if (
       (this.contains(chain.chaindefinition.notarizationreward, term) ||
       this.contains(chain.chaindefinition.name, term) ||
-      this.contains(chain.latestheight, term) ||
-      this.contains(estimateReward(chain.chaindefinition, chain.latestheight), term)))
+      this.contains(chain.lastconfirmedheight, term) ||
+      this.contains(estimateReward(chain.chaindefinition, chain.lastconfirmedheight), term)))
     {
       return true;
     }
@@ -211,7 +212,7 @@ class PBaaSDiscover extends React.Component {
   }
 
   renderChainsList() {  
-    let _chains = this.props.PBaaS.definedChains
+    let _chains = this.props.PBaaSMain.definedChains
 
     if (_chains.length) {
       return (
@@ -231,7 +232,7 @@ class PBaaSDiscover extends React.Component {
   }
 
   toggleChainInfoModal(display, chainIndex) {
-    const _chains = this.props.PBaaS.definedChains
+    const _chains = this.props.PBaaSMain.definedChains
 
     if (this.state.searchTerm || 
         !this.state.includePremine || 
@@ -287,7 +288,8 @@ class PBaaSDiscover extends React.Component {
   }
 
   generateItemsListColumns() {
-    const _chains = this.props.PBaaS.definedChains
+    const _chains = this.props.PBaaSMain.definedChains
+    const _currentHeight = this.props.CurrentHeight
 
     let columns = [{
       id: 'name',
@@ -295,6 +297,13 @@ class PBaaSDiscover extends React.Component {
       Footer: translate('PBAAS.NAME'),
       sortMethod: this.defaultSorting,
       accessor: (chain) => chainNameRender.call(this, chain),
+    },
+    {
+      id: 'status',
+      Header: translate('PBAAS.CHAIN_STATUS'),
+      Footer: translate('PBAAS.CHAIN_STATUS'),
+      sortMethod: this.defaultSorting,
+      accessor: (chain) => statusRender.call(this, chain, _currentHeight),
     },
     {
       id: 'premine',
@@ -313,7 +322,7 @@ class PBaaSDiscover extends React.Component {
     {
       id: 'lastblockreward',
       Header: lastRewardHeaderRender,
-      Footer: translate('PBAAS.LATEST_BLOCK_REWARD'),
+      Footer: translate('PBAAS.LAST_BLOCK_REWARD'),
       sortMethod: this.defaultSorting,
       accessor: (chain) => lastRewardRender.call(this, chain),
     },
@@ -356,13 +365,14 @@ class PBaaSDiscover extends React.Component {
 const mapStateToProps = (state) => {
   return {
     Main: state.Main,
-    PBaaS: {
-      activeSectionPbaas: state.PBaaS.activeSectionPbaas,
-      showChainInfo: state.PBaaS.showChainInfo,
-      showChainInfoChainIndex: state.PBaaS.showChainInfoChainIndex,
-      definedChains: state.PBaaS.definedChains
-    }
-  };
+    PBaaSMain: {
+      activeSectionPbaas: state.PBaaSMain.activeSectionPbaas,
+      showChainInfo: state.PBaaSMain.showChainInfo,
+      showChainInfoChainIndex: state.PBaaSMain.showChainInfoChainIndex,
+      definedChains: state.PBaaSMain.definedChains
+    },
+    CurrentHeight: state.ActiveCoin.progress.longestchain
+  }
 };
 
 export default connect(mapStateToProps)(PBaaSDiscover);

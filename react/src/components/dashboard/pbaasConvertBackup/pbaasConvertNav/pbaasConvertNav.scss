@@ -1,0 +1,19 @@
+.bottom-navbar {
+  bottom: 0;
+  overflow: hidden;
+  position: fixed;
+  width: 50%
+}
+
+.convert-navbar-container {
+  justify-content: center;
+  display: flex;
+  width: 100%;
+}
+
+.convert-navbar-item {
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: 100%;
+  text-align: center;
+}

@@ -15,11 +15,12 @@ import {
   dashboardChangeActiveCoin
 } from '../../../actions/actionCreators'
 import translate from '../../../translate/translate';
+import {
+  NATIVE_MODE,
+  VERUS_DAEMON
+} from '../../../util/constants'
 
 const { shell } = window.require('electron');
-
-const NATIVE_MODE = -1;
-const VERUS_DAEMON = 'verusd';
 
 class PBaaSConnect extends React.Component {
   constructor(props) {
@@ -155,9 +156,10 @@ class PBaaSConnect extends React.Component {
 const mapStateToProps = (state) => {
   return {
     Main: state.Main,
-    PBaaS: {
-      activeSectionPbaas: state.PBaaS.activeSectionPbaas
-    }
+    PBaaSMain: {
+      activeSectionPbaas: state.PBaaSMain.activeSectionPbaas
+    },
+    CurrentHeight: state.ActiveCoin.progress.longestchain
   };
 };
 

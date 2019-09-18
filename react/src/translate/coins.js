@@ -55,6 +55,9 @@ const coins = {
     LUMBER: 'Lumberscout',
     K64: 'Komodore64',
     RFOX: 'Redfox Labs',
+    HUSH: 'HUSH',
+    LABS: 'LABS',
+    MTST3: 'MTST3',
     DP: 'DigitalPrice',
   },
   CRYPTO: {

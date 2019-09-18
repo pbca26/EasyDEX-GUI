@@ -52,7 +52,6 @@ class MiningButton extends React.Component {
     const coin = this.props.ActiveCoin.coin
     Store.dispatch(updateMiningInfo(coin, _cliResponse))
     this.updateNumThreadsGUI(this.props.Mining.miningInfo[coin].genproclimit);
-    console.log(_cliResponse)
   }
 
   startMining(_numThreads) {
