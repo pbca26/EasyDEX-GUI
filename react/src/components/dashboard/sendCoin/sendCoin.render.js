@@ -220,16 +220,19 @@ export const SendRender = function() {
                             _chainStatus.state === 'PRE_CONVERT')
                             :
                             null
-  const _price = _coin === PBAAS_ROOT_CHAIN ? 
-    this.state.connectedChain ? 
-      (this.state.connectedChain.hasOwnProperty('bestcurrencystate') ? 
-        this.state.connectedChain.bestcurrencystate.priceinreserve 
+  const _price = this.props.ActiveCoin.mode === 'native' ? 
+    (_coin === PBAAS_ROOT_CHAIN ? 
+      this.state.connectedChain ? 
+        (this.state.connectedChain.hasOwnProperty('bestcurrencystate') ? 
+          this.state.connectedChain.bestcurrencystate.priceinreserve 
+          : 
+          0)
         : 
-        0)
-      : 
-      0
+        0
+      :
+      this.props.ActiveCoin.walletinfo.price_in_reserve)
     :
-    this.props.ActiveCoin.walletinfo.price_in_reserve
+    null
   const _launchfee = this.state.connectedChain ? this.state.connectedChain.launchfee : 0
 
   if (this.props.renderFormOnly) {
