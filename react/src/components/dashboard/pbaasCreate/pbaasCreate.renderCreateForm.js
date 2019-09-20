@@ -9,10 +9,11 @@ import {
   EXPONENTIAL,
   LINEAR
 } from '../../../util/constants';
-import { blocksToTime } from '../../../util/blockMath'
-
-const PBAAS_ROOT_CHAIN = Config.verus.pbaasTestmode ? 'VRSCTEST' : 'VRSC'
-const MIN_START_BLOCK_DISTANCE = 150
+import { blocksToTime } from '../../../util/blockMath';
+import {
+  PBAAS_ROOT_CHAIN,
+  MIN_START_BLOCK_DISTANCE
+} from '../../../util/pbaas/pbaasConstants';
 
 export const _nameFormRender = function() {
   return (

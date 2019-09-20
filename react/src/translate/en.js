@@ -1078,6 +1078,7 @@ const LANG_EN = {
   TX_INFO: {
     ADDRESS: 'address',
     AMOUNT: 'amount',
+    RESERVE_AMOUNT: 'Reserve Amount',
     CATEGORY: 'category',
     CONFIRMATIONS: 'confirmations',
     YEAR: 'year',

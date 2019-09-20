@@ -1,17 +1,16 @@
 import React from 'react';
 import translate from '../../../translate/translate';
 import { fromSats, toSats } from 'agama-wallet-lib/src/utils';
-import { estimateReward } from './chainData';
+import { estimateReward } from '../../../util/pbaas/pbaasTxUtils';
 import {
   EXPONENTIAL,
   LINEAR,
   LINEAR_DECAY
 } from '../../../util/constants';
 import ReactTooltip from 'react-tooltip';
-import { getChainStatus } from '../../../util/pbaasUtil'
+import { getChainStatus } from '../../../util/pbaas/pbaasChainUtils'
 import Config from '../../../config'
-
-const PBAAS_ROOT_CHAIN = Config.verus.pbaasTestmode ? 'VRSCTEST' : 'VRSC'
+import { PBAAS_ROOT_CHAIN } from '../../../util/pbaas/pbaasConstants'
 
 export const chainInfoTableRender = function(chain, currentHeight) {
   let _chain

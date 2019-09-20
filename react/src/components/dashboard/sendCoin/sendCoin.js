@@ -57,13 +57,13 @@ import { addressVersionCheck } from 'agama-wallet-lib/src/keys';
 import networks from 'agama-wallet-lib/src/bitcoinjs-networks';
 import kv from 'agama-wallet-lib/src/kv';
 import { encodeMemo } from '../../../util/zTxUtils';
-import { isPbaasChain, getChainStatus } from '../../../util/pbaasUtil';
+import { isPbaasChain, getChainStatus } from '../../../util/pbaas/pbaasChainUtils';
+import { PBAAS_ROOT_CHAIN } from '../../../util/pbaas/pbaasConstants'
 
 const { shell } = window.require('electron');
 const SPV_MAX_LOCAL_TIMESTAMP_DEVIATION = 300; // 5 min
 const FEE_EXCEEDS_DEFAULT_THRESHOLD = 5; // N fold increase
 const DEFAULT_ZTX_FEE = 0.0001;
-const PBAAS_ROOT_CHAIN = Config.verus.pbaasTestmode ? 'VRSCTEST' : 'VRSC'
 
 // TODO: - render z address trim
 

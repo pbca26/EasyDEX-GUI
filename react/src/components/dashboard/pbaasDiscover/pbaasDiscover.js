@@ -27,7 +27,7 @@ import {
 } from '../../../actions/actionCreators'
 import translate from '../../../translate/translate';
 import DoubleScrollbar from 'react-double-scrollbar';
-import { estimateReward } from '../pbaasUtils/chainData';
+import { estimateReward } from '../../../util/pbaas/pbaasTxUtils';
 import { 
   BOTTOM_BAR_DISPLAY_THRESHOLD,
   NATIVE_MODE,

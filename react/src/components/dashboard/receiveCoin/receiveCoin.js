@@ -24,7 +24,7 @@ import translate from '../../../translate/translate';
 import mainWindow, { staticVar } from '../../../util/mainWindow';
 import Config from '../../../config';
 import { BOTTOM_BAR_DISPLAY_THRESHOLD } from '../../../util/constants'
-import { isPbaasChain } from '../../../util/pbaasUtil';
+import { isPbaasChain } from '../../../util/pbaas/pbaasChainUtils';
 
 // TODO: implement balance/interest sorting
 

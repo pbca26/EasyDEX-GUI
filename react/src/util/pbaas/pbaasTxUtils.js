@@ -1,5 +1,5 @@
 import { fromSats } from 'agama-wallet-lib/src/utils';
-const LINEAR_DECAY = 100000000
+import { LINEAR_DECAY } from '../constants'
 
 export const estimateReward = (chainDefinition, lastconfirmedheight) => {
   const eras = chainDefinition.eras

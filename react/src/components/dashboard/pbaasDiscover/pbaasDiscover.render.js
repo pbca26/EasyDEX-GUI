@@ -8,8 +8,8 @@ import ReactTable from 'react-table';
 import mainWindow, { staticVar } from '../../../util/mainWindow';
 import { tableSorting } from '../pagination/utils';
 import { fromSats, toSats } from 'agama-wallet-lib/src/utils';
-import { estimateReward } from '../pbaasUtils/chainData';
-import { getChainStatus } from '../../../util/pbaasUtil'
+import { estimateReward } from '../../../util/pbaas/pbaasTxUtils';
+import { getChainStatus } from '../../../util/pbaas/pbaasChainUtils';
 
 export const PBaaSDiscoverRender = function() {
   return (

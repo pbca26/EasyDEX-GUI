@@ -2,7 +2,7 @@ import React from 'react';
 import translate from '../../../translate/translate';
 import { secondsToString } from 'agama-wallet-lib/src/time';
 import { explorerList } from 'agama-wallet-lib/src/coin-helpers';
-import { chainInfoTableRender, reserveChainInfoTableRender } from '../pbaasUtils/chainInfoRenders';
+import { chainInfoTableRender, reserveChainInfoTableRender } from '../pbaasGeneralRenders/chainInfoRenders';
 
 const ChainInfoRender = function(chainInfo) { 
   return (

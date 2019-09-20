@@ -110,6 +110,13 @@ const WalletsTxInfoRender = function(txInfo) {
                                   { isSpv ? (Number(this.state.txDetails.amount) === 0 ? translate('DASHBOARD.UNKNOWN') : Number(this.state.txDetails.amount)) : txInfo.amount }
                                 </td>
                               </tr>
+                              {txInfo && txInfo.reserveamount &&
+                                <tr>
+                                  <td>{ translate('TX_INFO.RESERVE_AMOUNT') }</td>
+                                  <td>
+                                    { Number(txInfo.reserveamount) }
+                                  </td>
+                                </tr>}
                               { (isEth || (isSpv && this.state.txDetails.amount !== this.state.txDetails.fee)) &&
                                 <tr>
                                   <td>{ this.capitalizeFirstLetter(translate('SEND.FEE')) }</td>
@@ -130,8 +137,8 @@ const WalletsTxInfoRender = function(txInfo) {
                                   { this.state.txDetails.confirmations }
                                 </td>
                               </tr>
-                              { this.state.txDetails.hasOwnProperty('rawconfirmations') &&
-                                this.state.txDetails.confirmations !== this.state.txDetails.rawconfirmations &&
+                              { (this.state.txDetails.hasOwnProperty('rawconfirmations') &&
+                                this.state.txDetails.confirmations !== this.state.txDetails.rawconfirmations) &&
                                 <tr>
                                   <td>Raw confirmations</td>
                                   <td>
@@ -139,7 +146,7 @@ const WalletsTxInfoRender = function(txInfo) {
                                   </td>
                                 </tr>
                               }
-                              { this.state.txDetails.blockindex &&
+                              { (this.state.txDetails.blockindex !== null && this.state.txDetails.blockindex !== undefined) &&
                                 <tr>
                                   <td>{ this.capitalizeFirstLetter('blockindex') }</td>
                                   <td className="selectable">

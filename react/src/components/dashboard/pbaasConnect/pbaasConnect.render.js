@@ -3,7 +3,7 @@ import translate from '../../../translate/translate';
 import mainWindow from '../../../util/mainWindow';
 import ReactTooltip from 'react-tooltip';
 import Config from '../../../config';
-import { chainInfoTableRender, reserveChainInfoTableRender } from '../pbaasUtils/chainInfoRenders';
+import { chainInfoTableRender, reserveChainInfoTableRender } from '../pbaasGeneralRenders/chainInfoRenders';
 
 const VRSC_LOGO_DIR = `assets/images/cryptologo/btc/vrsc.png`
 
