@@ -681,9 +681,9 @@ const mapStateToProps = (state) => {
   return {
     PBaaSMain: {
       activeSectionPbaas: state.PBaaSMain.activeSectionPbaas,
-      formState: state.PBaaSMain.formState
-    },
-    CurrentHeight: state.ActiveCoin.progress.longestchain
+      formState: state.PBaaSMain.formState,
+      rootChainHeight: state.PBaaSMain.rootChainHeight
+    }
   };
 };
 

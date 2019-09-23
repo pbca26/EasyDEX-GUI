@@ -179,9 +179,9 @@ const mapStateToProps = (state) => {
       definedChains: state.PBaaSMain.definedChains,
       showChainInfoChainIndex: state.PBaaSMain.showChainInfoChainIndex,
       showChainInfo: state.PBaaSMain.showChainInfo,
-      activeSectionPbaas: state.PBaaSMain.activeSectionPbaas
+      activeSectionPbaas: state.PBaaSMain.activeSectionPbaas,
+      rootChainHeight: state.PBaaSMain.rootChainHeight
     },
-    CurrentHeight: state.ActiveCoin.progress.longestchain
   };
 };
 

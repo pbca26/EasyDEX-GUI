@@ -46,7 +46,7 @@ const ChainInfoRender = function(chainInfo) {
               <div className="panel-body">
                 { this.state.chainInfo ? 
                     (this.state.activeTab === 0 ? 
-                      chainInfoTableRender.call(this, chainInfo, this.props.CurrentHeight)
+                      chainInfoTableRender.call(this, chainInfo, this.props.PBaaSMain.rootChainHeight)
                       :
                       reserveChainInfoTableRender.call(this, chainInfo)) 
                     : 

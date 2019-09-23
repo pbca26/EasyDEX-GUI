@@ -65,8 +65,7 @@ const NavbarRender = function() {
                 </a>
               </li>
             }
-            { _activeCoin.mode === 'native' &&
-              (_activeCoin.coin === 'VRSCTEST') &&
+            { this.props.PBaaSMain.rootChainActive &&
               <li className={ 'nav-top-menu' + (this.isSectionActive('pbaas') ? ' active' : '') }>
                 <a onClick={ () => this.dashboardChangeSection('pbaas') }>
                 <i className="site-menu-icon"></i> PBaaS
