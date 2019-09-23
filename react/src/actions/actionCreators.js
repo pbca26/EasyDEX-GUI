@@ -394,3 +394,10 @@ export const togglePbaasChainInfoModal = (display, txIndex) => {
     showChainInfoChainIndex: !display ? null : txIndex,
   }
 }
+
+export const setCoinTileOrder = (coinTileOrder) => {
+  return {
+    type: DASHBOARD_SET_COIN_TILE_ORDER,
+    coinTileOrder: coinTileOrder
+  }
+}

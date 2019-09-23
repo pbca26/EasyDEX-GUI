@@ -55,6 +55,8 @@ class CoinTileItem extends React.Component {
       propsUpdatedCounter: 0,
       toggledCoinMenu: null,
       coindStopRetries: {},
+      draggingKey: null,
+      dragging: false
     };
     this.autoSetActiveCoin = this.autoSetActiveCoin.bind(this);
     this.toggleCoinMenu = this.toggleCoinMenu.bind(this);
@@ -106,6 +108,17 @@ class CoinTileItem extends React.Component {
 
   openCoindDownModal() {
     Store.dispatch(toggleCoindDownModal(true));
+  }
+
+  onDragOver(underKey) {
+    const overKey = this.props.draggedItem
+    if (underKey && overKey && underKey !== overKey) {
+      this.props.dragOver(overKey, underKey)
+    }
+  }
+
+  onDragStart(key) {
+    this.props.updateDraggedItem(key)
   }
 
   renderCoinConError(item) {

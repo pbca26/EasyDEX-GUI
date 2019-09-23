@@ -15,6 +15,7 @@ import {
   DASHBOARD_EXCHANGES_SUPPORTED_COINS_MODAL,
   EXCHANGES_COINSWITCH_COINS,
   PRICES,
+  DASHBOARD_SET_COIN_TILE_ORDER
 } from '../actions/storeType';
 
 export const Dashboard = (state = {
@@ -35,6 +36,8 @@ export const Dashboard = (state = {
   showExchangesOrderInfoId: null,
   displayExchangesTOSModal: false,
   displayExchangesSupportedCoinsModal: false,
+  coinTileOrder: [] 
+  // ^ Array of coin ticker keys to handle coin tile order (ticker key: <spv||eth||native>:<ticker>)
 }, action) => {
   let exchanges = JSON.parse(JSON.stringify(state.exchanges));
   
@@ -122,6 +125,11 @@ export const Dashboard = (state = {
       return {
         ...state,
         exchanges,
+      };
+    case DASHBOARD_SET_COIN_TILE_ORDER:
+      return {
+        ...state,
+        coinTileOrder: action.coinTileOrder,
       };
     default:
       return state;

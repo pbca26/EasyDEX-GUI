@@ -16,7 +16,12 @@ const CoinTileItemRender = function() {
   const _coindStartParamsString = this.props.Main.coins.params && this.props.Main.coins.params[_coinuc] ? this.props.Main.coins.params[_coinuc].join(' ') : '';
   
   return (
-    <div className="list-group-item col-xlg-6 col-lg-12 wallet-widgets-info pointer">
+    <div 
+      className="list-group-item col-xlg-6 col-lg-12 wallet-widgets-info pointer draggable droppable"
+      onDragOver={() => { this.onDragOver(item.key) }}
+      onDragStart={() => { this.onDragStart(item.key) }}
+      draggable
+    >
       <span className={ `badge up badge-${item.mode === 'eth' && erc20ContractId[item.coin] ? 'success' : item.modecolor}` }>
         { item.mode === 'eth' && erc20ContractId[item.coin] ? 'ERC20' : item.modecode }
       </span>
