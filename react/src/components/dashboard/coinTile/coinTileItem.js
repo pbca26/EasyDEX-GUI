@@ -149,7 +149,7 @@ class CoinTileItem extends React.Component {
     }
   }
 
-  renderStopCoinButton() {
+  hasNativeCoins() {
     const _main = this.props.Main;
 
     if (_main &&
@@ -163,13 +163,17 @@ class CoinTileItem extends React.Component {
   renderRemoveCoinButton() {
     const _main = this.props.Main;
 
-    if (_main &&
+    //TODO: Change based on feedback
+    /*if (_main &&
         _main.coins &&
         ((_main.coins.native &&
           _main.coins.native.length &&
         !Config.native.stopNativeDaemonsOnQuit) ||
         (_main.coins.spv && _main.coins.spv.length) ||
         (_main.coins.eth && _main.coins.eth.length))) {
+      return true;
+    }*/
+    if (_main && _main.coins) {
       return true;
     }
   }
