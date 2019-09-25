@@ -3,7 +3,7 @@ import translate from '../../../translate/translate';
 import mainWindow from '../../../util/mainWindow';
 import ReactTooltip from 'react-tooltip';
 import Config from '../../../config';
-import { chainInfoTableRender, reserveChainInfoTableRender } from '../pbaasUtils/chainInfoRenders';
+import { chainInfoTableRender, reserveChainInfoTableRender } from '../pbaasGeneralRenders/chainInfoRenders';
 
 const VRSC_LOGO_DIR = `assets/images/cryptologo/btc/vrsc.png`
 
@@ -48,7 +48,7 @@ export const PBaaSConnectRender = function() {
             <div className="panel-body container-fluid">
               <div className="font-weight-600">{ translate('PBAAS.CONFIRM_DATA') }</div>
               <div className="chain-info-description">{ translate('PBAAS.CHAIN_FOUND_DESC') }</div>
-              { chainInfoTableRender.call(this, this.state.chainInfo, this.props.CurrentHeight) }
+              { chainInfoTableRender.call(this, this.state.chainInfo, this.props.PBaaSMain.rootChainHeight) }
               <div className="font-weight-600">{ translate('PBAAS.RESERVE_CONFIRMATION') }</div>
               <div className="chain-info-description">{ translate('PBAAS.RESERVE_CONFIRMATION_DESC') }</div>
               { reserveChainInfoTableRender.call(this, this.state.chainInfo) }

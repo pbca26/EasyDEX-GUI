@@ -3,10 +3,11 @@ import {
   isKomodoCoin
 } from 'agama-wallet-lib/src/coin-helpers';
 import translate from '../../../../translate/translate';
-import { isPbaasChain } from '../../../../util/pbaasUtil'
+import { isPbaasChain } from '../../../../util/pbaas/pbaasChainUtils'
 import Config from '../../../../config';
 import ReactTooltip from 'react-tooltip';
 import { fromSats } from 'agama-wallet-lib/src/utils';
+import { PBAAS_ROOT_CHAIN } from '../../../../util/pbaas/pbaasConstants'
 
 const pbaasSendFormRender = (self) => {
   const _coin = self.props.ActiveCoin.coin;
@@ -18,7 +19,7 @@ const pbaasSendFormRender = (self) => {
                             _chainStatus.state === 'PRE_CONVERT')
                             :
                             null
-  const _price = _coin === (Config.verus.pbaasTestmode ? 'VRSCTEST' : 'VRSC') ? 
+  const _price = _coin === PBAAS_ROOT_CHAIN ? 
     self.state.connectedChain ? 
       (self.state.connectedChain.hasOwnProperty('bestcurrencystate') ? 
         self.state.connectedChain.bestcurrencystate.priceinreserve 
@@ -93,7 +94,7 @@ const pbaasSendFormRender = (self) => {
         { !self.props.initState &&
           <button
             type="button"
-            className="btn btn-default btn-send-self color-done"
+            className={`btn btn-${self.state.sendToChain != null && self.state.sendToChain.length > 0 ? 'info' : 'default'} btn-send-self color-done`}
             onClick={ self.findChain }>
             { translate('PBAAS.CONNECT') }
           </button>
@@ -128,7 +129,7 @@ const pbaasSendFormRender = (self) => {
               0)
             :
             self.props.ActiveCoin.walletinfo.price_in_reserve
-          } ${Config.verus.pbaasTestmode ? 'VRSCTEST' : 'VRSC'}/${
+          } ${PBAAS_ROOT_CHAIN}/${
             self.state.connectedChain && !_isReserveChain ? 
                 self.state.connectedChain.name 
               : 
@@ -140,7 +141,7 @@ const pbaasSendFormRender = (self) => {
             { `${translate('PBAAS.RETURN_BASED_ON_RECENT_PRICE')}: `}
             { self.state.amount && !isNaN(Number(self.state.amount)) && Number(self.state.amount) > 0 ?
             ((Number(self.state.amount) - (Number(self.state.amount) * (_isPreconvert ? fromSats(_launchfee) : 0))) * (
-              _coin === (Config.verus.pbaasTestmode ? 'VRSCTEST' : 'VRSC') || self.state.sendVrscToken ? 
+              _coin === PBAAS_ROOT_CHAIN || self.state.sendVrscToken ? 
                 _price > 0 ? 
                   _price 
                   : 
@@ -150,7 +151,7 @@ const pbaasSendFormRender = (self) => {
             : 
             '-'}
             {' '}
-            { _coin === (Config.verus.pbaasTestmode ? 'VRSCTEST' : 'VRSC') ? 
+            { _coin === PBAAS_ROOT_CHAIN ? 
               self.state.connectedChain.name 
               : 
               self.state.sendVrscToken ? 
@@ -212,7 +213,7 @@ const pbaasSendFormRender = (self) => {
         <label
         className="col-lg-12 control-label form-group form-material"
         htmlFor="pbaasSendToChain">
-          { `${translate('PBAAS.LAUNCH_HEIGHT', Config.verus.pbaasTestmode ? 'VRSCTEST' : 'VRSC')}: `}
+          { `${translate('PBAAS.LAUNCH_HEIGHT', PBAAS_ROOT_CHAIN)}: `}
           { Math.abs(_chainStatus.age) }
         </label>
         {_isPreconvert && <label

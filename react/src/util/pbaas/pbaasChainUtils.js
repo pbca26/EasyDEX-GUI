@@ -1,5 +1,5 @@
-import Config from '../config'
-import translate from '../translate/translate'
+import Config from '../../config'
+import translate from '../../translate/translate'
 import React from 'react';
 
 /**

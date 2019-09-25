@@ -9,7 +9,8 @@ export const QRModalRender = function() {
       <span
         className="qrcode-modal"
         title={ translate('INDEX.QRCODE') }
-        onClick={ this.openModal }>
+        onClick={ this.openModal }
+        id="qrcode-modal-btn">
         <i className="icon fa-qrcode margin-right-5"></i> { translate('DASHBOARD.GENERATE_SM') } { translate('INDEX.QR_CODE') }
       </span>
       <div className={ `modal modal-3d-sign qr-modal ${this.state.className}` }>

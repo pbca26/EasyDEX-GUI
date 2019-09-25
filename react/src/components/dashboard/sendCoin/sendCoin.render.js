@@ -21,7 +21,8 @@ import defaultSendFormRender from './sendCoinForms/defaultSendForm.render'
 import kvSendFormRender from './sendCoinForms/kvSendForm.render'
 import shieldCoinbaseFormRender from './sendCoinForms/shieldCoinbaseForm.render'
 import pbaasSendFormRender from './sendCoinForms/pbaasSendForm.render'
-import { isPbaasChain } from '../../../util/pbaasUtil';
+import { isPbaasChain } from '../../../util/pbaas/pbaasChainUtils';
+import { PBAAS_ROOT_CHAIN } from '../../../util/pbaas/pbaasConstants'
 
 const _feeLookup = {
   eth: [
@@ -36,8 +37,6 @@ const kvCoins = {
   'BEER': true,
   'PIZZA': true,
 };
-
-const PBAAS_ROOT_CHAIN = Config.verus.pbaasTestmode ? 'VRSCTEST' : 'VRSC'
 
 export const ZmergeToAddressRender = function() {
   return (

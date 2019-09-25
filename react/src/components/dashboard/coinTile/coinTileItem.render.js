@@ -16,7 +16,12 @@ const CoinTileItemRender = function() {
   const _coindStartParamsString = this.props.Main.coins.params && this.props.Main.coins.params[_coinuc] ? this.props.Main.coins.params[_coinuc].join(' ') : '';
   
   return (
-    <div className="list-group-item col-xlg-6 col-lg-12 wallet-widgets-info pointer">
+    <div 
+      className="list-group-item col-xlg-6 col-lg-12 wallet-widgets-info pointer draggable droppable"
+      onDragOver={() => { this.onDragOver(item.key) }}
+      onDragStart={() => { this.onDragStart(item.key) }}
+      draggable
+    >
       <span className={ `badge up badge-${item.mode === 'eth' && erc20ContractId[item.coin] ? 'success' : item.modecolor}` }>
         { item.mode === 'eth' && erc20ContractId[item.coin] ? 'ERC20' : item.modecode }
       </span>
@@ -91,13 +96,19 @@ const CoinTileItemRender = function() {
         this.state.toggledCoinMenu === item.coin &&
         <div className="coin-tile-context-menu">
           <ul>
-            { this.renderStopCoinButton() &&
-              item.mode === 'native' &&
-              <li onClick={ () => this.stopCoind(item.coin, item.mode) }>
-                <i className="icon fa-stop-circle margin-right-5"></i> { translate('DASHBOARD.STOP') }
+            { this.renderRemoveCoinButton() &&
+              <li onClick={ item.mode === 'native' ? () => this.stopCoind(item.coin, item.mode) : () => this.removeCoin(item.coin, item.mode) }>
+                <i className="icon fa-trash-o margin-right-5"></i> { translate('DASHBOARD.REMOVE') }
               </li>
             }
-            { this.renderStopCoinButton() &&
+            { this.hasNativeCoins() &&
+              item.mode === 'native' &&
+              <li onClick={ /*() => this.stopCoind(item.coin, item.mode)*/ () => this.removeCoin(item.coin, item.mode) }>
+                <i className="icon fa-stop-circle margin-right-5"></i> { translate('DASHBOARD.DETACH') }
+              </li>
+            }
+            {/* TODO: Add this back to different place based on user feedback
+              this.hasNativeCoins() &&
               item.mode === 'native' &&
               this.props.Main.coins &&
               this.props.Main.coins.native &&
@@ -105,12 +116,7 @@ const CoinTileItemRender = function() {
               <li onClick={ this.stopAllCoind }>
                 <i className="icon fa-stop-circle margin-right-5"></i> { translate('DASHBOARD.STOP_ALL') }
               </li>
-            }
-            { this.renderRemoveCoinButton() &&
-              <li onClick={ () => this.removeCoin(item.coin, item.mode) }>
-                <i className="icon fa-trash-o margin-right-5"></i> { translate('DASHBOARD.REMOVE') }
-              </li>
-            }
+            */}
           </ul>
         </div>
       }
