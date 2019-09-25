@@ -56,7 +56,9 @@ class ReceiveCoin extends React.Component {
     this.renderAddressList = this.renderAddressList.bind(this);
   }
 
-  toggleAddressMenu(address) {
+  toggleAddressMenu(address, e) {
+    if (e && e.target && e.target.id === "qrcode-modal-btn") return
+    
     this.setState({
       toggledAddressMenu: this.state.toggledAddressMenu === address ? null : address,
     }, () => {
