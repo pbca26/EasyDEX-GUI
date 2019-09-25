@@ -94,7 +94,7 @@ const pbaasSendFormRender = (self) => {
         { !self.props.initState &&
           <button
             type="button"
-            className="btn btn-default btn-send-self color-done"
+            className={`btn btn-${self.state.sendToChain != null && self.state.sendToChain.length > 0 ? 'info' : 'default'} btn-send-self color-done`}
             onClick={ self.findChain }>
             { translate('PBAAS.CONNECT') }
           </button>
