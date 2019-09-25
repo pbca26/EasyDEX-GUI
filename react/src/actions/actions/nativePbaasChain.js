@@ -3,15 +3,14 @@ import {
   apiCliPromise
 } from '../actionCreators';
 import translate from '../../translate/translate';
-import Config, {
+import {
   token,
   agamaPort,
   rpc2cli,
 } from '../../config';
 import fetchType from '../../util/fetchType';
+import { PBAAS_ROOT_CHAIN } from '../../util/pbaas/pbaasConstants';
 import Store from '../../store';
-
-const PBAAS_ROOT_CHAIN = Config.verus.pbaasTestmode ? 'VRSCTEST' : 'VRSC'
 
 export const getChainDefinition = (chain) => {
   return new Promise((resolve, reject) => {

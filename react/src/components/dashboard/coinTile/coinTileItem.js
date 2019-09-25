@@ -55,6 +55,8 @@ class CoinTileItem extends React.Component {
       propsUpdatedCounter: 0,
       toggledCoinMenu: null,
       coindStopRetries: {},
+      draggingKey: null,
+      dragging: false
     };
     this.autoSetActiveCoin = this.autoSetActiveCoin.bind(this);
     this.toggleCoinMenu = this.toggleCoinMenu.bind(this);
@@ -108,6 +110,17 @@ class CoinTileItem extends React.Component {
     Store.dispatch(toggleCoindDownModal(true));
   }
 
+  onDragOver(underKey) {
+    const overKey = this.props.draggedItem
+    if (underKey && overKey && underKey !== overKey) {
+      this.props.dragOver(overKey, underKey)
+    }
+  }
+
+  onDragStart(key) {
+    this.props.updateDraggedItem(key)
+  }
+
   renderCoinConError(item) {
     const _coins = this.props.ActiveCoin.coins;
 
@@ -136,7 +149,7 @@ class CoinTileItem extends React.Component {
     }
   }
 
-  renderStopCoinButton() {
+  hasNativeCoins() {
     const _main = this.props.Main;
 
     if (_main &&
@@ -150,13 +163,17 @@ class CoinTileItem extends React.Component {
   renderRemoveCoinButton() {
     const _main = this.props.Main;
 
-    if (_main &&
+    //TODO: Change based on feedback
+    /*if (_main &&
         _main.coins &&
         ((_main.coins.native &&
           _main.coins.native.length &&
         !Config.native.stopNativeDaemonsOnQuit) ||
         (_main.coins.spv && _main.coins.spv.length) ||
         (_main.coins.eth && _main.coins.eth.length))) {
+      return true;
+    }*/
+    if (_main && _main.coins) {
       return true;
     }
   }

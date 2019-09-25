@@ -300,7 +300,7 @@ export const AddressTypeRender = function(addr) {
         className="text-left" />
       { this.state.toggledAddressMenu &&
         this.state.toggledAddressMenu === address &&
-        <div className="address-dropdown-menu" onClick={ () => this.toggleAddressMenu(address) }>
+        <div className="address-dropdown-menu" onClick={ (e) => this.toggleAddressMenu(address, e) }>
           <ul>
             <li onClick={ () => this._copyCoinAddress(address) }>
               <i className="icon wb-copy margin-right-5"></i> { `${translate('INDEX.COPY')} ${translate('RECEIVE.' + (type === 'public' ? 'PUB_KEY' : 'Z_KEY'))}` }
@@ -333,7 +333,7 @@ export const AddressTypeRender = function(addr) {
             <li className="address-dropdown-menu-get-qr">
               <QRModal
                 content={ address }
-                cbOnClose={ this.toggleAddressMenu } />
+                cbOnClose={ this.toggleAddressMenu }/>
             </li>
           </ul>
         </div>

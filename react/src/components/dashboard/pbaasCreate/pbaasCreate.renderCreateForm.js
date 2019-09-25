@@ -9,10 +9,11 @@ import {
   EXPONENTIAL,
   LINEAR
 } from '../../../util/constants';
-import { blocksToTime } from '../../../util/blockMath'
-
-const PBAAS_ROOT_CHAIN = Config.verus.pbaasTestmode ? 'VRSCTEST' : 'VRSC'
-const MIN_START_BLOCK_DISTANCE = 150
+import { blocksToTime } from '../../../util/blockMath';
+import {
+  PBAAS_ROOT_CHAIN,
+  MIN_START_BLOCK_DISTANCE
+} from '../../../util/pbaas/pbaasConstants';
 
 export const _nameFormRender = function() {
   return (
@@ -368,21 +369,21 @@ export const _launchFormRender = function() {
         <div>
           <label
             className="control-label">
-            { `${translate('PBAAS.EST_CURRENT_HEIGHT', PBAAS_ROOT_CHAIN)}: ${this.props.CurrentHeight ? this.props.CurrentHeight : translate('PBAAS.SYNCING')}` }
+            { `${translate('PBAAS.EST_CURRENT_HEIGHT', PBAAS_ROOT_CHAIN)}: ${this.props.PBaaSMain.rootChainHeight ? this.props.PBaaSMain.rootChainHeight : translate('PBAAS.SYNCING')}` }
           </label>
         </div>
         <div>
           <label
             className="control-label">
             { `${translate('PBAAS.EST_TIME_TO_LAUNCH')}: ${ 
-              this.props.CurrentHeight ? 
+              this.props.PBaaSMain.rootChainHeight ? 
                 (this.state.errors.startBlock || !this.state.startBlock ? '-' 
                 : 
                 blocksToTime((
-                  Number(this.state.startBlock) - this.props.CurrentHeight) < MIN_START_BLOCK_DISTANCE ? 
+                  Number(this.state.startBlock) - this.props.PBaaSMain.rootChainHeight) < MIN_START_BLOCK_DISTANCE ? 
                     MIN_START_BLOCK_DISTANCE 
                     : 
-                    (Number(this.state.startBlock) - this.props.CurrentHeight))) : translate('PBAAS.SYNCING') }` }
+                    (Number(this.state.startBlock) - this.props.PBaaSMain.rootChainHeight))) : translate('PBAAS.SYNCING') }` }
           </label>
         </div>
       </div>

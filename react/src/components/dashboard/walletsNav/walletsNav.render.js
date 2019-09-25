@@ -2,7 +2,7 @@ import React from 'react';
 import ReactTooltip from 'react-tooltip';
 import translate from '../../../translate/translate';
 import mainWindow, { staticVar } from '../../../util/mainWindow';
-import { isPbaasChain } from '../../../util/pbaasUtil'
+import { isPbaasChain } from '../../../util/pbaas/pbaasChainUtils'
 
 const WalletsNavWithWalletRender = function() {
   const _coin = this.props.ActiveCoin.coin;

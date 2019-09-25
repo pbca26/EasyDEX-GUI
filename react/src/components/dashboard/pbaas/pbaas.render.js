@@ -15,7 +15,6 @@ const PBaaSRender = function() {
   return (
     <div className={ 'full-height' }>
       <div
-        //className={ 'page-main page-main-pbaas navbar-collapse' }
         id="pbaas-dashboard">
         <PBaaSNav/>
         <div className={ this.isSectionActive(CONNECT) ? '' : 'hide' }>

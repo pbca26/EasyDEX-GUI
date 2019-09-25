@@ -157,9 +157,9 @@ const mapStateToProps = (state) => {
   return {
     Main: state.Main,
     PBaaSMain: {
-      activeSectionPbaas: state.PBaaSMain.activeSectionPbaas
+      activeSectionPbaas: state.PBaaSMain.activeSectionPbaas,
+      rootChainHeight: state.PBaaSMain.rootChainHeight
     },
-    CurrentHeight: state.ActiveCoin.progress.longestchain
   };
 };
 

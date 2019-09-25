@@ -5,7 +5,7 @@ import Spinner from '../spinner/spinner';
 import Config from '../../../config';
 import mainWindow, { staticVar } from '../../../util/mainWindow';
 import { isKomodoCoin } from 'agama-wallet-lib/src/coin-helpers';
-import { isPbaasChain } from '../../../util/pbaasUtil'
+import { isPbaasChain } from '../../../util/pbaas/pbaasChainUtils'
 
 const WalletsBalanceRender = function() {
   const _mode = this.props.ActiveCoin.mode;

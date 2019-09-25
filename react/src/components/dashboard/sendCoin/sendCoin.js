@@ -57,13 +57,13 @@ import { addressVersionCheck } from 'agama-wallet-lib/src/keys';
 import networks from 'agama-wallet-lib/src/bitcoinjs-networks';
 import kv from 'agama-wallet-lib/src/kv';
 import { encodeMemo } from '../../../util/zTxUtils';
-import { isPbaasChain, getChainStatus } from '../../../util/pbaasUtil';
+import { isPbaasChain, getChainStatus } from '../../../util/pbaas/pbaasChainUtils';
+import { PBAAS_ROOT_CHAIN } from '../../../util/pbaas/pbaasConstants'
 
 const { shell } = window.require('electron');
 const SPV_MAX_LOCAL_TIMESTAMP_DEVIATION = 300; // 5 min
 const FEE_EXCEEDS_DEFAULT_THRESHOLD = 5; // N fold increase
 const DEFAULT_ZTX_FEE = 0.0001;
-const PBAAS_ROOT_CHAIN = Config.verus.pbaasTestmode ? 'VRSCTEST' : 'VRSC'
 
 // TODO: - render z address trim
 
@@ -234,8 +234,24 @@ class SendCoin extends React.Component {
     } 
   }
 
-  resetPbaasState() {
-    this.setState({
+  /**
+   * Resets state to default, unless specified values are set to be something
+   * specific when state is reset
+   * @param {Object} updateValues Values that will be set when state is reset
+   */
+  resetState(updateValues = {}) {
+    const _defaultState = {
+      currentStep: 0,
+      addressType: 'public',
+      sendFrom: null,
+      sendFromAmount: 0,
+      sendTo: '',
+      amount: 0,
+      fee: 0,
+      addressSelectorOpen: false,
+      renderAddressDropdown: true,
+      subtractFee: false,
+      lastSendToResponse: null,
       sendOffChain: false,
       sendToChain: '',
       lastRecordedPrice: 0,
@@ -243,7 +259,9 @@ class SendCoin extends React.Component {
       sendVrscToken: false,
       connectedChain: null,
       connectedChainStatus: null
-    })
+    };
+
+    this.setState(Object.assign({}, _defaultState, updateValues))
   }
 
   //TODO: Finish this by using fetch function instead of hardcode
@@ -551,14 +569,15 @@ class SendCoin extends React.Component {
   componentWillReceiveProps(props) {
     const _coin = this.props.ActiveCoin.coin;
     const _mode = this.props.ActiveCoin.mode;
-
-    if (_coin !== props.ActiveCoin.coin &&
-        this.props.ActiveCoin.lastSendToResponse) {
-      Store.dispatch(clearLastSendToResponseState());
-    } else if (_coin !== props.ActiveCoin.coin) {
-      this.resetPbaasState()
+    const _zAddrStateUpdate = this.checkZAddressCount(props)
+    
+    if (_coin !== props.ActiveCoin.coin) {
+      this.resetState(_zAddrStateUpdate)
+    } else {
+      this.setState(_zAddrStateUpdate)
     }
-    this.checkZAddressCount(props);
+
+    if (this.props.ActiveCoin.lastSendToResponse) Store.dispatch(clearLastSendToResponseState())
 
     if (this.props.ActiveCoin.activeSection !== props.ActiveCoin.activeSection &&
         this.props.ActiveCoin.activeSection !== 'send') {
@@ -666,19 +685,6 @@ class SendCoin extends React.Component {
 
   checkZAddressCount(props) {
     const _addresses = this.props.ActiveCoin.addresses;
-    const _defaultState = {
-      currentStep: 0,
-      addressType: 'public',
-      sendFrom: null,
-      sendFromAmount: 0,
-      sendTo: '',
-      amount: 0,
-      fee: 0,
-      addressSelectorOpen: false,
-      renderAddressDropdown: true,
-      subtractFee: false,
-      lastSendToResponse: null,
-    };
     let updatedState;
 
     if (_addresses &&
@@ -699,11 +705,7 @@ class SendCoin extends React.Component {
       };
     }
 
-    if (this.state.coin !== props.ActiveCoin.coin) {
-      this.setState(Object.assign({}, _defaultState, updatedState));
-    } else {
-      this.setState(updatedState);
-    }
+    return updatedState
   }
 
   renderAddressByType(type, toggleType) {
@@ -927,17 +929,18 @@ class SendCoin extends React.Component {
   }
 
   updateInput(e) {
+    console.trace({name: e.target.name, value: e.target.value})
+    console.log(this.state.sendTo)
+
     this.setState({
       [e.target.name]: e.target.value,
-    });
-
-    if (this.props.ActiveCoin.mode === 'native') {
-      setTimeout(() => {
+    }, () => {
+      if (this.props.ActiveCoin.mode === 'native') {
         this.setState({
           renderAddressDropdown: this.state.sendTo && (this.state.sendTo.substring(0, 2) === 'zc' || this.state.sendTo.substring(0, 2) === 'zs') && (this.state.sendTo.length === 95 || this.state.sendTo.length === 78) ? true : this.state.renderAddressDropdown,
         });
-      }, 100);
-    }
+      }
+    });
   }
 
   fetchBTCFees() {

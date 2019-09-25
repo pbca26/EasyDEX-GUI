@@ -201,6 +201,9 @@ const mapStateToProps = (state) => {
       blurSensitiveData: state.Main.blurSensitiveData,
       newUpdateAvailable: state.Main.newUpdateAvailable,
     },
+    PBaaSMain: {
+      rootChainActive: state.PBaaSMain.rootChainActive
+    },
   };
 };
 

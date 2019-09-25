@@ -27,7 +27,7 @@ import {
 } from '../../../actions/actionCreators'
 import translate from '../../../translate/translate';
 import DoubleScrollbar from 'react-double-scrollbar';
-import { estimateReward } from '../pbaasUtils/chainData';
+import { estimateReward } from '../../../util/pbaas/pbaasTxUtils';
 import { 
   BOTTOM_BAR_DISPLAY_THRESHOLD,
   NATIVE_MODE,
@@ -289,7 +289,7 @@ class PBaaSDiscover extends React.Component {
 
   generateItemsListColumns() {
     const _chains = this.props.PBaaSMain.definedChains
-    const _currentHeight = this.props.CurrentHeight
+    const _currentHeight = this.props.PBaaSMain.rootChainHeight
 
     let columns = [{
       id: 'name',
@@ -369,9 +369,9 @@ const mapStateToProps = (state) => {
       activeSectionPbaas: state.PBaaSMain.activeSectionPbaas,
       showChainInfo: state.PBaaSMain.showChainInfo,
       showChainInfoChainIndex: state.PBaaSMain.showChainInfoChainIndex,
-      definedChains: state.PBaaSMain.definedChains
+      definedChains: state.PBaaSMain.definedChains,
+      rootChainHeight: state.PBaaSMain.rootChainHeight
     },
-    CurrentHeight: state.ActiveCoin.progress.longestchain
   }
 };
 

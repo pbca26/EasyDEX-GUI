@@ -692,6 +692,7 @@ const LANG_EN = {
     REMOVE: 'Remove',
     STOP: 'Stop',
     STOP_ALL: 'Stop all',
+    DETACH: 'Detach GUI & Daemon',
     SOFT_LOGOUT: 'Soft logout',
     COMPLETE_LOGOUT: 'Complete logout',
     GENERATE_SM: 'generate',
@@ -1078,6 +1079,7 @@ const LANG_EN = {
   TX_INFO: {
     ADDRESS: 'address',
     AMOUNT: 'amount',
+    RESERVE_AMOUNT: 'Reserve Amount',
     CATEGORY: 'category',
     CONFIRMATIONS: 'confirmations',
     YEAR: 'year',
@@ -1643,7 +1645,10 @@ const LANG_EN = {
     REFUND_ADDRESS: 'Refund Address',
     REFUND_ADDRESS_DESC: 'If this chain were to fail to launch, you would be refunded at this address.',
     RESERVE_AMOUNT: 'Reserve Amount',
-    RESERVE_TX_INFO: 'Reserve Transaction Info:'
+    RESERVE_TX_INFO: 'Reserve Transaction Info:',
+    OLD: 'old',
+    UNTIL_LAUNCH: 'until launch',
+    CONNECT_BEFORE_SEND: 'Press connect before sending.'
   }
 }
 export default Object.assign(LANG_EN, coins);

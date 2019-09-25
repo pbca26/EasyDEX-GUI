@@ -895,7 +895,7 @@ class WalletsData extends React.Component {
       return (
         <div className="padding-left-15">{ translate('INDEX.NO_DATA') }</div>
       );
-    } else if (this.state.itemsList === 'connection error') {
+    } else if (this.props.ActiveCoin.mode === 'spv' && this.state.itemsList === 'connection error') {
       return (
         <div className="padding-left-15">
           <div className="color-warning">
