@@ -17,7 +17,9 @@ export const decodeMemo = (memoEncoded) => {
   var hexes = memoEncoded.match(/.{1,4}/g) || [];
   var memoDecoded = "";
   for(j = 0; j<hexes.length; j++) {
-      memoDecoded += String.fromCharCode(parseInt(hexes[j], 16));
+    const charCode = parseInt(hexes[j], 16)
+
+    if (charCode) memoDecoded += String.fromCharCode(charCode)
   }
 
   return memoDecoded;
