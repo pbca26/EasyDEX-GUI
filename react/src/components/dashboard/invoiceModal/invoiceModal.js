@@ -10,6 +10,7 @@ import {
   AddressItemRender,
 } from './invoiceModal.render';
 import mainWindow, { staticVar } from '../../../util/mainWindow';
+import { isPbaasChain } from '../../../util/pbaas/pbaasChainUtils'
 
 class InvoiceModal extends React.Component {
   constructor() {
@@ -110,6 +111,7 @@ class InvoiceModal extends React.Component {
         if (type === 'private' ||
             (type === 'public' &&
             (_coin === 'KMD' ||
+            isPbaasChain(_coin, true) ||
              (staticVar.chainParams &&
               staticVar.chainParams[_coin] &&
               !staticVar.chainParams[_coin].ac_private)))) {
