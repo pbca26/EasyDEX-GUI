@@ -3,10 +3,8 @@ import {
   UPDATE_PBAAS_FORM_STATE,
   PBAAS_ACTIVE_CHAININFO_MODAL,
   UPDATE_DEFINED_CHAINS,
-  DASHBOARD_REMOVE_COIN,
-  DASHBOARD_ACTIVE_COIN_CHANGE,
-  SYNCING_NATIVE_MODE,
-  DASHBOARD_UPDATE
+  DASHBOARD_UPDATE,
+  GET_ACTIVE_COINS
 } from '../actions/storeType';
 import { CONNECT } from '../util/constants'
 import { PBAAS_ROOT_CHAIN } from '../util/pbaas/pbaasConstants'
@@ -44,15 +42,10 @@ export const PBaaSMain = (state = {
         showChainInfo: action.showChainInfo,
         showChainInfoChainIndex: action.showChainInfoChainIndex,
       };
-    case DASHBOARD_REMOVE_COIN:
+    case GET_ACTIVE_COINS:
       return{
         ...state,
-        rootChainActive: action.coin === PBAAS_ROOT_CHAIN ? false : state.rootChainActive,
-      };
-    case DASHBOARD_ACTIVE_COIN_CHANGE:
-      return{
-        ...state,
-        rootChainActive: action.coin === PBAAS_ROOT_CHAIN ? true : state.rootChainActive,
+        rootChainActive: action.coins && action.coins.native && action.coins.native.includes(PBAAS_ROOT_CHAIN) ? true : false,
       };
     case DASHBOARD_UPDATE:
       if (action.coin === PBAAS_ROOT_CHAIN) {
