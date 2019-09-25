@@ -11,11 +11,13 @@ import ReactTooltip from 'react-tooltip';
 import { getChainStatus } from '../../../util/pbaas/pbaasChainUtils'
 import Config from '../../../config'
 import { PBAAS_ROOT_CHAIN } from '../../../util/pbaas/pbaasConstants'
+import { blocksToTime } from '../../../util/blockMath'
 
 export const chainInfoTableRender = function(chain, currentHeight) {
   let _chain
   let _lastconfirmedheight
   let _status
+  let _age
 
   if (chain.chaindefinition) {
     _chain = chain.chaindefinition
@@ -25,6 +27,7 @@ export const chainInfoTableRender = function(chain, currentHeight) {
     _lastconfirmedheight = null
   }
 
+  _age = Number(_chain.startblock) - Number(currentHeight)
   _status = getChainStatus(
     currentHeight,
     _chain.startblock,
@@ -55,7 +58,7 @@ export const chainInfoTableRender = function(chain, currentHeight) {
             <tr>
               <td>{ translate('PBAAS.START_BLOCK') }</td>
               <td>
-                { _chain.startblock }
+                { `${_chain.startblock}${currentHeight && _status.state !== 'FAILED' ? ` (approx. ${blocksToTime(Math.abs(_age))} ${translate(`PBAAS.${_age < 0 ? 'OLD' : 'UNTIL_LAUNCH'}`)})` : ''}` }
               </td>
             </tr>
             <tr>
