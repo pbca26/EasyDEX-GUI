@@ -199,7 +199,7 @@ const pbaasSendFormRender = (self) => {
             className="icon fa-question-circle settings-help"
             data-html={ true }
             data-for="chainState"
-            data-tip={ translate(`PBAAS.${_chainStatus.state}_DESC`, _chainStatus.startblock) }></i>
+            data-tip={ translate(`PBAAS.${_chainStatus.state}_DESC`, _chainStatus.state === 'SYNCING' ? PBAAS_ROOT_CHAIN : _chainStatus.startblock) }></i>
           <ReactTooltip
             id="chainState"
             effect="solid"
