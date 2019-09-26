@@ -11,7 +11,7 @@ import {
   lastRewardHeaderRender,
   notaryRewardRender,
   chainDetailRender,
-  premineRender,
+  isReserveRender,
   statusRender,
   chainNameRender,
   ChainsListRender
@@ -306,11 +306,11 @@ class PBaaSDiscover extends React.Component {
       accessor: (chain) => statusRender.call(this, chain, _currentHeight),
     },
     {
-      id: 'premine',
-      Header: translate('PBAAS.PREMINE'),
-      Footer: translate('PBAAS.PREMINE'),
+      id: 'isreserve',
+      Header: translate('PBAAS.IS_RESERVE_CURRENCY_QUESTION'),
+      Footer: translate('PBAAS.IS_RESERVE_CURRENCY_QUESTION'),
       sortMethod: this.defaultSorting,
-      accessor: (chain) => premineRender.call(this, chain),
+      accessor: (chain) => isReserveRender.call(this, chain),
     },
     {
       id: 'lastnotarization',

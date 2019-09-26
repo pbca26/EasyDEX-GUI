@@ -4,6 +4,7 @@ import {
 } from 'agama-wallet-lib/src/coin-helpers';
 import translate from '../../../../translate/translate';
 import { isPbaasChain } from '../../../../util/pbaas/pbaasChainUtils'
+import { blocksToTime } from '../../../../util/blockMath'
 import Config from '../../../../config';
 import ReactTooltip from 'react-tooltip';
 import { fromSats } from 'agama-wallet-lib/src/utils';
@@ -198,7 +199,7 @@ const pbaasSendFormRender = (self) => {
             className="icon fa-question-circle settings-help"
             data-html={ true }
             data-for="chainState"
-            data-tip={ translate(`PBAAS.${_chainStatus.state}_DESC`, _chainStatus.startblock) }></i>
+            data-tip={ translate(`PBAAS.${_chainStatus.state}_DESC`, _chainStatus.state === 'SYNCING' ? PBAAS_ROOT_CHAIN : _chainStatus.startblock) }></i>
           <ReactTooltip
             id="chainState"
             effect="solid"
@@ -213,8 +214,8 @@ const pbaasSendFormRender = (self) => {
         <label
         className="col-lg-12 control-label form-group form-material"
         htmlFor="pbaasSendToChain">
-          { `${translate('PBAAS.LAUNCH_HEIGHT', PBAAS_ROOT_CHAIN)}: `}
-          { Math.abs(_chainStatus.age) }
+          { `${translate('PBAAS.START_BLOCK')}: `}
+          { `${Math.abs(self.state.connectedChain.startblock)} (approx. ${blocksToTime(Math.abs(_chainStatus.age))} ${translate('PBAAS.UNTIL_LAUNCH')})`}
         </label>
         {_isPreconvert && <label
         className="col-lg-12 control-label form-group form-material"
