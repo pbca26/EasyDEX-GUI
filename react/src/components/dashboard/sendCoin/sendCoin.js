@@ -928,9 +928,6 @@ class SendCoin extends React.Component {
   }
 
   updateInput(e) {
-    console.trace({name: e.target.name, value: e.target.value})
-    console.log(this.state.sendTo)
-
     this.setState({
       [e.target.name]: e.target.value,
     }, () => {
