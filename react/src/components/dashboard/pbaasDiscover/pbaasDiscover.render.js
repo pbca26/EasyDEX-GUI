@@ -163,10 +163,11 @@ export const chainDetailRender = function(chainIndex) {
   );
 };
 
-export const premineRender = function(chain) {
-  const premine = chain.chaindefinition.premine
+export const isReserveRender = function(chain) {
+  const _chain = chain.chaindefinition
+  const isReserve = Number(_chain.minpreconvert) > 0 || Number(_chain.maxpreconvert) > 0 || Number(_chain.initialcontribution) > 0
 
-  return (<span>{ Number(premine) > 0 ? translate('SETTINGS.YES') : translate('SETTINGS.NO') }</span>)
+  return (<span>{ isReserve ? translate('SETTINGS.YES') : translate('SETTINGS.NO') }</span>)
 }
 
 export const statusRender = function(chain, currentHeight) {

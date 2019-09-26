@@ -572,12 +572,11 @@ class SendCoin extends React.Component {
     const _zAddrStateUpdate = this.checkZAddressCount(props)
     
     if (_coin !== props.ActiveCoin.coin) {
+      if (this.props.ActiveCoin.lastSendToResponse) Store.dispatch(clearLastSendToResponseState())
       this.resetState(_zAddrStateUpdate)
     } else {
       this.setState(_zAddrStateUpdate)
     }
-
-    if (this.props.ActiveCoin.lastSendToResponse) Store.dispatch(clearLastSendToResponseState())
 
     if (this.props.ActiveCoin.activeSection !== props.ActiveCoin.activeSection &&
         this.props.ActiveCoin.activeSection !== 'send') {
@@ -929,9 +928,6 @@ class SendCoin extends React.Component {
   }
 
   updateInput(e) {
-    console.trace({name: e.target.name, value: e.target.value})
-    console.log(this.state.sendTo)
-
     this.setState({
       [e.target.name]: e.target.value,
     }, () => {
@@ -1288,6 +1284,11 @@ class SendCoin extends React.Component {
     const _mode = this.props.ActiveCoin.mode;
     const isAcPrivate = _mode === 'native' && _coin !== 'KMD' && staticVar.chainParams && staticVar.chainParams[_coin] && staticVar.chainParams[_coin].ac_private ? true : false;
     let valid = true;
+    const _isPreconvert = this.state.connectedChainStatus ? 
+                            (this.state.connectedChainStatus.state === 'FULLY_FUNDED' || 
+                            this.state.connectedChainStatus.state === 'PRE_CONVERT')
+                            :
+                            null
 
     // temp
     if (_mode === 'native') {
@@ -1470,7 +1471,7 @@ class SendCoin extends React.Component {
       const _balance = this.props.ActiveCoin.balance;
 
       if (this.state.addressType === 'public') {
-        if (this.state.sendFrom && this.state.sendTo) {
+        if (this.state.sendFrom && this.state.sendTo && !_isPreconvert) {
           if (
             (this.state.sendTo.substring(0, 2) === 'zc' || this.state.sendTo.substring(0, 2) === 'zs') && 
             this.state.sendTo.length > 36 &&
