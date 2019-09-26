@@ -52,7 +52,7 @@ export const getChainStatus = (currentHeight, activationHeight, minPreconvert, m
       labeltype = "success"
       chainStatus.openForSend = priceInReserve && priceInReserve > 0
     }
-  } else if (minPreconvert > 0) {
+  } else if (minPreconvert > 0 || maxPreconvert > 0) {
     if (initialSupply >= maxPreconvert) {
       chainStatus.state = 'FULLY_FUNDED'
       labeltype = "success"
