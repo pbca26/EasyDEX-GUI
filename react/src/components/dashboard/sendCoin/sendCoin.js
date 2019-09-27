@@ -551,11 +551,30 @@ class SendCoin extends React.Component {
   }
 
   componentWillMount() {
+    const _coin = this.props.ActiveCoin.coin;
+    const _mode = this.props.ActiveCoin.mode;
+
     document.addEventListener(
       'click',
       this.handleClickOutside,
       false
     );
+
+    this.fetchBTCFees(this.props.ActiveCoin);
+    this.fetchETHFees(this.props.ActiveCoin);
+
+    if (_mode === 'spv' &&
+        _coin === 'KMD') {
+      this._checkCurrentTimestamp();
+    }
+
+    if (_mode === 'spv' &&
+        !this.state.fee &&
+      _coin !== 'BTC') {
+      this.setState({
+        fee: fromSats(staticVar.spvFees[_coin]),
+      });
+    }
   }
 
   componentWillUnmount() {
@@ -574,28 +593,25 @@ class SendCoin extends React.Component {
     if (_coin !== props.ActiveCoin.coin) {
       if (this.props.ActiveCoin.lastSendToResponse) Store.dispatch(clearLastSendToResponseState())
       this.resetState(_zAddrStateUpdate)
-    } else {
-      this.setState(_zAddrStateUpdate)
-    }
-
-    if (this.props.ActiveCoin.activeSection !== props.ActiveCoin.activeSection &&
-        this.props.ActiveCoin.activeSection !== 'send') {
-      this.fetchBTCFees();
-      this.fetchETHFees();
 
       if (_mode === 'spv' &&
-          _coin === 'KMD') {
-        this._checkCurrentTimestamp();
-      }
-    }
-
-    if (_mode === 'spv' &&
         !this.state.fee &&
         _coin !== 'BTC') {
-      this.setState({
-        fee: fromSats(staticVar.spvFees[_coin]),
-      });
-    }
+        this.setState({
+          fee: fromSats(staticVar.spvFees[_coin]),
+        });
+      }
+
+      this.fetchBTCFees(props.ActiveCoin);
+      this.fetchETHFees(props.ActiveCoin);
+
+      if (this.props.ActiveCoin.mode === 'spv' &&
+          this.props.ActiveCoin.coin === 'KMD') {
+        this._checkCurrentTimestamp();
+      }
+    } else {
+      this.setState(_zAddrStateUpdate)
+    }    
 
     if (this.props.initState) {
       this.setState({
@@ -939,9 +955,9 @@ class SendCoin extends React.Component {
     });
   }
 
-  fetchBTCFees() {
-    if (this.props.ActiveCoin.mode === 'spv' &&
-        this.props.ActiveCoin.coin === 'BTC') {
+  fetchBTCFees(activeCoin) {
+    if (activeCoin.mode === 'spv' &&
+        activeCoin.coin === 'BTC') {
       apiGetRemoteBTCFees()
       .then((res) => {
         if (res.msg === 'success') {
@@ -974,8 +990,8 @@ class SendCoin extends React.Component {
     }
   }
 
-  fetchETHFees() {
-    if (this.props.ActiveCoin.mode === 'eth') {
+  fetchETHFees(activeCoin) {
+    if (activeCoin.mode === 'eth') {
       apiEthereumGasPrice()
       .then((res) => {
         if (res.msg === 'success') {
@@ -1006,8 +1022,8 @@ class SendCoin extends React.Component {
     }
 
     if (step === 0) {
-      this.fetchBTCFees();
-      this.fetchETHFees();
+      this.fetchBTCFees(this.props.ActiveCoin);
+      this.fetchETHFees(this.props.ActiveCoin);
       
       if (back) {
         this.setState({
