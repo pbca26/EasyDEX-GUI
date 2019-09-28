@@ -31,12 +31,14 @@ class WalletsNav extends React.Component {
 
   checkTotalBalance() {
     const _mode = this.props.ActiveCoin.mode;
-    let _balance = '0';
+    let _balance = 0;
 
     if (this.props.ActiveCoin.balance &&
         this.props.ActiveCoin.balance.total &&
         _mode === 'native') {
-      _balance = this.props.ActiveCoin.balance.total;
+      _balance = Number(this.props.ActiveCoin.balance.total);
+
+      if (this.props.ActiveCoin.balance.reserve) _balance += Number(this.props.ActiveCoin.balance.reserve)
     } else if (
       (_mode === 'spv' || _mode === 'eth') &&
       this.props.ActiveCoin.balance.balance
