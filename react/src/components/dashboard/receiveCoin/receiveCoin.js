@@ -254,11 +254,13 @@ class ReceiveCoin extends React.Component {
   }
 
   checkTotalBalance() {
-    let _balance = '0';
+    let _balance = 0;
 
     if (this.props.balance &&
         this.props.balance.total) {
-      _balance = this.props.balance.total;
+      _balance = Number(this.props.balance.total);
+
+      if (this.props.balance.reserve) _balance += Number(this.props.balance.reserve)
     }
 
     return _balance;
