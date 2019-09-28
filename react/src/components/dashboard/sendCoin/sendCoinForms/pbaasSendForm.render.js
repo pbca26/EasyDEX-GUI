@@ -15,23 +15,23 @@ const pbaasSendFormRender = (self) => {
   const _mode = self.props.ActiveCoin.mode;
   const _isReserveChain = isPbaasChain(self.props.ActiveCoin.coin)
   const _chainStatus = self.state.connectedChainStatus
-  const _isPreconvert = _chainStatus ? 
-                            (_chainStatus.state === 'FULLY_FUNDED' || 
+  const _isPreconvert = _chainStatus ?
+                            (_chainStatus.state === 'FULLY_FUNDED' ||
                             _chainStatus.state === 'PRE_CONVERT')
                             :
                             null
-  const _price = _coin === PBAAS_ROOT_CHAIN ? 
-    self.state.connectedChain ? 
-      (self.state.connectedChain.hasOwnProperty('bestcurrencystate') ? 
-        self.state.connectedChain.bestcurrencystate.priceinreserve 
-        : 
+  const _price = _coin === PBAAS_ROOT_CHAIN ?
+    self.state.connectedChain ?
+      (self.state.connectedChain.hasOwnProperty('bestcurrencystate') ?
+        self.state.connectedChain.bestcurrencystate.priceinreserve
+        :
         0)
-      : 
+      :
       0
     :
     self.props.ActiveCoin.walletinfo.price_in_reserve
   const _launchfee = self.state.connectedChain ? self.state.connectedChain.launchfee : 0
-  
+
   return (
   <div className="row">
     <div className="col-xlg-12 form-group form-material">
@@ -67,7 +67,7 @@ const pbaasSendFormRender = (self) => {
         value={ self.state.sendTo }
         disabled={ self.props.initState }
         id="kmdWalletSendTo"
-        placeholder={ self.state.sendOffChain || self.state.sendVrscToken || self.state.convertAmount ? 
+        placeholder={ self.state.sendOffChain || self.state.sendVrscToken || self.state.convertAmount ?
                       translate('SEND.ENTER_T_ADDR')
                         :
                       translate('SEND.ENTER_T_OR_Z_ADDR') }
@@ -122,7 +122,7 @@ const pbaasSendFormRender = (self) => {
         <label
           className="col-lg-12 control-label form-group form-material"
           htmlFor="pbaasSendToChain">
-          { translate('SEND.RECENT_PRICE_X', 
+          { translate('SEND.RECENT_PRICE_X',
           `${self.state.connectedChain && !_isReserveChain ? 
             (self.state.connectedChain.hasOwnProperty('bestcurrencystate') ? 
               self.state.connectedChain.bestcurrencystate.priceinreserve 
@@ -142,20 +142,20 @@ const pbaasSendFormRender = (self) => {
             { `${translate('PBAAS.RETURN_BASED_ON_RECENT_PRICE')}: `}
             { self.state.amount && !isNaN(Number(self.state.amount)) && Number(self.state.amount) > 0 ?
             ((Number(self.state.amount) - (Number(self.state.amount) * (_isPreconvert ? fromSats(_launchfee) : 0))) * (
-              _coin === PBAAS_ROOT_CHAIN || self.state.sendVrscToken ? 
-                _price > 0 ? 
-                  _price 
-                  : 
+              _coin === PBAAS_ROOT_CHAIN || self.state.sendVrscToken ?
+                _price > 0 ?
+                    1 / _price
+                  :
                   0
                 :
-                1/_price)).toFixed(8)
-            : 
+                _price)).toFixed(8)
+            :
             '-'}
             {' '}
-            { _coin === PBAAS_ROOT_CHAIN ? 
-              self.state.connectedChain.name 
-              : 
-              self.state.sendVrscToken ? 
+            { _coin === PBAAS_ROOT_CHAIN ?
+              self.state.connectedChain.name
+              :
+              self.state.sendVrscToken ?
                 _coin
                 :
                 'Verus Reserve Token' }
@@ -168,7 +168,7 @@ const pbaasSendFormRender = (self) => {
               <ReactTooltip
                 id="estReturn"
                 effect="solid"
-                className="text-left" 
+                className="text-left"
                 place="right" />
             </span>
           </label>
@@ -190,7 +190,7 @@ const pbaasSendFormRender = (self) => {
             <ReactTooltip
               id="cantSendWarning"
               effect="solid"
-              className="text-left" 
+              className="text-left"
               place="right" />
           </span>
         }
@@ -203,13 +203,13 @@ const pbaasSendFormRender = (self) => {
           <ReactTooltip
             id="chainState"
             effect="solid"
-            className="text-left" 
+            className="text-left"
             place="right" />
         </span>
       </label>
     }
     { _chainStatus &&
-    (_chainStatus.state === 'PRE_CONVERT' || _chainStatus.state === 'PRE_LAUNCH' || _chainStatus.state === 'FULLY_FUNDED') && 
+    (_chainStatus.state === 'PRE_CONVERT' || _chainStatus.state === 'PRE_LAUNCH' || _chainStatus.state === 'FULLY_FUNDED') &&
       <React.Fragment>
         <label
         className="col-lg-12 control-label form-group form-material"
@@ -231,7 +231,7 @@ const pbaasSendFormRender = (self) => {
             <ReactTooltip
               id="launchFeeDesc"
               effect="solid"
-              className="text-left" 
+              className="text-left"
               place="right" />
           </span>
         </label>}
@@ -262,7 +262,7 @@ const pbaasSendFormRender = (self) => {
         placeholder={ translate('SEND.ENTER_AMOUNT') }
         autoComplete="off" />
       { (
-        (self.state.sendOffChain && !_isReserveChain && self.state.connectedChain && self.state.connectedChain.name) 
+        (self.state.sendOffChain && !_isReserveChain && self.state.connectedChain && self.state.connectedChain.name)
         || (_isReserveChain && !self.state.sendOffChain)) && !_isPreconvert &&
         <span className="pointer">
           <label className="switch margin-top-10">
@@ -277,23 +277,23 @@ const pbaasSendFormRender = (self) => {
           <div
           className="toggle-label"
           onClick={ () => self.toggleConvertAmount() }>
-          { translate('SEND.CONVERT_AMOUNT_TO_X', 
-            _isReserveChain ? 
-              (self.state.sendVrscToken ? 
+          { translate('SEND.CONVERT_AMOUNT_TO_X',
+            _isReserveChain ?
+              (self.state.sendVrscToken ?
                 self.props.ActiveCoin.coin
                   :
                 'Verus Reserve Token')
-              : 
+              :
             (self.state.connectedChain && self.state.connectedChain.name ? self.state.connectedChain.name : '')
           ) }
           </div>
         </span>
       }
     </div>
-    { (self.props.ActiveCoin.coin === 'VRSC' || 
+    { (self.props.ActiveCoin.coin === 'VRSC' ||
       self.props.ActiveCoin.coin === 'VRSCTEST' ||
-      _isReserveChain) && 
-      (self.state.sendTo.length === 95 || self.state.sendTo.length === 78) && 
+      _isReserveChain) &&
+      (self.state.sendTo.length === 95 || self.state.sendTo.length === 78) &&
       !self.state.sendOffChain &&
       <div className="col-lg-12 form-group form-material">
         <label
@@ -348,14 +348,14 @@ const pbaasSendFormRender = (self) => {
       onClick={ self.props.renderFormOnly ? self.handleSubmit : () => self.changeSendCoinStep(1) }
       disabled={!self.state.sendTo ||
       !self.state.amount ||
-      (self.props.ActiveCoin && self.props.ActiveCoin.balance && 
+      (self.props.ActiveCoin && self.props.ActiveCoin.balance &&
         self.props.ActiveCoin.balance.interest > 0 && !self.state.donateInterest) ||
       (!_isReserveChain && self.state.sendOffChain && !self.state.connectedChain) ||
       self.state.loading}>
-      { (self.state.convertAmount ? 
-        translate('SEND.CONVERT_AND_SEND') 
-          : 
-        translate('SEND.SEND')) } { self.state.amount } { self.state.sendVrscToken ? 'VRSC Token' : _coin } { 
+      { (self.state.convertAmount ?
+        translate('SEND.CONVERT_AND_SEND')
+          :
+        translate('SEND.SEND')) } { self.state.amount } { self.state.sendVrscToken ? 'VRSC Token' : _coin } {
           self.state.sendOffChain && self.state.connectedChain && self.state.connectedChain.name ? translate('SEND.TO_X_CHAIN', self.state.connectedChain.name) : ''}
     </button>
     </div>
