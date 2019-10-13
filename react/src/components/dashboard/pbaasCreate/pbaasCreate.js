@@ -525,17 +525,6 @@ class PBaaSCreate extends React.Component {
       payload.premine = toSats(Number(this.state.premineAmount))
     }
 
-    if (this.state.isReserveCurrency) {
-      payload.initialcontribution = toSats(Number(this.state.initialContribution))
-      payload.conversion = toSats(Number(this.state.conversionRate))
-      
-      if (this.state.publicPreconvert) {
-        payload.minpreconvert = toSats(Number(this.state.minPreconvert))
-        payload.maxpreconvert = toSats(Number(this.state.maxPreconvert))
-        payload.launchfee = toSats(Number(this.state.launchfee) / 100)
-      }
-    }
-
     payload.eras = this.state.rewardEras.map((rewardEra, index) => {
       let returnObj = {
         reward: toSats(Number(rewardEra.initReward)),
@@ -553,6 +542,20 @@ class PBaaSCreate extends React.Component {
       
       return returnObj
     })
+
+    if (this.state.isReserveCurrency) {
+      payload.initialcontribution = toSats(Number(this.state.initialContribution))
+      payload.conversion = toSats(Number(this.state.conversionRate))
+      if (payload.eras && Array.isArray(payload.eras) && payload.eras.length > 0) {
+        payload.eras[0].eraoptions = 1
+      }
+      
+      if (this.state.publicPreconvert) {
+        payload.minpreconvert = toSats(Number(this.state.minPreconvert))
+        payload.maxpreconvert = toSats(Number(this.state.maxPreconvert))
+        payload.launchfee = toSats(Number(this.state.launchfee) / 100)
+      }
+    }
 
     payload.notarizationreward = toSats(Number(this.state.initCost))
     payload.billingperiod = Number(this.state.billingPeriod)
