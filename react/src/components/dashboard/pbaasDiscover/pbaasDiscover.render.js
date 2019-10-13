@@ -165,7 +165,7 @@ export const chainDetailRender = function(chainIndex) {
 
 export const isReserveRender = function(chain) {
   const _chain = chain.chaindefinition
-  const isReserve = Number(_chain.minpreconvert) > 0 || Number(_chain.maxpreconvert) > 0 || Number(_chain.initialcontribution) > 0
+  const isReserve = _chain.eras && Array.isArray(_chain.eras) && _chain.eras.length > 0 ? _chain.eras[0].eraoptions & 1 : false
 
   return (<span>{ isReserve ? translate('SETTINGS.YES') : translate('SETTINGS.NO') }</span>)
 }
