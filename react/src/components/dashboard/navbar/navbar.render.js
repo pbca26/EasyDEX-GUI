@@ -66,7 +66,7 @@ const NavbarRender = function() {
               </li>
             }
             { this.props.PBaaSMain.rootChainActive &&
-              <li className={ 'nav-top-menu' + (this.isSectionActive('pbaas') ? ' active' : '') }>
+              <li className={ 'nav-top-menu hide' + (this.isSectionActive('pbaas') ? ' active' : '') }>
                 <a onClick={ () => this.dashboardChangeSection('pbaas') }>
                   <i className="site-menu-icon"></i> PBaaS
                 </a>

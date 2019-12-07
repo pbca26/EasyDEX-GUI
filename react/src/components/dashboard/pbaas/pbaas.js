@@ -15,7 +15,7 @@ class PBaaS extends React.Component {
   }
 
   isSectionActive(section) {
-    return this.props.PBaaSMain.activeSectionPbaas === section;
+    return false //this.props.PBaaSMain.activeSectionPbaas === section;
   }
 
   render() {

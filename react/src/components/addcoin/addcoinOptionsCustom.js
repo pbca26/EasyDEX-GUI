@@ -7,7 +7,7 @@ const addCoinOptionsCustom = () => {
     icon: 'btc/vrsc',
     value: 'VRSC|native|spv',
   }]
-
+/*
   if (Config.verus.enableVrsctest) {
     coinOptions.push({
       label: 'Verus Testnet (VRSCTEST)',
@@ -26,7 +26,7 @@ const addCoinOptionsCustom = () => {
         }
       ))
     }
-  }
+  }*/
 
   return coinOptions;
 }

@@ -37,7 +37,6 @@ const kmdexplorer = {
   CCL: 'https://ccl.kmdexplorer.io',
   PIRATE: 'https://pirate.kmdexplorer.io',
   DION: 'https://explorer.dionpay.com',
-  K64: 'http://explorer.komodore64.com',
 };
 
 export default kmdexplorer;

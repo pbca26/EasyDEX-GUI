@@ -251,10 +251,6 @@ const LoginRender = function() {
                           label: 'pirate',
                         },
                         {
-                          value: 'k64',
-                          label: 'k64'
-                        },
-                        {
                           value: 'mnz',
                           label: 'mnz',
                         },
@@ -283,7 +279,7 @@ const LoginRender = function() {
                     { translate('INDEX.SPV_MODE') }
                     <i
                       className="icon fa-question-circle login-help"
-                      data-tip={ 
+                      data-tip={
                         translate('LOGIN.SPV_MODE_DESC_P1') +
                         ` <u>${ translate('LOGIN.SPV_MODE_DESC_P2') }</u> ` +
                         translate('LOGIN.SPV_MODE_DESC_P3') +
@@ -319,10 +315,6 @@ const LoginRender = function() {
                       {
                         value: 'zec',
                         label: 'zec',
-                      },
-                      {
-                        value: 'k64',
-                        label: 'k64'
                       },
                       {
                         value: 'chips',
@@ -495,7 +487,7 @@ const LoginRender = function() {
                         </span>
                         <i
                           className="icon fa-question-circle login-help first"
-                          data-tip={ 
+                          data-tip={
                             translate('LOGIN.SEED_ENCRYPT_KEY_DESC_P1') +
                             '<br />' +
                             translate('LOGIN.SEED_ENCRYPT_KEY_DESC_P2')

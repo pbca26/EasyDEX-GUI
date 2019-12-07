@@ -53,7 +53,6 @@ const coins = {
     ZEXO: 'Zaddex',
     SPLTEST: 'Sapling Test Chain',
     LUMBER: 'Lumberscout',
-    K64: 'Komodore64',
     RFOX: 'Redfox Labs',
     HUSH: 'HUSH',
     LABS: 'LABS',
