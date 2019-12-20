@@ -2,30 +2,27 @@ import React from 'react';
 import { connect } from 'react-redux';
 import {
   copyCoinAddress,
-  toggleSendCoinForm,
-  toggleReceiveCoinForm,
-  toggleSendReceiveCoinForms,
   toggleDashboardActiveSection,
   getNativeNettotals,
   getNativePeers,
 } from '../../../actions/actionCreators';
 import Store from '../../../store';
 import Config from '../../../config';
-import {
-  WalletsNavNoWalletRender,
-  WalletsNavWithWalletRender,
-} from './walletsNav.render';
+import WalletsNavWithWalletRender from './walletsNav.render';
 
 const NET_INFO_INTERVAL = 10000;
 
 class WalletsNav extends React.Component {
   constructor() {
     super();
-    this.toggleSendReceiveCoinForms = this.toggleSendReceiveCoinForms.bind(this);
     this.toggleNativeWalletInfo = this.toggleNativeWalletInfo.bind(this);
-    this.toggleNativeWalletTransactions = this.toggleNativeWalletTransactions.bind(this);
     this.checkTotalBalance = this.checkTotalBalance.bind(this);
     this.netInfoInterval = null;
+    this.DEFAULT = 'default'
+    this.SEND = 'send',
+    this.RECEIVE = 'receive'
+    this.SETTINGS = 'settings'
+    this.CONVERT = 'convert'
   }
 
   copyMyAddress(address) {
@@ -34,14 +31,16 @@ class WalletsNav extends React.Component {
 
   checkTotalBalance() {
     const _mode = this.props.ActiveCoin.mode;
-    let _balance = '0';
+    let _balance = 0;
 
     if (this.props.ActiveCoin.balance &&
         this.props.ActiveCoin.balance.total &&
         _mode === 'native') {
-      _balance = this.props.ActiveCoin.balance.total;
+      _balance = Number(this.props.ActiveCoin.balance.total);
+
+      if (this.props.ActiveCoin.balance.reserve) _balance += Number(this.props.ActiveCoin.balance.reserve)
     } else if (
-      _mode === 'spv' &&
+      (_mode === 'spv' || _mode === 'eth') &&
       this.props.ActiveCoin.balance.balance
     ) {
       _balance = this.props.ActiveCoin.balance.balance;
@@ -59,7 +58,8 @@ class WalletsNav extends React.Component {
   }
 
   toggleNativeWalletInfo() {
-    if (this.props.ActiveCoin.activeSection !== 'settings') {
+    if (this.props.ActiveCoin.activeSection !== 'settings' &&
+        this.props.ActiveCoin.mode === 'native') {
       Store.dispatch(getNativePeers(this.props.ActiveCoin.coin));
       Store.dispatch(getNativeNettotals(this.props.ActiveCoin.coin));
 
@@ -72,34 +72,13 @@ class WalletsNav extends React.Component {
     Store.dispatch(toggleDashboardActiveSection('settings'));
   }
 
-  toggleNativeWalletTransactions() {
-    Store.dispatch(toggleDashboardActiveSection('default'));
-  }
-
-  // TODO: merge toggle func into one
-  toggleSendReceiveCoinForms() {
+  toggleCoinForm(coinForm) {
     Store.dispatch(
       toggleDashboardActiveSection(
-        this.props.ActiveCoin.activeSection === 'settings' ? 'default' : 'settings'
+        this.props.ActiveCoin.activeSection === coinForm ? this.DEFAULT : coinForm
       )
     );
-  }
-
-  toggleSendCoinForm(display) {
-    Store.dispatch(
-      toggleDashboardActiveSection(
-        this.props.ActiveCoin.activeSection === 'send' ? 'default' : 'send'
-      )
-    );
-  }
-
-  toggleReceiveCoinForm(display) {
-    Store.dispatch(
-      toggleDashboardActiveSection(
-        this.props.ActiveCoin.activeSection === 'receive' ? 'default' : 'receive'
-      )
-    );
-  }
+  } 
 
   render() {
     if (this.props &&
@@ -124,7 +103,6 @@ const mapStateToProps = (state) => {
       activeAddress: state.ActiveCoin.activeAddress,
     },
     Dashboard: state.Dashboard,
-    nativeOnly: Config.iguanaLessMode,
   };
 };
 

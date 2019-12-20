@@ -1,5 +1,6 @@
 import 'whatwg-fetch';
 import 'bluebird';
+import mainWindow from '../util/mainWindow';
 
 import translate from '../translate/translate';
 import {
@@ -31,6 +32,20 @@ import {
   DISPLAY_ZCASH_PARAMS_FETCH,
   DASHBOARD_REMOVE_COIN,
   DISPLAY_NOTARY_ELECTIONS_MODAL,
+  BLUR_SENSITIVE_DATA,
+  DASHBOARD_ACTIVE_EXCHANGES_ORDER_MODAL,
+  DASHBOARD_EXCHANGES_TOS_MODAL,
+  DASHBOARD_EXCHANGES_SUPPORTED_COINS_MODAL,
+  CHANGE_PBAAS_ACTIVE_SECTION,
+  UPDATE_PBAAS_FORM_STATE,
+  UPDATE_DEFINED_CHAINS,
+  PBAAS_ACTIVE_CHAININFO_MODAL,
+  CHANGE_PBAAS_CONVERT_ACTIVE_SECTION,
+  UPDATE_PBAAS_QUICK_CONVERT_FORM_STATE,
+  UPDATE_PBAAS_CC_FORM_STATE,
+  UPDATE_MINING_INFO,
+  TOGGLE_MINING_OPTIONS,
+  DASHBOARD_SET_COIN_TILE_ORDER
 } from './storeType';
 
 export * from './actions/nativeSyncInfo';
@@ -55,6 +70,14 @@ export * from './actions/tools';
 export * from './actions/prices';
 export * from './actions/elections';
 export * from './actions/pin';
+export * from './actions/csv';
+export * from './actions/addressBook';
+export * from './actions/dice';
+export * from './actions/eth';
+export * from './actions/exchanges';
+export * from './actions/nativeMining';
+export * from './actions/nativePbaasChain';
+export * from './actions/nativePbaasSend';
 
 export const changeActiveAddress = (address) => {
   return {
@@ -74,7 +97,7 @@ export const toggleDashboardTxInfoModal = (display, txIndex) => {
   return {
     type: DASHBOARD_ACTIVE_TXINFO_MODAL,
     showTransactionInfo: display,
-    showTransactionInfoTxIndex: txIndex,
+    showTransactionInfoTxIndex: !display ? null : txIndex,
   }
 }
 
@@ -83,28 +106,6 @@ export const syncingNativeModeState = (display, json) => {
     type: SYNCING_NATIVE_MODE,
     syncingNativeMode: display,
     progress: json,
-  }
-}
-
-export const toggleSendCoinFormState = (display) => {
-  return {
-    type: DASHBOARD_ACTIVE_COIN_SEND_FORM,
-    send: display,
-  }
-}
-
-export const toggleReceiveCoinFormState = (display) => {
-  return {
-    type: DASHBOARD_ACTIVE_COIN_RECEIVE_FORM,
-    receive: display,
-  }
-}
-
-export const toggleSendReceiveCoinFormsState = () => {
-  return {
-    type: DASHBOARD_ACTIVE_COIN_RESET_FORMS,
-    send: false,
-    receive: false,
   }
 }
 
@@ -150,24 +151,6 @@ export const getMainAddressState = (json) => {
   }
 }
 
-export const toggleSendCoinForm = (display) => {
-  return dispatch => {
-    dispatch(toggleSendCoinFormState(display));
-  }
-}
-
-export const toggleReceiveCoinForm = (display) => {
-  return dispatch => {
-    dispatch(toggleReceiveCoinFormState(display));
-  }
-}
-
-export const toggleSendReceiveCoinForms = () => {
-  return dispatch => {
-    dispatch(toggleSendReceiveCoinFormsState());
-  }
-}
-
 export const dashboardChangeSectionState = (sectionName) => {
   return {
     type: DASHBOARD_SECTION_CHANGE,
@@ -191,6 +174,8 @@ export const dashboardChangeActiveCoinState = (coin, mode, skipCoinsArrayUpdate)
 }
 
 export const dashboardChangeActiveCoin = (coin, mode, skipCoinsArrayUpdate) => {
+  mainWindow.activeCoin = coin;
+
   return dispatch => {
     dispatch(dashboardChangeActiveCoinState(coin, mode, skipCoinsArrayUpdate));
   }
@@ -212,9 +197,16 @@ export const getNativeTxHistoryState = (json) => {
   if (json &&
       json.error) {
     json = null;
-  } else if (json && json.result && json.result.length) {
+  } else if (
+    json &&
+    json.result &&
+    json.result.length
+  ) {
     json = json.result;
-  } else if (!json || (!json.result || !json.result.length)) {
+  } else if (
+    !json ||
+    (!json.result || !json.result.length)
+  ) {
     json = 'no data';
   }
 
@@ -265,7 +257,7 @@ export const toggleClaimInterestModal = (display) => {
 export const getPinList = (pinList) => {
   return {
     type: GET_PIN_LIST,
-    pinList: pinList,
+    pinList,
   }
 }
 
@@ -308,5 +300,105 @@ export const toggleNotaryElectionsModal = (display) => {
   return {
     type: DISPLAY_NOTARY_ELECTIONS_MODAL,
     displayNotaryElectionsModal: display,
+  }
+}
+
+export const toggleBlurSensitiveData = (display) => {
+  return {
+    type: BLUR_SENSITIVE_DATA,
+    blurSensitiveData: display,
+  }
+}
+
+export const toggleExchangesOrderInfoModal = (orderId) => {
+  return {
+    type: DASHBOARD_ACTIVE_EXCHANGES_ORDER_MODAL,
+    showExchangesOrderInfoId: orderId,
+  }
+}
+
+export const toggleExchangesTOSModal = (display) => {
+  return {
+    type: DASHBOARD_EXCHANGES_TOS_MODAL,
+    display,
+  }
+}
+
+export const toggleExchangesSupportedCoinsModal = (display) => {
+  return {
+    type: DASHBOARD_EXCHANGES_SUPPORTED_COINS_MODAL,
+    display,
+  }
+};
+
+export const pbaasChangeSectionState = (sectionName) => {
+  return {
+    type: CHANGE_PBAAS_ACTIVE_SECTION,
+    activeSectionPbaas: sectionName,
+  }
+}
+
+export const updatePbaasFormState = (state) => {
+  return {
+    type: UPDATE_PBAAS_FORM_STATE,
+    formState: state
+  }
+}
+
+export const updatePbaasDefinedChains = (definedChains) => {
+  return {
+    type: UPDATE_DEFINED_CHAINS,
+    definedChains: definedChains
+  }
+}
+
+export const pbaasConvertChangeSectionState = (sectionName) => {
+  return {
+    type: CHANGE_PBAAS_CONVERT_ACTIVE_SECTION,
+    activeSection: sectionName
+  }
+}
+
+export const updatePbaasConversionCenterFormState = (state) => {
+  return {
+    type: UPDATE_PBAAS_QUICK_CONVERT_FORM_STATE,
+    quickFormState: state
+  }
+}
+
+export const updatePbaasCCFormState = (state) => {
+  return {
+    type: UPDATE_PBAAS_CC_FORM_STATE,
+    conversionControlFormState: state
+  }
+}
+
+export const updateMiningInfo = (coin, miningInfo) => {
+  return {
+    type: UPDATE_MINING_INFO,
+    coin: coin,
+    miningInfo: miningInfo
+  }
+}
+
+export const toggleMiningOptions = (coin) => {
+  return {
+    type: TOGGLE_MINING_OPTIONS,
+    coin: coin,
+  }
+}
+
+export const togglePbaasChainInfoModal = (display, txIndex) => {
+  return {
+    type: PBAAS_ACTIVE_CHAININFO_MODAL,
+    showChainInfo: display,
+    showChainInfoChainIndex: !display ? null : txIndex,
+  }
+}
+
+export const setCoinTileOrder = (coinTileOrder) => {
+  return {
+    type: DASHBOARD_SET_COIN_TILE_ORDER,
+    coinTileOrder: coinTileOrder
   }
 }

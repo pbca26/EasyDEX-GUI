@@ -1,4 +1,6 @@
-export const LANG_DE = {
+import coins from './coins';
+
+const LANG_DE = {
   'WALLETS_INFO': {
     'ADDRESS': 'Adresse',
     'ADDRESS_LOCAL': 'Adresse lokal',
@@ -570,6 +572,7 @@ export const LANG_DE = {
   },
   'IAPI': {
     'PUBLIC_SM': 'öffentlich',
+    'PRIVATE_SM': 'privat',
     'CON_STATUS': 'Verbindungsstatus'
   },
   'KMD_NATIVE': {
@@ -782,26 +785,6 @@ export const LANG_DE = {
     'TRY': 'Türkische Lira (TRY)',
     'USD': 'US-Dollar (USD)'
   },
-  'ASSETCHAINS': {
-    'BET': 'BET (BET)',
-    'BOTS': 'BOTS (BOTS)',
-    'CEAL': 'CEAL NET (CEAL)',
-    'COQUI': 'COQUI (COQUI)',
-    'CRYPTO': 'CRYPTO (CRYPTO)',
-    'HODL': 'HODL (HODL)',
-    'DEX': 'DEX (DEX)',
-    'JUMBLR': 'JUMBLR (JUMBLR)',
-    'KV': 'KV (KV)',
-    'MGW': 'MultiGateway (MGW)',
-    'MVP': 'MVP Lineup (MVP)',
-    'MNZ': 'Monaize (MNZ)',
-    'PANGEA': 'PANGEA (PANGEA)',
-    'REVS': 'REVS (REVS)',
-    'MSHARK': 'MSHARK (MSHARK)',
-    'MESH': 'SpaceMesh (MESH)',
-    'SUPERNET': 'SUPERNET (SUPERNET)',
-    'WLC': 'WIRELESS (WIRELESS)'
-  },
   'DEX': {
     'GEN_NEW_PASSPHRASE': 'Neue Passphrase erstellen',
     'LOGIN': 'Anmelden',
@@ -812,4 +795,6 @@ export const LANG_DE = {
     'ELECTRUM_MODE': 'Electrum-Modus',
     'NATIVE_MODE': 'Nativer Modus'
   }
-}
+};
+
+export default Object.assign(LANG_DE, coins);

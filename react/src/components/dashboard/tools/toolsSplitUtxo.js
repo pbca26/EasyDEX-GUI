@@ -2,23 +2,29 @@ import React from 'react';
 import translate from '../../../translate/translate';
 import addCoinOptionsCrypto from '../../addcoin/addcoinOptionsCrypto';
 import addCoinOptionsAC from '../../addcoin/addcoinOptionsAC';
+import addCoinOptionsCustom from '../../addcoin/addcoinOptionsCustom';
 import Select from 'react-select';
 import {
   triggerToaster,
-  shepherdToolsBalance,
-  shepherdToolsBuildUnsigned,
-  shepherdToolsPushTx,
-  shepherdToolsSeedToWif,
-  shepherdToolsWifToKP,
-  shepherdElectrumListunspent,
-  shepherdCliPromise,
-  shepherdElectrumSplitUtxoPromise,
+  apiToolsBalance,
+  apiToolsBuildUnsigned,
+  apiToolsPushTx,
+  apiToolsSeedToWif,
+  apiToolsWifToKP,
+  apiElectrumListunspent,
+  apiCliPromise,
+  apiElectrumSplitUtxoPromise,
+  apiElectrumPushTx,
 } from '../../../actions/actionCreators';
 import Store from '../../../store';
-import { isKomodoCoin } from '../../../util/coinHelper';
 import devlog from '../../../util/devlog';
+import {
+  isKomodoCoin,
+  explorerList,
+} from 'agama-wallet-lib/src/coin-helpers';
+import { toSats } from 'agama-wallet-lib/src/utils';
 
-const shell = window.require('electron').shell;
+const { shell } = window.require('electron');
 
 class ToolsSplitUTXO extends React.Component {
   constructor() {
@@ -36,6 +42,8 @@ class ToolsSplitUTXO extends React.Component {
       utxoSplitPushResult: null,
       utxoSplitShowUtxoList: false,
       splitUtxoApproximateVal: null,
+      isNative: false,
+      singleModeOnly: false,
     };
     this.updateInput = this.updateInput.bind(this);
     this.updateSelectedCoin = this.updateSelectedCoin.bind(this);
@@ -43,6 +51,15 @@ class ToolsSplitUTXO extends React.Component {
     this.splitUtxo = this.splitUtxo.bind(this);
     this.toggleSplitUtxoList = this.toggleSplitUtxoList.bind(this);
     this.splitUtxoApproximate = this.splitUtxoApproximate.bind(this);
+    this.toggleIsNative = this.toggleIsNative.bind(this);
+    this._getUtxoSplit = this._getUtxoSplit.bind(this);
+    this._splitUtxo = this._splitUtxo.bind(this);
+  }
+
+  toggleIsNative() {
+    this.setState({
+      isNative: !this.state.isNative,
+    });
   }
 
   toggleSplitUtxoList() {
@@ -80,7 +97,7 @@ class ToolsSplitUTXO extends React.Component {
     for (let i = 0; i < pairsCount; i++) {
       for (let j = 0; j < targetSizes.length; j++) {
         devlog(`vout ${_targets.length} ${targetSizes[j]}`);
-        _targets.push(Number(targetSizes[j]) * 100000000);
+        _targets.push(Number(toSats(targetSizes[j])));
         totalOutSize += Number(targetSizes[j]);
       }
     }
@@ -94,7 +111,32 @@ class ToolsSplitUTXO extends React.Component {
     });
   }
 
+  _splitUtxo(coin, rawtx) {
+    return new Promise((resolve, reject) => {
+      if (this.state.isNative) {
+        apiCliPromise(
+          null,
+          coin,
+          'sendrawtransaction',
+          [rawtx]
+        )
+        .then((res) => {
+          resolve(res);
+        });
+      } else {
+        apiElectrumPushTx(
+          coin,
+          rawtx
+        )
+        .then((res) => {
+          resolve(res);
+        });
+      }
+    });
+  }
+
   splitUtxo() {
+    const _coin = this.state.utxoSplitCoin.split('|');
     let largestUTXO = { amount: 0 };
 
     for (let i = 0; i < this.state.utxoSplitList.length; i++) {
@@ -123,7 +165,7 @@ class ToolsSplitUTXO extends React.Component {
     for (let i = 0; i < pairsCount; i++) {
       for (let j = 0; j < targetSizes.length; j++) {
         devlog(`vout ${_targets.length} ${targetSizes[j]}`);
-        _targets.push(parseInt(Number(targetSizes[j]) * 100000000));
+        _targets.push(parseInt(Number(toSats(targetSizes[j]))));
         totalOutSize += Number(targetSizes[j]);
       }
     }
@@ -134,29 +176,27 @@ class ToolsSplitUTXO extends React.Component {
 
     const payload = {
       wif,
-      network: 'komodo',
+      network: _coin[0],
       targets: _targets,
       utxo: [largestUTXO],
       changeAddress: address,
       outputAddress: address,
-      change: Math.floor(Number(largestUTXO.amount - totalOutSize) * 100000000 - 10000 + ((largestUTXO.interest ? largestUTXO.interest : 0) * 100000000)), // 10k sat fee
+      change: Math.floor(Number(toSats(largestUTXO.amount - totalOutSize)) - 10000 + (toSats(largestUTXO.interest ? largestUTXO.interest : 0))), // 10k sat fee
     };
 
     devlog(payload);
     devlog(largestUTXO);
 
-    shepherdElectrumSplitUtxoPromise(payload)
+    apiElectrumSplitUtxoPromise(payload)
     .then((res) => {
       devlog(res);
 
       if (res.msg === 'success') {
         const _coin = this.state.utxoSplitCoin.split('|');
 
-        shepherdCliPromise(
-          null,
+        this._splitUtxo(
           _coin[0],
-          'sendrawtransaction',
-          [res.result]
+          res.result
         )
         .then((res) => {
           devlog(res);
@@ -194,20 +234,42 @@ class ToolsSplitUTXO extends React.Component {
     });
   }
 
+  _getUtxoSplit(coin, pub) {
+    return new Promise((resolve, reject) => {
+      if (this.state.isNative) {
+        apiCliPromise(
+          null,
+          coin,
+          'listunspent'
+        )
+        .then((res) => {
+          resolve(res);
+        });
+      } else {
+        apiElectrumListunspent(
+          coin,
+          pub
+        )
+        .then((res) => {
+          resolve(res);
+        });
+      }
+    });
+  }
+
   getUtxoSplit() {
     const _coin = this.state.utxoSplitCoin.split('|');
 
-    shepherdToolsSeedToWif(
+    apiToolsSeedToWif(
       this.state.utxoSplitSeed,
-      'KMD',
+      _coin[0],
       true
     )
     .then((seed2kpRes) => {
       if (seed2kpRes.msg === 'success') {
-        shepherdCliPromise(
-          null,
+        this._getUtxoSplit(
           _coin[0],
-          'listunspent'
+          seed2kpRes.result.keys.pub
         )
         .then((res) => {
           // devlog(res);
@@ -287,9 +349,23 @@ class ToolsSplitUTXO extends React.Component {
     if (e &&
         e.value &&
         e.value.indexOf('|')) {
-      this.setState({
-        [propName]: e.value,
-      });
+      const _val = e.value;
+      const _newState = {
+        [propName]: _val,
+      };
+
+      if (_val.indexOf('|spv|native') > -1) {
+        _newState.singleModeOnly = false;
+        _newState.isNative = true;
+      } else if (_val.indexOf('|spv') > -1) {
+        _newState.singleModeOnly = true;
+        _newState.isNative = false;
+      } else {
+        _newState.singleModeOnly = true;
+        _newState.isNative = true;
+      }
+
+      this.setState(_newState);
     }
   }
 
@@ -300,7 +376,7 @@ class ToolsSplitUTXO extends React.Component {
   }
 
   openExplorerWindow(txid, coin) {
-    const url = `http://${coin}.explorer.supernet.org/tx/${txid}`;
+    const url = explorerList[coin].split('/').length - 1 > 2 ? `${explorerList[coin]}${txid}` : `${explorerList[coin]}/tx/${txid}`;
     return shell.openExternal(url);
   }
 
@@ -314,10 +390,10 @@ class ToolsSplitUTXO extends React.Component {
         _items.push(
           <tr key={ `tools-utxos-${i}` }>
             <td>{ _utxos[i].amount }</td>
-            <td>{ _utxos[i].address }</td>
+            <td className="blur selectable">{ _utxos[i].address }</td>
             <td>{ _utxos[i].confirmations }</td>
             <td>{ _utxos[i].vout }</td>
-            <td>{ _utxos[i].txid }</td>
+            <td className="blur selectable">{ _utxos[i].txid }</td>
           </tr>
         );
       }
@@ -359,7 +435,9 @@ class ToolsSplitUTXO extends React.Component {
         <div className="col-xlg-12 form-group form-material no-padding-left padding-top-20 padding-bottom-50">
           <label
             className="control-label col-sm-1 no-padding-left"
-            htmlFor="kmdWalletSendTo">{ translate('TOOLS.COIN') }</label>
+            htmlFor="kmdWalletSendTo">
+            { translate('TOOLS.COIN') }
+          </label>
           <Select
             name="utxoSplitCoin"
             className="col-sm-3"
@@ -367,11 +445,29 @@ class ToolsSplitUTXO extends React.Component {
             onChange={ (event) => this.updateSelectedCoin(event, 'utxoSplitCoin') }
             optionRenderer={ this.renderCoinOption }
             valueRenderer={ this.renderCoinOption }
-            options={ [{
-              label: 'Komodo (KMD)',
-              icon: 'KMD',
-              value: `KMD|native`,
-            }].concat(addCoinOptionsAC()) } />
+            options={
+              addCoinOptionsCustom()
+              .concat(addCoinOptionsCrypto('skip', true, false))
+              .concat(addCoinOptionsAC('skip'))
+            } />
+        </div>
+        <div className="col-xlg-12 form-group form-material no-padding-left padding-top-20 padding-bottom-50">
+          <span disabled={ this.state.singleModeOnly }>
+            <label className="switch">
+              <input
+                type="checkbox"
+                checked={ this.state.isNative }
+                readOnly />
+              <div
+                className="slider"
+                onClick={ this.toggleIsNative }></div>
+            </label>
+            <div
+              className="toggle-label margin-right-15 pointer"
+              onClick={ this.toggleIsNative }>
+              { translate('LOGIN.NATIVE_MODE_DESC_P2') }
+            </div>
+          </span>
         </div>
         <div className="col-sm-12 form-group form-material no-padding-left">
           <label
@@ -379,7 +475,7 @@ class ToolsSplitUTXO extends React.Component {
             htmlFor="kmdWalletSendTo">{ translate('TOOLS.SEED') }</label>
           <input
             type="text"
-            className="form-control col-sm-3"
+            className="form-control col-sm-3 blur"
             name="utxoSplitSeed"
             onChange={ this.updateInput }
             value={ this.state.utxoSplitSeed }
@@ -389,12 +485,12 @@ class ToolsSplitUTXO extends React.Component {
         </div>
         { this.state.utxoSplitAddress &&
           <div className="col-sm-12 form-group form-material no-padding-left margin-top-10">
-            Pub: { this.state.utxoSplitAddress }
+            Pub: <span className="blur selectable">{ this.state.utxoSplitAddress }</span>
           </div>
         }
         { this.state.utxoSplitAddress &&
           <div className="col-sm-12 form-group form-material no-padding-left margin-top-10">
-            WIF: { this.state.utxoSplitWif }
+            WIF: <span className="blur selectable">{ this.state.utxoSplitWif }</span>
           </div>
         }
         <div className="col-sm-12 form-group no-padding-left margin-top-20 padding-bottom-10">
@@ -416,7 +512,8 @@ class ToolsSplitUTXO extends React.Component {
           <label className="switch">
             <input
               type="checkbox"
-              checked={ this.state.utxoSplitShowUtxoList } />
+              checked={ this.state.utxoSplitShowUtxoList }
+              readOnly />
             <div
               className="slider"
               onClick={ this.toggleSplitUtxoList }></div>
@@ -435,7 +532,9 @@ class ToolsSplitUTXO extends React.Component {
         <div className="col-sm-12 form-group form-material no-padding-left margin-top-20 padding-bottom-20">
           <label
             className="control-label col-sm-2 no-padding-left"
-            htmlFor="kmdWalletSendTo">{ translate('TOOLS.UTXO_SIZES') }</label>
+            htmlFor="kmdWalletSendTo">
+            { translate('TOOLS.UTXO_SIZES') }
+          </label>
           <input
             type="text"
             className="form-control col-sm-3"
@@ -449,7 +548,9 @@ class ToolsSplitUTXO extends React.Component {
         <div className="col-sm-12 form-group form-material no-padding-left padding-top-20 padding-bottom-20">
           <label
             className="control-label col-sm-2 no-padding-left"
-            htmlFor="kmdWalletSendTo">{ translate('TOOLS.NUMBER_OF_PAIRS') }</label>
+            htmlFor="kmdWalletSendTo">
+            { translate('TOOLS.NUMBER_OF_PAIRS') }
+          </label>
           <input
             type="text"
             className="form-control col-sm-3"
@@ -487,7 +588,7 @@ class ToolsSplitUTXO extends React.Component {
         }
         { this.state.utxoSplitPushResult &&
           <div className="col-sm-12 form-group form-material no-padding-left margin-top-10">
-            TXID: <div style={{ wordBreak: 'break-all' }}>{ this.state.utxoSplitPushResult }</div>
+            TXID: <div className="blur selectable word-break--all">{ this.state.utxoSplitPushResult }</div>
             { isKomodoCoin(this.state.utxoSplitCoin.split('|')[0]) &&
               <div className="margin-top-10">
                 <button

@@ -1,314 +1,128 @@
 import translate from '../../translate/translate';
-import mainWindow from '../../util/mainWindow';
+import mainWindow, { staticVar } from '../../util/mainWindow';
 import config from '../../config';
+import { cryptoCoins } from '../../util/coinHelper';
+import { sortObject } from 'agama-wallet-lib/src/utils';
+import erc20ContractId from 'agama-wallet-lib/src/eth-erc20-contract-id';
 
-const addCoinOptionsCrypto = () => {
-  const availableKMDModes = mainWindow.arch === 'x64' ? 'spv|native' : 'spv';
+let _prepCoinsList;
+let coins = cryptoCoins;
+let _activeCoins;
+let _disableETH;
 
-  let _coins = [{
-    label: 'Komodo (KMD)',
-    icon: 'KMD',
-    value: `KMD|${availableKMDModes}`,
-  }, {
-    label: 'Chips (CHIPS)',
-    icon: 'CHIPS',
-    value: `CHIPS|spv`,
-  }];
+// sort coins by their title
+let _coins = [];
+let coinsList = [];
 
-  if (config.experimentalFeatures) {
-    _coins.push(/*{
-      label: 'ArtByte (ABY)',
-      icon: 'ABY',
-      value: `ABY|spv`,
-    }, {
-      label: 'VoteCoin (VOT)',
-      icon: 'VOT',
-      value: `VOT|spv`,
-    }, {
-      label: 'Bitdeal (BDL)',
-      icon: 'BDL',
-      value: `BDL|spv`,
-    }, {
-      label: 'BitcoinPrivate (BTCP)',
-      icon: 'BTCP',
-      value: `BTCP|spv`,
-    }, {
-      label: 'Machinecoin (MAC)',
-      icon: 'MAC',
-      value: `MAC|spv`,
-    },
-    {
-      label: 'Whitecoin (XWC)',
-      icon: 'XWC',
-      value: `XWC|spv`,
-    },
-    {
-      label: 'Vcash (XVC)',
-      icon: 'XVC',
-      value: `XVC|spv`,
-    },
-    {
-      label: 'Smartcash (SMART)',
-      icon: 'SMART',
-      value: `SMART|spv`,
-    },
-    {
-      label: 'Crave (CRAVE)',
-      icon: 'CRAVE',
-      value: `CRAVE|spv`,
-    },
-    {
-      label: 'AdCoin (ACC)',
-      icon: 'ACC',
-      value: `ACC|spv`,
-    }, {
-      label: 'Auroracoin (AUR)',
-      icon: 'AUR',
-      value: `AUR|spv`,
-    }, {
-      label: 'Bitcoin Atom (BCA)',
-      icon: 'BCA',
-      value: `BCA|spv`,
-    }, {
-      label: 'Clams (CLAM)',
-      icon: 'CLAM',
-      value: `CLAM|spv`,
-    }, {
-      label: 'ClubCoin (CLUB)',
-      icon: 'CLUB',
-      value: `CLUB|spv`,
-    }, {
-      label: 'Diamond (DMD)',
-      icon: 'DMD',
-      value: `DMD|spv`,
-    }, {
-      label: 'ExclusiveCoin (EXCL)',
-      icon: 'EXCL',
-      value: `EXCL|spv`,
-    }, {
-      label: 'FeatherCoin (FTC)',
-      icon: 'FTC',
-      value: `FTC|spv`,
-    }, {
-      label: 'Flash (Flash)',
-      icon: 'FLASH',
-      value: `FLASH|spv`,
-    }, {
-      label: 'Fujicoin (FJC)',
-      icon: 'FJC',
-      value: `FJC|spv`,
-    }, {
-      label: 'Gulden (NLG)',
-      icon: 'NLG',
-      value: `NLG|spv`,
-    }, {
-      label: 'Litecoin Cash (LCC)',
-      icon: 'LCC',
-      value: `LCC|spv`,
-    }, {
-      label: 'MinexCoin (MNX)',
-      icon: 'MNX',
-      value: `MNX|spv`,
-    }, {
-      label: 'NavCoin (NAV)',
-      icon: 'NAV',
-      value: `NAV|spv`,
-    }, {
-      label: 'NeosCoin (NEOS)',
-      icon: 'NEOS',
-      value: `NEOS|spv`,
-    }, {
-      label: 'OKCash (OK)',
-      icon: 'OK',
-      value: `OK|spv`,
-    }, {
-      label: 'OmniLayer (OMNI)',
-      icon: 'OMNI',
-      value: `OMNI|spv`,
-    }, {
-      label: 'Pivx (PIVX)',
-      icon: 'PIVX',
-      value: `PIVX|spv`,
-    }, {
-      label: 'Reddcoin (RDD)',
-      icon: 'RDD',
-      value: `RDD|spv`,
-    }, {
-      label: 'Unobtanium (UNO)',
-      icon: 'UNO',
-      value: `UNO|spv`,
-    }, {
-      label: 'Verge (XVG)',
-      icon: 'XVG',
-      value: `XVG|spv`,
-    }, {
-      label: 'VIVO (VIVO)',
-      icon: 'VIVO',
-      value: `VIVO|spv`,
-    }, {
-      label: 'E-Gulden (EFL)',
-      icon: 'EFL',
-      value: `EFL|spv`,
-    }, {
-      label: 'GoByte (GBX)',
-      icon: 'GBX',
-      value: `GBX|spv`,
-    }, {
-      label: 'Bitsend (BSD)',
-      icon: 'BSD',
-      value: `BSD|spv`,
-    }, {
-      label: 'LBRY Credits (LBC)',
-      icon: 'LBC',
-      value: `LBC|spv`,
-    }, {
-      label: 'Europecoin (ERC)',
-      icon: 'ERC',
-      value: `ERC|spv`,
-    }, {
-      label: 'Bata (BTA)',
-      icon: 'BTA',
-      value: `BTA|spv`,
-    }, {
-      label: 'Einsteinium (EMC2)',
-      icon: 'EMC2',
-      value: `EMC2|spv`,
-    }, {
-      label: 'Syscoin (SYS)',
-      icon: 'SYS',
-      value: `SYS|spv`,
-    }, {
-      label: 'GameCredits (GAME)',
-      icon: 'GAME',
-      value: `GAME|spv`,
-    }, {
-      label: 'Internet of People (IOP)',
-      icon: 'IOP',
-      value: `IOP|spv`,
-    }, {
-      label: 'Zencashio (ZEN)',
-      icon: 'ZEN',
-      value: `ZEN|spv`,
-    }, {
-      label: 'Zcoin (XZC)',
-      icon: 'XZC',
-      value: `XZC|spv`,
-    },*/{
-      label: 'Bitcoin CBC (BCBC)',
-      icon: 'BCBC',
-      value: `BCBC|spv`,
-    }, {
-      label: 'BitcoinGold (BTG)',
-      icon: 'BTG',
-      value: `BTG|spv`,
-    }, {
-      label: 'BitcoinCash (BCH)',
-      icon: 'BCH',
-      value: `BCH|spv`,
-    }, {
-      label: 'Bitcoin (BTC)',
-      icon: 'BTC',
-      value: `BTC|spv`,
-    }, {
-      label: 'Crown (CRW)',
-      icon: 'CRW',
-      value: `CRW|spv`,
-    }, {
-      label: 'Dash (DASH)',
-      icon: 'DASH',
-      value: `DASH|spv`,
-    }, {
-      label: 'Denarius (DNR)',
-      icon: 'DNR',
-      value: `DNR|spv`,
-    }, {
-      label: 'DigiByte (DGB)',
-      icon: 'DGB',
-      value: `DGB|spv`,
-    }, {
-      label: 'Faircoin (FAIR)',
-      icon: 'FAIR',
-      value: `FAIR|spv`,
-    }, {
-      label: 'Argentum (ARG)',
-      icon: 'ARG',
-      value: `ARG|spv`,
-    }, {
-      label: 'Litecoin (LTC)',
-      icon: 'LTC',
-      value: `LTC|spv`,
-    }, {
-      label: 'Monacoin (MONA)',
-      icon: 'MONA',
-      value: `MONA|spv`,
-    }, {
-      label: 'Namecoin (NMC)',
-      icon: 'NMC',
-      value: `NMC|spv`,
-    }, {
-      label: 'Vertcoin (VTC)',
-      icon: 'VTC',
-      value: `VTC|spv`,
-    }, {
-      label: 'Viacoin (VIA)',
-      icon: 'VIA',
-      value: `VIA|spv`,
-    }, {
-      label: 'Sibcoin (SIB)',
-      icon: 'SIB',
-      value: `SIB|spv`,
-    }, {
-      label: 'Blackcoin (BLK)',
-      icon: 'BLK',
-      value: `BLK|spv`,
-    }, {
-      label: 'Dogecoin (DOGE)',
-      icon: 'DOGE',
-      value: `DOGE|spv`,
-    }, {
-      label: 'Zcash (ZEC)',
-      icon: 'ZEC',
-      value: `ZEC|spv`,
-    }, {
-      label: 'Hush (HUSH)',
-      icon: 'HUSH',
-      value: `HUSH|spv`,
-    }, {
-      label: 'SnowGem (SNG)',
-      icon: 'sng',
-      value: `SNG|spv`,
-    }, {
-      label: 'Zclassic (ZCL)',
-      icon: 'ZCL',
-      value: `ZCL|spv`,
-    }, {
-      label: 'Myriad (XMY)',
-      icon: 'XMY',
-      value: `XMY|spv`,
-    },/* {
-      label: 'Groestlcoin (GRS)',
-      icon: 'GRS',
-      value: `GRS|spv`,
-    }, */{
-      label: 'Hodlc (HODLC)',
-      icon: 'HODLC',
-      value: `HODLC|spv`,
-    }, {
-      label: 'Bitcore (BTX)',
-      icon: 'BTX',
-      value: `BTX|spv`,
-    }, {
-      label: 'Qtum (QTUM)',
-      icon: 'QTUM',
-      value: `QTUM|spv`,
-    }, {
-      label: 'BitcoinZ (BTCZ)',
-      icon: 'BTCZ',
-      value: `BTCZ|spv`,
-    });
+for (let i = 0; i < cryptoCoins.length; i++) {
+  _coins[translate('CRYPTO.' + cryptoCoins[i].toUpperCase())] = cryptoCoins[i];
+}
+
+_coins = sortObject(_coins);
+
+for (let key in _coins) {
+  coinsList.push(_coins[key]);
+}
+
+coins = coinsList;
+
+const prepCoinsList = (options) => {
+  const availableKMDModes = staticVar.arch === 'x64' ? 'spv|native' : 'spv';
+  let _items = [];
+  
+  if (options.filterNonActive) {
+    if (_activeCoins.spv &&
+        _activeCoins.spv.length) {
+      for (let i = 0; i < _activeCoins.spv.length; i++) {
+        _items.push({
+          label: `${translate('CRYPTO.' + _activeCoins.spv[i])} (${_activeCoins.spv[i]})`,
+          icon: `btc/${_activeCoins.spv[i]}`,
+          value: `${_activeCoins.spv[i]}|spv`,
+        });
+      }
+    }
+
+    if (_activeCoins.eth.indexOf('eth') > -1) {
+      _items.push({
+        label: `${translate('CRYPTO.ETH')} (ETH)`,
+        icon: 'eth/ETH',
+        value: 'ETH',
+      });
+    }
+
+    if (!_disableETH &&
+        _activeCoins.eth &&
+        _activeCoins.eth.length) {
+      for (let i = 0; i < _activeCoins.eth.length; i++) {
+        if (_activeCoins.eth[i] !== 'eth' ||
+            _activeCoins.eth[i] !== 'eth_ropsten') {
+          _items.push({
+            label: `${translate('CRYPTO.' + _activeCoins.eth[i])} (${_activeCoins.eth[i]})`,
+            icon: `eth/${_activeCoins.eth[i]}`,
+            value: `ETH|${_activeCoins.eth[i]}`,
+          });
+        }
+      }
+    }
+  } else {
+    for (let i = 0; i < coins.length; i++) {
+      try {
+        const _coinlc = coins[i].toLowerCase();
+        const _coinuc = coins[i].toUpperCase();
+        
+        if (staticVar.electrumServers &&
+            staticVar.electrumServers[_coinlc] &&
+            (_activeCoins === 'skip' || (_activeCoins !== 'skip' &&
+            _activeCoins &&
+            _activeCoins.spv &&
+            _activeCoins.native &&
+            _activeCoins.spv.indexOf(_coinuc) === -1 &&
+            _activeCoins.native.indexOf(_coinuc) === -1))) {
+          _items.push({
+            label: `${translate('CRYPTO.' + coins[i])} (${coins[i]})`,
+            icon: `btc/${coins[i]}`,
+            value: `${coins[i]}|${coins[i] === 'KMD' ? availableKMDModes : 'spv'}`,
+          });
+        }
+      } catch (e) {
+        console.warn('electron remote error addcoin' + e);
+      }
+    }
+
+    if (!_disableETH) {
+      _items.push({
+        label: `${translate('CRYPTO.ETH')} (ETH)`,
+        icon: 'eth/ETH',
+        value: 'ETH',
+      }, {
+        label: `${translate('CRYPTO.ETH_ROPSTEN')} (TESTNET)`,
+        icon: 'eth/ETH',
+        value: 'ETH|ropsten',
+      });
+
+      for (let key in erc20ContractId) {
+        _items.push({
+          label: `${translate('CRYPTO.' + key)} (${key} ERC20)`,
+          icon: `eth/${key}`,
+          value: `ETH|${key}`,
+        });
+      }
+    }
   }
 
-  return _coins;
+  _prepCoinsList = _items;
+
+  return _items;
+};
+
+const addCoinOptionsCrypto = (activeCoins, disableETH, filterNonActive) => {
+  _activeCoins = activeCoins;
+  _disableETH = disableETH;
+
+  return prepCoinsList({
+    filterActiveCoins: false,
+    filterNonActive,
+  });
 }
 
 export default addCoinOptionsCrypto;

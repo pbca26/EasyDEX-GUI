@@ -186,6 +186,9 @@
   .page-main {
     margin-left: 300px !important;
   }
+  .page-main-pbaas {
+    margin-left: 0px !important;
+  }
 }
 
 @media (max-width: 767px) {

@@ -20,11 +20,14 @@ import {
   DASHBOARD_REMOVE_COIN,
   DASHBOARD_ACTIVE_COIN_NET_PEERS,
   DASHBOARD_ACTIVE_COIN_NET_TOTALS,
+  KV_HISTORY,
+  DASHBOARD_ETHEREUM_BALANCE,
+  DASHBOARD_ETHEREUM_TRANSACTIONS,
 } from '../actions/storeType';
 
 // TODO: refactor current coin props copy on change
 
-export function ActiveCoin(state = {
+export const ActiveCoin = (state = {
   coins: {},
   coin: null,
   mode: null,
@@ -42,11 +45,12 @@ export function ActiveCoin(state = {
   progress: null,
   rescanInProgress: false,
   getinfoFetchFailures: 0,
+  walletinfo: null,
   net: {
     peers: null,
     totals: null,
   },
-}, action) {
+}, action) => {
   switch (action.type) {
     case DASHBOARD_REMOVE_COIN:
       delete state.coins[action.coin];
@@ -211,19 +215,19 @@ export function ActiveCoin(state = {
         ...state,
         balance: action.balance,
       };
-    case DASHBOARD_ACTIVE_COIN_SEND_FORM:
+    case DASHBOARD_ACTIVE_COIN_SEND_FORM: //DEPRECATED
       return {
         ...state,
         send: action.send,
         receive: false,
       };
-    case DASHBOARD_ACTIVE_COIN_RECEIVE_FORM:
+    case DASHBOARD_ACTIVE_COIN_RECEIVE_FORM: //DEPRECATED
       return {
         ...state,
         send: false,
         receive: action.receive,
       };
-    case DASHBOARD_ACTIVE_COIN_RESET_FORMS:
+    case DASHBOARD_ACTIVE_COIN_RESET_FORMS: //DEPRECATED
       return {
         ...state,
         send: false,
@@ -291,6 +295,7 @@ export function ActiveCoin(state = {
           balance: action.balance,
           addresses: action.addresses,
           rescanInProgress: action.rescanInProgress,
+          walletinfo: action.walletinfo
         };
       }
     case DASHBOARD_ACTIVE_COIN_NET_PEERS:
@@ -308,6 +313,16 @@ export function ActiveCoin(state = {
           peers: state.net.peers,
           totals: action.totals,
         },
+      };
+    case DASHBOARD_ETHEREUM_BALANCE:
+      return {
+        ...state,
+        balance: action.balance,
+      };
+    case DASHBOARD_ETHEREUM_TRANSACTIONS:
+      return {
+        ...state,
+        txhistory: action.txhistory,
       };
     default:
       return state;

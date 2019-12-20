@@ -3,14 +3,15 @@ import ReactTable from 'react-table';
 import TablePaginationRenderer from './pagination';
 import { connect } from 'react-redux';
 import translate from '../../../translate/translate';
-import sortByDate from '../../../util/sort';
-import formatValue from '../../../util/formatValue';
+import {
+  sortByDate,
+  formatValue,
+} from 'agama-wallet-lib/src/utils';
 import Config from '../../../config';
 import { triggerToaster } from '../../../actions/actionCreators';
 import Store from '../../../store';
-import { secondsToString } from '../../../util/time';
-
-const BOTTOM_BAR_DISPLAY_THRESHOLD = 15;
+import { secondsToString } from 'agama-wallet-lib/src/time';
+import { BOTTOM_BAR_DISPLAY_THRESHOLD } from '../../../util/constants';
 
 class DexSwapsTable extends React.Component {
   constructor(props) {

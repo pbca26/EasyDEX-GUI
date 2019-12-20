@@ -35,10 +35,29 @@
 @import '../components/overrides.scss';
 @import '../components/switch.scss';
 @import '../components/contextMenu.scss';
+@import '../components/rcSlider.scss';
+@import '../components/select.scss';
 @import '../components/responsive.scss';
+@import '../components/modal.scss';
+@import '../components/dropdownMenu.scss';
+@import '../components/dashboard/walletsTxInfo/walletsTxInfo.scss';
+@import '../components/dashboard/pbaasChainInfo/chainInfo.scss';
+@import '../components/dashboard/walletsMain/walletsMain.scss';
+@import '../components/dashboard/walletsProgress/walletsProgress.scss';
 @import '../components/dashboard/walletsHeader/walletsHeader.scss';
 @import '../components/dashboard/walletsInfo/walletsInfo.scss';
+@import '../components/dashboard/pbaasConnect/pbaasConnect.scss';
+@import '../components/dashboard/pbaasCreate/pbaasCreate.scss';
+@import '../components/dashboard/pbaasConvert/pbaasConvert.scss';
+@import '../components/dashboard/pbaasConvert/pbaasConversionCenter/pbaasConversionCenter.scss';
+@import '../components/dashboard/pbaasConvert/pbaasConvertNav/pbaasConvertNav.scss';
+@import '../components/dashboard/pbaasConvertBalance/pbaasConvertBalance.scss';
+@import '../components/dashboard/pbaasLimitHistory/pbaasLimitHistory.scss';
+@import '../components/dashboard/pbaas/pbaas.scss';
+@import '../components/dashboard/pbaasNav/pbaasNav.scss';
+@import '../components/dashboard/pbaasPriceData/pbaasPriceData.scss';
 @import '../components/dashboard/sendCoin/sendCoin.scss';
+@import '../components/dashboard/receiveCoin/receiveCoin.scss';
 @import '../components/dashboard/walletsNav/walletsNav.scss';
 @import '../components/dashboard/coinTile/coinTile.scss';
 @import '../components/dashboard/navbar/navbar.scss';
@@ -53,13 +72,20 @@
 @import '../components/dashboard/loginSettingsModal/loginSettingsModal.scss';
 @import '../components/dashboard/zcparamsFetchModal/zcparamsFetchModal.scss';
 @import '../components/dashboard/notaryElectionsModal/notaryElectionsModal.scss';
+@import '../components/dashboard/exchangesTOSModal/exchangesTOSModal.scss';
+@import '../components/dashboard/exchangesSupportedCoinsModal/exchangesSupportedCoinsModal.scss';
 @import '../components/dashboard/spinner/spinner.scss';
 @import '../components/dashboard/tools/tools.scss';
+@import '../components/dashboard/exchanges/exchanges.scss';
+@import '../components/dashboard/changeLog/changeLog.scss';
 @import '../components/toaster/toaster.scss';
 @import '~react-table/react-table.css';
 @import '~react-select/dist/react-select.css';
 @import '~rc-slider/assets/index.css';
 
 /* dex */
-@import 'dex/main.scss';
-@import '../components/dex/dexMain.scss';
+/*@import 'dex/main.scss';
+@import '../components/dex/dexMain.scss';*/
+
+/* dark mode */
+/*@import '../components/dark.scss';*/

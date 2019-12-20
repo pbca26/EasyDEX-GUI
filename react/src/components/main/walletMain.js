@@ -6,7 +6,7 @@ import Login from '../login/login';
 import Dashboard from '../dashboard/main/dashboard';
 import DexMain from '../dex/dexMain';
 import NotaryElectionsModal from '../dashboard/notaryElectionsModal/notaryElectionsModal';
-import mainWindow from '../../util/mainWindow';
+import mainWindow, { staticVar } from '../../util/mainWindow';
 import Store from '../../store';
 import {
   toggleDashboardTxInfoModal,
@@ -16,6 +16,7 @@ import {
   toggleCoindDownModal,
   displayImportKeyModal,
   toggleNotaryElectionsModal,
+  togglePbaasChainInfoModal
 } from '../../actions/actionCreators';
 
 class WalletMain extends React.Component {
@@ -50,13 +51,15 @@ class WalletMain extends React.Component {
           Store.dispatch(toggleLoginSettingsModal(false));
         } else if (this.props.activeModals.displayNotaryElectionsModal) {
           Store.dispatch(toggleNotaryElectionsModal(false));
+        } else if (this.props.PBaaSMain.showChainInfo) {
+          Store.dispatch(togglePbaasChainInfoModal(false));
         }
       }
     };
   }
 
   render() {
-    if (mainWindow.argv.indexOf('dexonly') > -1) {
+    if (staticVar.argv.indexOf('dexonly') > -1) { // deprecated
       return (
         <div className="full-height">
           <input
@@ -75,7 +78,7 @@ class WalletMain extends React.Component {
           <AddCoin />
           <Login />
           <NotaryElectionsModal />
-          <Toaster {...this.props.toaster} />
+          <Toaster { ...this.props.toaster } />
         </div>
       );
     }
@@ -85,6 +88,9 @@ class WalletMain extends React.Component {
 const mapStateToProps = (state) => {
   return {
     toaster: state.toaster,
+    PBaaSMain: {
+      showChainInfo: state.PBaaSMain.showChainInfo
+    },
     activeModals: {
       showTransactionInfo: state.ActiveCoin.showTransactionInfo,
       displayClaimInterestModal: state.Dashboard.displayClaimInterestModal,
@@ -99,4 +105,3 @@ const mapStateToProps = (state) => {
 };
 
 export default connect(mapStateToProps)(WalletMain);
-

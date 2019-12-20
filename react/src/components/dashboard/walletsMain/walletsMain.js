@@ -4,39 +4,36 @@ import WalletsMainRender from './walletsMain.render';
 import translate from '../../../translate/translate';
 import {
   triggerToaster,
-  prices,
+  newUpdateAvailable,
 } from '../../../actions/actionCreators';
 import { getCoinTitle } from '../../../util/coinHelper';
 import Config from '../../../config';
 import Store from '../../../store';
-import mainWindow from '../../../util/mainWindow';
-
-import { SocketProvider } from 'socket.io-react';
+import mainWindow, { staticVar } from '../../../util/mainWindow';
 import io from 'socket.io-client';
 
 const socket = io.connect(`http://127.0.0.1:${Config.agamaPort}`);
-const PRICES_UPDATE_INTERVAL = 120000; // every 2m
+const NEW_UPDATE_CHECK_INTERVAL = 14400 * 1000; // every 4h
 
 class WalletsMain extends React.Component {
   constructor() {
     super();
     this.getCoinStyle = this.getCoinStyle.bind(this);
-    this.pricesInterval = null;
     socket.on('service', msg => this.updateSocketsData(msg));
   }
 
   componentWillUnmount() {
-    if (this.pricesInterval) {
-      clearInterval(this.pricesInterval);
-    }
+    mainWindow.activeCoin = null;
   }
 
   componentWillMount() {
-    if (Config.fiatRates) {
-      Store.dispatch(prices());
-      this.pricesInterval = setInterval(() => {
-        Store.dispatch(prices());
-      }, PRICES_UPDATE_INTERVAL);
+    if (!Config.dev ||
+        staticVar.argv.indexOf('devmode') > -1) {
+      Store.dispatch(newUpdateAvailable());
+
+      setInterval(() => {
+        Store.dispatch(newUpdateAvailable());
+      }, NEW_UPDATE_CHECK_INTERVAL);
     }
 
     if (mainWindow.createSeed.triggered &&
@@ -105,21 +102,20 @@ class WalletsMain extends React.Component {
   }
 
   getCoinStyle(type) {
+    const _coin = this.props.ActiveCoin.coin;
+
     if (type === 'transparent') {
-      if (getCoinTitle(this.props.ActiveCoin.coin).transparentBG &&
+      if (getCoinTitle(_coin).transparentBG &&
           getCoinTitle().logo) {
         return { 'backgroundImage': `url("assets/images/bg/${getCoinTitle().logo.toLowerCase()}_transparent_header_bg.png")` };
       }
     } else if (type === 'title') {
       let _iconPath;
 
-      if (getCoinTitle(this.props.ActiveCoin.coin).titleBG) {
-        _iconPath = `assets/images/native/${getCoinTitle(this.props.ActiveCoin.coin).logo.toLowerCase()}_header_title_logo.png`;
-      } else if (
-        !getCoinTitle(this.props.ActiveCoin.coin).titleBG &&
-        getCoinTitle(this.props.ActiveCoin.coin).logo
-      ) {
-        _iconPath = `assets/images/cryptologo/${getCoinTitle(this.props.ActiveCoin.coin).logo.toLowerCase()}.png`;
+      if (getCoinTitle(_coin).titleBG) {
+        _iconPath = `assets/images/native/${getCoinTitle(_coin).logo.toLowerCase()}_header_title_logo.png`;
+      } else if (!getCoinTitle(_coin).titleBG) {
+        _iconPath = `assets/images/cryptologo/${this.props.ActiveCoin.mode === 'spv' || this.props.ActiveCoin.mode === 'native' ? 'btc' : 'eth'}/${_coin.toLowerCase()}.png`;
       }
 
       return _iconPath;
@@ -141,6 +137,7 @@ const mapStateToProps = (state) => {
     ActiveCoin: {
       coin: state.ActiveCoin.coin,
       mode: state.ActiveCoin.mode,
+      activeSection: state.ActiveCoin.activeSection,
     },
   };
 };

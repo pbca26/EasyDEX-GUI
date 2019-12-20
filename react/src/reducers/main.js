@@ -4,20 +4,26 @@ import {
   ACTIVE_HANDLE,
   DISPLAY_LOGIN_SETTINGS_MODAL,
   DISPLAY_NOTARY_ELECTIONS_MODAL,
+  BLUR_SENSITIVE_DATA,
+  NEW_UPDATE_AVAILABLE,
 } from '../actions/storeType';
 
-export function Main(state = {
+export const Main = (state = {
   isLoggedIn: false,
   displayLoginSettingsModal: false,
   displayNotaryElectionsModal: false,
+  blurSensitiveData: false,
+  newUpdateAvailable: false,
   total: 0,
-}, action) {
+  nativeStartParams: {},
+}, action) => {
   switch (action.type) {
     case GET_ACTIVE_COINS:
       return {
         ...state,
         coins: action.coins,
         total: action.total,
+        nativeStartParams: action.params,
       };
     case LOGIN:
       return {
@@ -39,6 +45,16 @@ export function Main(state = {
       return {
         ...state,
         displayNotaryElectionsModal: action.displayNotaryElectionsModal,
+      };
+    case BLUR_SENSITIVE_DATA:
+      return {
+        ...state,
+        blurSensitiveData: action.blurSensitiveData,
+      };
+    case NEW_UPDATE_AVAILABLE:
+      return {
+        ...state,
+        newUpdateAvailable: action.newUpdateAvailable,
       };
     default:
       return state;

@@ -6,20 +6,21 @@ import {
   stopInterval,
   startInterval,
   displayImportKeyModal,
-  shepherdElectrumLock,
-  shepherdElectrumLogout,
+  apiElectrumLock,
+  apiElectrumLogout,
   getDexCoins,
   activeHandle,
   dashboardRemoveCoin,
   dashboardChangeActiveCoin,
   toggleNotaryElectionsModal,
+  toggleBlurSensitiveData,
 } from '../../../actions/actionCreators';
 import Store from '../../../store';
 import Config from '../../../config';
 import { checkAC } from '../../addcoin/payload';
-import mainWindow from '../../../util/mainWindow';
-
+import mainWindow, { staticVar } from '../../../util/mainWindow';
 import NavbarRender from './navbar.render';
+const { shell } = window.require('electron');
 
 class Navbar extends React.Component {
   constructor() {
@@ -32,22 +33,34 @@ class Navbar extends React.Component {
     this.handleClickOutside = this.handleClickOutside.bind(this);
     this._toggleNotaryElectionsModal = this._toggleNotaryElectionsModal.bind(this);
     this._checkAC = this._checkAC.bind(this);
+    this._toggleBlurSensitiveData = this._toggleBlurSensitiveData.bind(this);
     this.spvLock = this.spvLock.bind(this);
     this.spvLogout = this.spvLogout.bind(this);
+    this.openKomodoPlatformLink = this.openKomodoPlatformLink.bind(this);
+  }
+
+  openKomodoPlatformLink() {
+    return shell.openExternal('https://komodoplatform.com/komodo-wallets');
+  }
+
+  _toggleBlurSensitiveData() {
+    Store.dispatch(toggleBlurSensitiveData(!this.props.Main.blurSensitiveData));
   }
 
   isRenderSpvLockLogout() {
-    if (this.props.Main &&
-        this.props.Main.isLoggedIn &&
-        this.props.Main.coins &&
-        this.props.Main.coins.spv &&
-        this.props.Main.coins.spv.length) {
+    const _main = this.props.Main;
+
+    if (_main &&
+        _main.isLoggedIn &&
+        _main.coins &&
+        (_main.coins.spv && _main.coins.spv.length) ||
+        (_main.coins.eth && _main.coins.eth.length)) {
       return true;
     }
   }
 
   spvLock() {
-    shepherdElectrumLock()
+    apiElectrumLock()
     .then((res) => {
       mainWindow.pinAccess = false;
       Store.dispatch(getDexCoins());
@@ -56,13 +69,15 @@ class Navbar extends React.Component {
   }
 
   spvLogout() {
-    shepherdElectrumLogout()
+    apiElectrumLogout()
     .then((res) => {
-      const _spvCoins = this.props.Main.coins.spv;
+      const _coins = this.props.Main.coins;
+      const _spvCoins = _coins.spv;
+      const _ethCoins = _coins.eth;
 
       mainWindow.pinAccess = false;
 
-      if (!this.props.Main.coins.native.length) {
+      if (!_coins.native.length) {
         Store.dispatch(dashboardChangeActiveCoin(null, null, true));
       }
 
@@ -70,8 +85,18 @@ class Navbar extends React.Component {
         for (let i = 0; i < _spvCoins.length; i++) {
           Store.dispatch(dashboardRemoveCoin(_spvCoins[i]));
         }
-        if (!this.props.Main.coins.native.length) {
+        for (let i = 0; i < _ethCoins.length; i++) {
+          Store.dispatch(dashboardRemoveCoin(_ethCoins[i]));
+        }
+        if (!_coins.native.length) {
           Store.dispatch(dashboardChangeActiveCoin(null, null, true));
+        }
+
+        Store.dispatch(getDexCoins());
+        Store.dispatch(activeHandle());
+
+        if (_coins.native.length) {
+          Store.dispatch(dashboardChangeActiveCoin(_coins.native[0], 'native'));    
         }
       }, 500);
 
@@ -91,7 +116,7 @@ class Navbar extends React.Component {
       isExperimentalOn: mainWindow.appConfig.experimentalFeatures,
     });
 
-    if (mainWindow.argv.indexOf('dexonly') > -1) {
+    if (staticVar.argv.indexOf('dexonly') > -1) {
       Store.dispatch(dashboardChangeSection(mainWindow.activeSection));
     }
   }
@@ -105,11 +130,16 @@ class Navbar extends React.Component {
   }
 
   handleClickOutside(e) {
-    if (e.srcElement.className !== 'dropdown-menu' &&
-        e.srcElement.className !== 'icon fa-bars' &&
-        e.srcElement.title !== 'top menu' &&
-        (e.srcElement.offsetParent && e.srcElement.offsetParent.className !== 'navbar-avatar-inner') &&
-        e.srcElement.className.indexOf('navbar-avatar') === -1 &&
+    const _srcElement = e ? e.srcElement : null;
+
+    if (this.state.openDropMenu &&
+        e &&
+        _srcElement &&
+        _srcElement.className !== 'dropdown-menu' &&
+        _srcElement.className !== 'icon fa-bars' &&
+        _srcElement.title !== 'top menu' &&
+        (_srcElement.offsetParent && _srcElement.offsetParent.className !== 'navbar-avatar-inner') &&
+        _srcElement.className.indexOf('navbar-avatar') === -1 &&
         (e.path && e.path[4] && e.path[4].className.indexOf('dropdown-menu') === -1)) {
       this.setState({
         openDropMenu: false,
@@ -168,6 +198,11 @@ const mapStateToProps = (state) => {
     Main: {
       isLoggedIn: state.Main.isLoggedIn,
       coins: state.Main.coins,
+      blurSensitiveData: state.Main.blurSensitiveData,
+      newUpdateAvailable: state.Main.newUpdateAvailable,
+    },
+    PBaaSMain: {
+      rootChainActive: state.PBaaSMain.rootChainActive
     },
   };
 };

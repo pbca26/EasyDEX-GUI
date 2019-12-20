@@ -50,9 +50,12 @@ class NativeWalletDatKeysPanel extends React.Component {
         if (res.msg === 'success' &&
             res.result.length > 0) {
           setTimeout(() => {
-            document.querySelector('#coind-keys-textarea-left').style.height = '1px';
-            document.querySelector('#coind-keys-textarea-left').style.height = `${(15 + document.querySelector('#coind-keys-textarea-left').scrollHeight)}px`;
-            document.querySelector('#coind-keys-textarea-right').style.height = `${(15 + document.querySelector('#coind-keys-textarea-right').scrollHeight)}px`;
+            const _taleft = document.querySelector('#coind-keys-textarea-left');
+            const _taright = document.querySelector('#coind-keys-textarea-right');
+
+            _taleft.style.height = '1px';
+            _taleft.style.height = `${(15 + _taleft.scrollHeight)}px`;
+            _taright.style.height = `${(15 + _taright.scrollHeight)}px`;
           }, 100);
         }
       });
@@ -69,17 +72,23 @@ class NativeWalletDatKeysPanel extends React.Component {
     let _items = [];
     let _nativeCoins = coindList();
 
+    _nativeCoins.sort();
+
     _items.push(
       <option
         key={ `coind-walletdat-coins-none` }
-        value="none">{ translate('SETTINGS.PICK_A_COIN') }</option>
+        value="none">
+        { translate('SETTINGS.PICK_A_COIN') }
+      </option>
     );
 
     for (let i = 0; i < _nativeCoins.length; i++) {
       _items.push(
         <option
           key={ `coind-walletdat-coins-${ _nativeCoins[i] }` }
-          value={ `${_nativeCoins[i]}` }>{ `${_nativeCoins[i]}` }</option>
+          value={ `${_nativeCoins[i]}` }>
+          { `${_nativeCoins[i]}` }
+        </option>
       );
     }
 
@@ -116,7 +125,7 @@ class NativeWalletDatKeysPanel extends React.Component {
               <textarea
                 readOnly
                 id="coind-keys-textarea-left"
-                className="form-control settings-coind-stdout-textarea"
+                className="form-control settings-coind-stdout-textarea blur"
                 value={ _addresses }></textarea>
             </div>
           }
@@ -128,7 +137,7 @@ class NativeWalletDatKeysPanel extends React.Component {
               <textarea
                 readOnly
                 id="coind-keys-textarea-right"
-                className="form-control settings-coind-stdout-textarea"
+                className="form-control settings-coind-stdout-textarea blur"
                 value={ _wifs }></textarea>
             </div>
           }
@@ -154,7 +163,7 @@ class NativeWalletDatKeysPanel extends React.Component {
                 </select>
                 <input
                   type="text"
-                  className="form-control margin-top-10"
+                  className="form-control margin-top-10 blur"
                   autoComplete="off"
                   name="keyMatchPattern"
                   onChange={ this.updateInput }
@@ -167,7 +176,9 @@ class NativeWalletDatKeysPanel extends React.Component {
                     this.state.loading ||
                     this.state.coin === 'none'
                   }
-                  onClick={ this._getWalletDatKeys }>{ this.state.loading ? translate('SETTINGS.FETCHING_KEYS') + '...' : translate('SETTINGS.GET_KEYS') }</button>
+                  onClick={ this._getWalletDatKeys }>
+                  { this.state.loading ? translate('SETTINGS.FETCHING_KEYS') + '...' : translate('SETTINGS.GET_KEYS') }
+                </button>
               </div>
             </div>
           </div>
