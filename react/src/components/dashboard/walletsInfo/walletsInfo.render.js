@@ -400,7 +400,8 @@ const WalletsInfoRender = function() {
   } else if (_mode === 'spv') {
     const _balance = this.props.ActiveCoin.balance;
     const _server = this.props.Dashboard.electrumCoins[_coin];
-
+    const isNspv = this.props.Dashboard.electrumCoins[_coin].nspv;
+    
     return (
       <div>
         <div className="col-xlg-6 col-md-6">
@@ -427,6 +428,12 @@ const WalletsInfoRender = function() {
                     <td>{ translate('INDEX.SPV_SERVER_CON_TYPE') }</td>
                     <td className="selectable">
                       { _server.server.proto }
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>{ translate('INDEX.LITE_MODE_TYPE') }</td>
+                    <td className="selectable">
+                      { isNspv ? 'nSPV' : 'SPV' }
                     </td>
                   </tr>
                   <tr>

@@ -193,6 +193,7 @@ class SendCoin extends React.Component {
     this.toggleConvertAmount = this.toggleConvertAmount.bind(this);
     this.toggleSendVrscToken = this.toggleSendVrscToken.bind(this);
     this.findChain = this.findChain.bind(this)
+    this.toggleDonateInterest = this.toggleDonateInterest.bind(this);
     //this.loadTestData = this.loadTestData.bind(this);
   }
 
