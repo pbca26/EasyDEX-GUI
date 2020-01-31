@@ -27,7 +27,7 @@ for (let key in _coins) {
 coins = coinsList;
 
 const prepCoinsList = (options) => {
-  const availableKMDModes = staticVar.arch === 'x64' ? 'spv|native' : 'spv';
+  const availableKMDModes = staticVar.arch === 'x64' ? 'spv|nspv|native' : 'spv';
   let _items = [];
   
   if (options.filterNonActive) {

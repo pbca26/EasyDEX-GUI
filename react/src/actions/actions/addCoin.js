@@ -98,12 +98,15 @@ export const apiElectrumAuth = (seed) => {
   }
 }
 
-export const apiElectrumAddCoin = (coin) => {
+export const apiElectrumAddCoin = (coin, isNspv) => {
   return dispatch => {
-    const _urlParams = {
+    let _urlParams = {
       coin,
       token,
     };
+
+    if (isNspv) _urlParams.nspv = true;
+
     return fetch(
       `http://127.0.0.1:${agamaPort}/api/electrum/coins/add${urlParams(_urlParams)}`,
       fetchType.get
@@ -121,7 +124,7 @@ export const apiElectrumAddCoin = (coin) => {
     .then(response => response.json())
     .then(json => {
       dispatch(
-        addCoinResult(coin, '0')
+        addCoinResult(coin, isNspv ? '4' : '0')
       );
     });
   }
@@ -170,6 +173,13 @@ export const addCoin = (coin, mode, startupParams, genproclimit, pubkey, customD
       mode === '0') {
     return dispatch => {
       dispatch(apiElectrumAddCoin(coin));
+    }
+  } else if (
+    mode === 4 ||
+    mode === '4'
+  ) {
+    return dispatch => {
+      dispatch(apiElectrumAddCoin(coin, true));
     }
   } else {
     return dispatch => {
@@ -341,6 +351,7 @@ export const addCoinResult = (coin, mode) => {
     '1': 'staking',
     '2': 'mining',
     '3': 'eth',
+    '4': 'nspv',
   };
 
   return dispatch => {
@@ -366,7 +377,8 @@ export const addCoinResult = (coin, mode) => {
     );
     dispatch(toggleAddcoinModal(false, false));
 
-    if (Number(mode) === 0) {
+    if (Number(mode) === 0 ||
+        Number(mode) === 4) {
       dispatch(activeHandle());
       dispatch(apiElectrumCoins());
       dispatch(getDexCoins());

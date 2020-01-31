@@ -15,6 +15,7 @@ const CoinSelectorsRender = function(item, coin, i) {
   const _modesEnum = [
     'native',
     'spv',
+    'nspv',
     // custom ac
     'mining',
     'staking'
@@ -46,7 +47,7 @@ const CoinSelectorsRender = function(item, coin, i) {
       pubkeyAddress = translate('TOASTR.INVALID_PUBKEY');
     }
   }
-
+  
   return (
     <div
       className={ this.hasMoreThanOneCoin() ? 'multi' : 'single' }
@@ -129,6 +130,40 @@ const CoinSelectorsRender = function(item, coin, i) {
                 { item.spvMode.checked &&
                   <span className="labelauty-checked">
                     { translate('INDEX.SPV_MODE') }
+                  </span>
+                }
+              </label>
+            </div>
+          }
+          { _availModes.nspv &&
+            <div className="form-group col-lg-4 col-md-4 col-sm-6 col-xs-6 style-addcoin-lbl-mdl-login">
+              <input
+                type="radio"
+                className="to-labelauty labelauty"
+                name={ `mode-${i}` }
+                id={ `addcoin_mdl_basilisk_mode_login-${i}` }
+                disabled={ item.nspvMode.disabled }
+                checked={ item.nspvMode.checked }
+                readOnly />
+              <label
+                htmlFor={ `addcoin_mdl_basilisk_mode_login-${i}` }
+                onClick={ () => this.updateSelectedMode('4', i) }
+                style={{ pointerEvents: item.nspvMode.disabled ? 'none' : 'all' }}>
+                { !item.nspvMode.checked &&
+                  <span className="labelauty-unchecked-image"></span>
+                }
+                { !item.nspvMode.checked &&
+                  <span
+                    className="labelauty-unchecked">
+                    { translate('INDEX.NSPV_MODE') }
+                  </span>
+                }
+                { item.nspvMode.checked &&
+                  <span className="labelauty-checked-image"></span>
+                }
+                { item.nspvMode.checked &&
+                  <span className="labelauty-checked">
+                    { translate('INDEX.NSPV_MODE') }
                   </span>
                 }
               </label>

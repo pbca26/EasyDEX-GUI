@@ -39,6 +39,10 @@ class AddCoin extends React.Component {
           disabled: true,
           checked: false,
         },
+        nspvMode: {
+          disabled: true,
+          checked: false,
+        },
         nativeMode: {
           disabled: true,
           checked: false,
@@ -261,6 +265,7 @@ class AddCoin extends React.Component {
         native: -1,
         staking: 1,
         mining: 2,
+        nspv: 4,
       };
       const _value = e.value;
       let _coins = this.state.coins;
@@ -270,6 +275,10 @@ class AddCoin extends React.Component {
         spvMode: {
           disabled: _value.indexOf('spv') > -1 ? false : true,
           checked: defaultMode === 'spv' ? true : false,
+        },
+        nspvMode: {
+          disabled: _value.indexOf('nspv') > -1 ? false : true,
+          checked: defaultMode === 'nspv' ? true : false,
         },
         nativeMode: {
           disabled: _value.indexOf('native') > -1 ? false : true,
@@ -314,6 +323,10 @@ class AddCoin extends React.Component {
       miningMode: {
         disabled: _selectedCoin.indexOf('mining') > -1 ? false : true,
         checked: _value === '2' ? true : false,
+      },
+      nspvMode: {
+        disabled: _selectedCoin.indexOf('nspv') > -1 ? false : true,
+        checked: _value === '4' ? true : false,
       },
       mode: _value,
     };

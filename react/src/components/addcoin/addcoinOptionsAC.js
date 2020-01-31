@@ -64,6 +64,10 @@ const addCoinOptionsAC = (activeCoins) => {
       if (staticVar.arch !== 'x64') {
         availableModes = 'spv';
       }
+
+      if (staticVar.nspvPorts[_coinuc]) {
+        availableModes += '|nspv';
+      }
   
       if (_disabledAC.all.indexOf(_coinlc) === -1 &&
           (activeCoins === 'skip' || (activeCoins !== 'skip' &&

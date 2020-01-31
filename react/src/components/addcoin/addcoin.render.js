@@ -62,13 +62,16 @@ const AddCoinRender = function() {
               { staticVar.arch === 'x64' &&
                 <div className="col-sm-12">
                   <p>
-                    <strong>{ translate('INDEX.SPV_MODE') }:</strong> { translate('ADD_COIN.LITE_MODE_DESC') }.
+                    <strong>{ translate('INDEX.SPV_MODE') }:</strong> { translate('ADD_COIN.LITE_SPV_MODE_DESC') }
+                  </p>
+                  <p>
+                    <strong>{ translate('INDEX.NSPV_MODE') }:</strong> { translate('ADD_COIN.LITE_NSPV_MODE_DESC') }
                   </p>
                   <p>
                     <strong>{ translate('INDEX.NATIVE_MODE') }:</strong> { translate('INDEX.NATIVE_MODE_DESC1') }&nbsp;
-                    <strong>a Daemon</strong> { translate('INDEX.NATIVE_MODE_DESC2') }.
+                    <strong>a Daemon</strong> { translate('INDEX.NATIVE_MODE_DESC2') }
                   </p>
-                  <div className="alert alert-icon alert-primary margin-top-20">
+                  <div className="alert alert-icon alert-primary margin-top-30">
                     <i className="icon md-info-outline"></i>
                     <strong>{ translate('INDEX.NATIVE_MODE') }</strong> { translate('INDEX.NATIVE_MODE_DESC3') }&nbsp;
                     <strong>{ translate('INDEX.NATIVE_MODE_DESC4') }</strong>,&nbsp;
